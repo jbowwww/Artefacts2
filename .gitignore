@@ -1,0 +1,10 @@
+.commit_message*.txt
+zz.Excluded/
+*.userprefs
+*.usertasks
+#*.sln
+#*.csproj
+*~
+*.o
+*/testdata/
+
