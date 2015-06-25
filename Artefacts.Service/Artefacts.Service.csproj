@@ -5,10 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}</ProjectGuid>
+    <ProjectGuid>{916B70EF-EA98-43E0-A713-6061773C9596}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Artefacts</RootNamespace>
-    <AssemblyName>Artefacts</AssemblyName>
+    <RootNamespace>Artefacts.Service</RootNamespace>
+    <AssemblyName>Artefacts.Service</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -31,22 +31,36 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Text.dll</HintPath>
-    </Reference>
     <Reference Include="MongoDB.Bson">
       <HintPath>..\..\..\..\Resources\CS\MongoDB\CSharpDriver-1.9.2\MongoDB.Bson.dll</HintPath>
     </Reference>
     <Reference Include="MongoDB.Driver">
       <HintPath>..\..\..\..\Resources\CS\MongoDB\CSharpDriver-1.9.2\MongoDB.Driver.dll</HintPath>
     </Reference>
+    <Reference Include="ServiceStack.Common">
+      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Common.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Interfaces">
+      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Text.dll</HintPath>
+    </Reference>
+    <Reference Include="ServiceStack">
+      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Artefact.cs" />
-    <Compile Include="Host.cs" />
-    <Compile Include="MemberInfo_Extensions.cs" />
+    <Compile Include="ArtefactsService.cs" />
+    <Compile Include="ArtefactsHost.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <ProjectReference Include="..\Artefacts\Artefacts.csproj">
+      <Project>{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}</Project>
+      <Name>Artefacts</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

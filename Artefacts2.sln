@@ -3,18 +3,36 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artefacts", "Artefacts\Artefacts.csproj", "{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artefacts.Service", "Artefacts.Service\Artefacts.Service.csproj", "{916B70EF-EA98-43E0-A713-6061773C9596}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ArtefactFileSystem", "Plugins\FileSystem\ArtefactFileSystem.csproj", "{5B486604-0B8B-4214-99DB-C36A69168F5B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artefacts.TestClient", "Artefacts.TestClient\Artefacts.TestClient.csproj", "{930479F7-0453-4293-9AAE-27C54107215C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5B486604-0B8B-4214-99DB-C36A69168F5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B486604-0B8B-4214-99DB-C36A69168F5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B486604-0B8B-4214-99DB-C36A69168F5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B486604-0B8B-4214-99DB-C36A69168F5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{916B70EF-EA98-43E0-A713-6061773C9596}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{916B70EF-EA98-43E0-A713-6061773C9596}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{916B70EF-EA98-43E0-A713-6061773C9596}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{916B70EF-EA98-43E0-A713-6061773C9596}.Release|Any CPU.Build.0 = Release|Any CPU
+		{930479F7-0453-4293-9AAE-27C54107215C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{930479F7-0453-4293-9AAE-27C54107215C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{930479F7-0453-4293-9AAE-27C54107215C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{930479F7-0453-4293-9AAE-27C54107215C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Artefacts\Artefacts.csproj
+		StartupItem = Artefacts.TestClient\Artefacts.TestClient.csproj
 	EndGlobalSection
 EndGlobal

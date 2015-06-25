@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="ArtefactFileSystem" 
+                   namespace="Artefacts.FileSystem"> 
+	<joined-subclass name="FileSystemEntry" extends="Artefacts.Artefact">
+		<key column="Id" />
+		<property name="Path" not-null="true" unique="true" />
+		<many-to-one name="Drive" class="Drive" fetch="join" /> <!-- cascade="all" />-->
+		<property name="Attributes" />
+		<property name="CreationTime" />
+		<property name="AccessTime" />
+		<property name="ModifyTime" />
+	</joined-subclass>  
+</hibernate-mapping>

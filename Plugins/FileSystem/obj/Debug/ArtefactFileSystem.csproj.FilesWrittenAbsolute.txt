@@ -1,0 +1,10 @@
+/home/jk/Code/Projects/NET/ArtefactService/Plugins/FileSystem/obj/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs
+/home/jk/Code/Projects/NET/ArtefactService/Plugins/FileSystem/obj/Debug/Artefacts.FileSystem.Artefacts.Mappings.Directory.hbm.xml
+/home/jk/Code/Projects/NET/ArtefactService/Plugins/FileSystem/obj/Debug/Artefacts.FileSystem.Artefacts.Mappings.Drive.hbm.xml
+/home/jk/Code/Projects/NET/ArtefactService/Plugins/FileSystem/obj/Debug/Artefacts.FileSystem.Artefacts.Mappings.File.hbm.xml
+/home/jk/Code/Projects/NET/ArtefactService/Plugins/FileSystem/obj/Debug/Artefacts.FileSystem.Artefacts.Mappings.FileSystemEntry.hbm.xml
+/home/jk/Code/Projects/NET/ArtefactService/Plugins/FileSystem/obj/Debug/Artefacts.FileSystem.Artefacts.Mappings.Disk.hbm.xml
+/home/jk/Code/Projects/NET/ArtefactService/bin/Debug/Plugins/ArtefactFileSystem.dll.mdb
+/home/jk/Code/Projects/NET/ArtefactService/bin/Debug/Plugins/ArtefactFileSystem.dll
+/home/jk/Code/Projects/NET/ArtefactService/Plugins/FileSystem/obj/Debug/ArtefactFileSystem.dll
+/home/jk/Code/Projects/NET/ArtefactService/Plugins/FileSystem/obj/Debug/ArtefactFileSystem.dll.mdb

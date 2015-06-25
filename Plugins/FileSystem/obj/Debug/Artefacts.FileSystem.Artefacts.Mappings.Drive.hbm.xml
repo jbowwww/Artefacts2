@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<hibernate-mapping xmlns="urn:nhibernate-mapping-2.2" 
+                   assembly="ArtefactFileSystem" 
+                   namespace="Artefacts.FileSystem"> 
+	<joined-subclass name="Drive" extends="Artefacts.Artefact">
+		<key column="Id" />
+		<many-to-one name="Disk" class="Disk" fetch="join" /> <!--- cascade="all" />-->
+		<property name="Partition" />
+		<property name="Label" unique="true" />
+		<property name="Format" />
+		<property name="Type" />
+		<property name="Size" />
+		<property name="FreeSpace" />
+		<property name="AvailableFreeSpace" />
+	</joined-subclass>  
+</hibernate-mapping>
