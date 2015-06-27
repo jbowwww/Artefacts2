@@ -6,14 +6,16 @@ using System.Threading;
 using System;
 using System.IO;
 using System.Text;
+using System.Linq;
 using ServiceStack;
 using MongoDB.Bson;
+using System.Collections.Generic;
 
 public partial class MainWindow: Gtk.Window
 {	
 	protected ArtefactsHost AppHost = null;
 
-	protected JsonServiceClient _client = null;
+	protected ServiceStack.IServiceClient _client = null;
 	
 	private Thread _appHostThread = null;
 	private bool _appHostThreadExit = false;
@@ -79,20 +81,39 @@ public partial class MainWindow: Gtk.Window
 			Artefact artefact = new Artefact(new { Name = "Test", Desc = "Description" });
 			BsonDocument bsonDocument = artefact.ToBsonDocument();
 			string doc = bsonDocument.ToString();
-			tvClient.Buffer.Text += doc;
-			object result = _client.Put(bsonDocument);
-			tvClient.Buffer.Text += "result = " + (result == null ? "(null)" : result.ToString());
-		}
-		catch (WebServiceException wsex)
-		{
-			tvClient.Buffer.Text += wsex.ToString();// + wsex.ServerStackTrace;
-			for (Exception _wsex = wsex; _wsex != null; _wsex = _wsex.InnerException)
-				
-				tvClient.Buffer.Text += _wsex.ToString();
-		}
-		catch (InvalidOperationException ioex)
-		{
-			tvClient.Buffer.Text += ioex.ToString() + ioex.TargetSite.ToString();	
+			byte[] data = bsonDocument.ToBson();
+			string json = MongoDB.Bson.BsonExtensionMethods.ToJson(artefact);
+			string ss_json = ServiceStack.StringExtensions.ToJson(artefact);
+			tvClient.Buffer.Text +=
+				"(BsonDocument) " + doc +
+				"\n(byte[])     " + data.Select(b => string.Format("\\{0:X2}", b)).Join() +
+				"\n(json)       " + json +
+				"\n\n";
+			List<object> subjects = new List<object>(new object[]{ /*artefact,*/ bsonDocument, doc, data, ss_json });
+			
+			foreach (object subject in subjects)
+			{
+				try
+				{
+					System.Net.HttpWebResponse result = _client.Put(subject);
+					tvClient.Buffer.Text += "result = " + result == null ? "(null)" : result.ReadToEnd() + "\n\n";
+				}
+				catch (ServiceStack.WebServiceException wsex)
+				{
+					tvClient.Buffer.Text += wsex.ToString();// + wsex.ServerStackTrace;
+					for (Exception _wsex = wsex; _wsex != null; _wsex = _wsex.InnerException)
+
+						tvClient.Buffer.Text += _wsex.ToString();
+				}
+				catch (InvalidOperationException ioex)
+				{
+					tvClient.Buffer.Text += ioex.ToString() + ioex.TargetSite.ToString();	
+				}
+				catch (Exception ex)
+				{
+					tvClient.Buffer.Text += ex.ToString();	
+				}
+			}
 		}
 		catch (Exception ex)
 		{

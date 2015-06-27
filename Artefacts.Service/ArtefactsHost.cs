@@ -53,7 +53,11 @@ namespace Artefacts.Service
 //					typeof(Artefacts.FileSystem.FileSystemEntry)});
 			});
 			container.Register<ArtefactsService>(new ArtefactsService(_output));
-			this.Routes.Add<Artefact>("/artefacts", ApplyTo.Put);
+			this.Routes
+				.Add<Artefact>("/artefacts", ApplyTo.Put)
+				.Add<BsonDocument>("/docs", ApplyTo.Put | ApplyTo.Post | ApplyTo.Update | ApplyTo.Delete)
+				.Add<byte[]>("/bytes", ApplyTo.Put)
+				.Add<string>("/strings", ApplyTo.Put);
 
 			//					//				.Add<ObjectId>("/artefacts/Id={ToString}", ApplyTo.Get)
 //					.Add<GetQueryRequest>("/artefacts/Query={Expression}", ApplyTo.Get)

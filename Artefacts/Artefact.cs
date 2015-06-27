@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
-using MongoDB.Bson;
 using System.Dynamic;
 using System.Reflection;
 using System.Linq;
+using System.Runtime.Serialization;
+using ServiceStack.Text.Json;
+using MongoDB.Bson;
 
 namespace Artefacts
 {
@@ -11,15 +13,26 @@ namespace Artefacts
 	/// Artefact.
 	/// </summary>
 	/// <remarks>
-	/// 
+	/// Two potential approaches to serialization I see at the moment:
+	/// 	- Use streams (SS DTO with a Stream member?) to just bang the BsonDocument through
+	/// 		- Avoids handling full serialization twice - client side (ServiceStack) and server side (into MongoDB)
+	/// 		- No flexibility, depends on MongoDB reference
+	/// 		- Not really how it should be done if service is REST
+	/// 			- JSON more appopriate - can probably convert relatively cheaply from BsonDocument to JSON
+	/// 	- Iterate on elements in the document and add them to SerializationInfo in GetObjectData
+	/// 		- ServiceStack can then serialize as it wishes/ how its configured / which client is being
+	/// 		  used (JSON, JSV, ProtoBuf, ...)
+	/// 		- Seems like double handling of the fields
+	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
-	public class Artefact : DynamicObject, IConvertibleToBsonDocument
+	public class Artefact : DynamicObject, IConvertibleToBsonDocument, ISerializable
 	{	
 		#region Fields & Properties
 		private BindingFlags _bindingFlags =
 			BindingFlags.Public | BindingFlags.Instance |
 			BindingFlags.GetField | BindingFlags.GetProperty;
 
+		[IgnoreDataMember]
 		private BsonDocument _bsonDocument = new BsonDocument();
 		
 		/// <summary>
@@ -85,6 +98,7 @@ namespace Artefacts
 		#endregion
 
 		#region Methods
+		#region DynamicObject overrides
 		/// <summary>
 		/// Sets the instance.
 		/// </summary>
@@ -153,7 +167,9 @@ namespace Artefacts
 		{
 			return base.TryCreateInstance(binder, args, out result);
 		}
-
+		#endregion
+		
+		#region Serialization / data handling
 		/// <summary>
 		/// Converts this object to a BsonDocument.
 		/// </summary>
@@ -164,6 +180,20 @@ namespace Artefacts
 			return _bsonDocument;
 		}
 
+		/// <Docs>To be added: an object of type 'SerializationInfo'</Docs>
+		/// <summary>
+		/// To be added
+		/// </summary>
+		/// <param name="info">Info.</param>
+		/// <param name="context">Context.</param>
+		/// <remarks>ISerializable implementation</remarks>
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			//			info.SetType(typeof(Artefact));
+			throw new NotImplementedException();
+		}
+		#endregion
+		
 		/// <summary>
 		/// Returns a <see cref="System.String"/> that represents the current <see cref="Artefacts.Artefact"/>.
 		/// </summary>

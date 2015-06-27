@@ -83,6 +83,8 @@
     <Reference Include="MongoDB.Driver">
       <HintPath>..\..\..\..\Resources\CS\MongoDB\CSharpDriver-1.9.2\MongoDB.Driver.dll</HintPath>
     </Reference>
+    <Reference Include="System.Net" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">

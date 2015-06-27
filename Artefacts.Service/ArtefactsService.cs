@@ -17,7 +17,22 @@ namespace Artefacts.Service
 			_output.WriteLine("Testing");
 		}
 		
-		public HttpWebResponse Put(BsonDocument artefact)
+		
+		public HttpWebResponse Put(byte[] artefact)
+		{
+			_output.WriteLine("byte[] artefact: " + artefact.ToString());
+			//			return null;
+			return default(HttpWebResponse);
+		}
+
+		public HttpWebResponse Put(string artefact)
+		{
+			_output.WriteLine("string artefact: " + artefact.ToString());
+			//			return null;
+			return default(HttpWebResponse);
+		}
+
+public HttpWebResponse Put(BsonDocument artefact)
 		{
 			_output.WriteLine("BsonDocument artefact: " + artefact.ToString());
 //			return null;
