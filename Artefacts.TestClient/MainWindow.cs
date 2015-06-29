@@ -13,6 +13,8 @@ using System.Collections.Generic;
 
 public partial class MainWindow: Gtk.Window
 {	
+	public const string ServiceBaseUrl = "http://localhost:8888/Artefacts/";
+	
 	protected ArtefactsHost AppHost = null;
 
 	protected ServiceStack.IServiceClient _client = null;
@@ -37,22 +39,21 @@ public partial class MainWindow: Gtk.Window
 
 	protected void StartHost()
 	{
+		Mutex hostOutputMutex = new Mutex();
 		StringBuilder sb = new StringBuilder(4096);
 		_appHostThread = new Thread(() =>  {
 			//			Console.SetOut(new StringWriter(sb));
 			AppHost = new ArtefactsHost(new StringWriter(sb));
-			AppHost.Init().Start("http://localhost:8888/Artefacts/");
+			AppHost.Init().Start(ServiceBaseUrl);
 			while (!_appHostThreadExit)
 				Thread.Sleep(222);
 			AppHost.Stop();
 		});
 		_appHostThread.Start();
-		_appHostUpdateTimer = new Timer(state =>  {
-			Thread.BeginCriticalRegion();
+		_appHostUpdateTimer = new Timer(state => {
 			string s = sb.ToString();
 			sb.Clear();
-			Thread.EndCriticalRegion();
-			tvHost.Buffer.Text += s;
+			tvHost.Buffer.Insert(tvHost.Buffer.EndIter, s);
 		}, null, 800, 888);
 	}
 
@@ -75,50 +76,73 @@ public partial class MainWindow: Gtk.Window
 	
 	protected void StartClient()
 	{
-		try
-		{
-			_client = new JsonServiceClient("http://localhost:8888/Artefacts/");
+//		try
+//		{
 			Artefact artefact = new Artefact(new { Name = "Test", Desc = "Description" });
 			BsonDocument bsonDocument = artefact.ToBsonDocument();
 			string doc = bsonDocument.ToString();
 			byte[] data = bsonDocument.ToBson();
 			string json = MongoDB.Bson.BsonExtensionMethods.ToJson(artefact);
 			string ss_json = ServiceStack.StringExtensions.ToJson(artefact);
-			tvClient.Buffer.Text +=
-				"(BsonDocument) " + doc +
-				"\n(byte[])     " + data.Select(b => string.Format("\\{0:X2}", b)).Join() +
-				"\n(json)       " + json +
-				"\n\n";
-			List<object> subjects = new List<object>(new object[]{ /*artefact,*/ bsonDocument, doc, data, ss_json });
+//			string json3 = artefact.ToJson();
+			string jsv = artefact.ToJsv();
+			string csv = artefact.ToCsv();
+			tvClient.Buffer.Insert(tvClient.Buffer.EndIter,
+				"Data:" +
+				"\n\t(Artefact)     " + artefact.ToString() +
+				"\n\t(BsonDocument) " + doc +
+				"\n\t(byte[])       " + data.Select(b => string.Format("\\{0:X2}", b)).Join() +
+				"\n\t(json)         " + json +
+				"\n\t(jsv)          " + jsv +
+				"\n\t(csv)          " + csv +
+				"\n\n");
+			List<object> subjects = new List<object>(new object[]{ /**/artefact, bsonDocument, doc, data, ss_json });
+
+			_client = new JsonServiceClient(ServiceBaseUrl);
+			string putUrl = artefact.ToPutUrl();
+			tvClient.Buffer.Insert(tvClient.Buffer.EndIter,
+				"Client: " + _client.ToString() + "\n\tPUT URL: " + putUrl + "\n\n");
+			
 			
 			foreach (object subject in subjects)
 			{
 				try
 				{
-					System.Net.HttpWebResponse result = _client.Put(subject);
-					tvClient.Buffer.Text += "result = " + result == null ? "(null)" : result.ReadToEnd() + "\n\n";
+					tvClient.Buffer.Text += "_client.Put(" + subject + " [" + (subject == null ? "(NULL)" : subject.GetType().FullName) + "] )\n";
+					object result = _client.Put(subject);
+					tvClient.Buffer.Text += "\tresult = " + (result == null ? "(null)" : result.ToString())/*.ReadToEnd()*/ + "\n";
 				}
 				catch (ServiceStack.WebServiceException wsex)
 				{
-					tvClient.Buffer.Text += wsex.ToString();// + wsex.ServerStackTrace;
-					for (Exception _wsex = wsex; _wsex != null; _wsex = _wsex.InnerException)
-
-						tvClient.Buffer.Text += _wsex.ToString();
+					tvClient.Buffer.Text += wsex.ToString() + "\nServerStackTrace: " + wsex.ServerStackTrace;
+					for (Exception _wsex = wsex.InnerException; _wsex != null; _wsex = _wsex.InnerException)
+						tvClient.Buffer.Text += "\n" + _wsex.ToString();
+					tvClient.Buffer.Text += "\n";
 				}
 				catch (InvalidOperationException ioex)
 				{
-					tvClient.Buffer.Text += ioex.ToString() + ioex.TargetSite.ToString();	
+					tvClient.Buffer.Text += ioex.ToString() + ioex.TargetSite.ToString();
+					for (Exception _wsex = ioex.InnerException; _wsex != null; _wsex = _wsex.InnerException)
+						tvClient.Buffer.Text += "\n" + _wsex.ToString();
+					tvClient.Buffer.Text += "\n";
 				}
 				catch (Exception ex)
 				{
 					tvClient.Buffer.Text += ex.ToString();	
+					for (Exception _wsex = ex.InnerException; _wsex != null; _wsex = _wsex.InnerException)	
+						tvClient.Buffer.Text += "\n" + _wsex.ToString();
+					tvClient.Buffer.Text += "\n";
+				}
+				finally
+				{
+					tvClient.Buffer.Text += "\n";
 				}
 			}
-		}
-		catch (Exception ex)
-		{
-			tvClient.Buffer.Text += ex.ToString();	
-		}
+//		}
+//		catch (Exception ex)
+//		{
+//			tvClient.Buffer.Text += ex.ToString();	
+//		}
 	}
 	
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a)

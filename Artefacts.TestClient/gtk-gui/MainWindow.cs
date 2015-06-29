@@ -19,6 +19,7 @@ public partial class MainWindow
 		this.vpaned1 = new global::Gtk.VPaned ();
 		this.vpaned1.CanFocus = true;
 		this.vpaned1.Name = "vpaned1";
+		this.vpaned1.Position = 660;
 		// Container child vpaned1.Gtk.Paned+PanedChild
 		this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
@@ -45,8 +46,8 @@ public partial class MainWindow
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();
 		}
-		this.DefaultWidth = 854;
-		this.DefaultHeight = 485;
+		this.DefaultWidth = 1369;
+		this.DefaultHeight = 857;
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 		this.ConfigureEvent += new global::Gtk.ConfigureEventHandler (this.OnConfigureEvent);

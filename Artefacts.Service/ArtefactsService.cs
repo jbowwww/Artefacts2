@@ -4,10 +4,11 @@ using MongoDB.Bson;
 using System.IO;
 using System.Web;
 using System.Net;
+using ServiceStack;
 
 namespace Artefacts.Service
 {
-	public class ArtefactsService : ServiceStack.IService
+	public class ArtefactsService : ServiceStack.IService, IPut<Artefact>
 	{
 		private TextWriter _output = null;
 		
@@ -18,32 +19,70 @@ namespace Artefacts.Service
 		}
 		
 		
-		public HttpWebResponse Put(byte[] artefact)
-		{
-			_output.WriteLine("byte[] artefact: " + artefact.ToString());
-			//			return null;
-			return default(HttpWebResponse);
-		}
+//		public object Put(byte[] artefact)
+//		{
+//			_output.WriteLine("byte[] artefact: " + artefact.ToString());
+//			//			return null;
+//			return default(HttpWebResponse);
+//		}
+//
+//		public object Put(string artefact)
+//		{
+//			_output.WriteLine("string artefact: " + artefact.ToString());
+//			//			return null;
+//			return default(HttpWebResponse);
+//		}
 
-		public HttpWebResponse Put(string artefact)
+		public object Put(BsonDocument artefact)
 		{
-			_output.WriteLine("string artefact: " + artefact.ToString());
-			//			return null;
-			return default(HttpWebResponse);
-		}
-
-public HttpWebResponse Put(BsonDocument artefact)
-		{
-			_output.WriteLine("BsonDocument artefact: " + artefact.ToString());
-//			return null;
-			return default(HttpWebResponse);
+			try
+			{_output.WriteLine("BsonDocument artefact: " + artefact.ToString());
+			return null;
+			}
+			
+			catch (Exception ex)
+			{
+				_output.WriteLine(ex.ToString());
+			}
+			return null;
+//			return default(HttpWebResponse);
 		}
 		
-		public HttpWebResponse Put(Artefact artefact)
+		public object Put(Artefact artefact)
 		{
-			_output.WriteLine("Artefact artefact: " + artefact.ToString());
-//			return null;
+		try
+			{_output.WriteLine("Artefact artefact: " + artefact.ToString());
+			return null;
+		}
+
+		catch (Exception ex)
+		{
+			_output.WriteLine(ex.ToString());
+		}
+			return null;
+//			return default(HttpWebResponse);
+		}
+		
+//		public object Put(object artefact)
+//		{
+//			_output.WriteLine("object artefact: " + artefact.ToString());
+//			//			return null;
+//			return default(HttpWebResponse);
+//		}
+		
+		public object Any(object request)
+		{
+			try
+			{
+				_output.WriteLine("Any ! request: " + request.ToString());
 			return default(HttpWebResponse);
+			}
+
+		catch (Exception ex)
+		{
+			_output.WriteLine(ex.ToString());
+		}
+			return null;
 		}
 	}
 }

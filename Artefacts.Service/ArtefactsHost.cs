@@ -8,6 +8,7 @@ using MongoDB.Bson;
 using System.Collections.Generic;
 using System;
 using System.IO;
+using ServiceStack.Text;
 
 namespace Artefacts.Service
 {
@@ -21,9 +22,15 @@ namespace Artefacts.Service
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Host.ArtefactsHost"/> class.
 		/// </summary>
-		public ArtefactsHost(TextWriter output) : base("Artefacts", typeof(ArtefactsService).Assembly)
+		public ArtefactsHost(TextWriter output)
+			: base("Artefacts",
+			       typeof(ArtefactsService).Assembly,
+			       typeof(Artefact).Assembly,
+			typeof(BsonDocument).Assembly)
 		{
 			_output = output;
+			JsConfig.ConvertObjectTypesIntoStringDictionary = true;
+//			JsConfig.Dump<JsConfig>();
 		}
 
 		/// <summary>
@@ -43,21 +50,22 @@ namespace Artefacts.Service
 				DebugMode = true,
 				ReturnsInnerException = true,
 				AllowPartialResponses = true,
-				Return204NoContentForEmptyResponse = true,
+				Return204NoContentForEmptyResponse = true
 //				EmbeddedResourceBaseTypes = new List<Type>(new Type[] {
-//					typeof(Artefact)
+//					typeof(Artefact), typeof(BsonValue) })
 //					typeof(Artefacts.FileSystem.Disk),
 //					typeof(Artefacts.FileSystem.Drive),
 //					typeof(Artefacts.FileSystem.Directory),
 //					typeof(Artefacts.FileSystem.File),
 //					typeof(Artefacts.FileSystem.FileSystemEntry)});
 			});
+			
 			container.Register<ArtefactsService>(new ArtefactsService(_output));
 			this.Routes
-				.Add<Artefact>("/artefacts", ApplyTo.Put)
-				.Add<BsonDocument>("/docs", ApplyTo.Put | ApplyTo.Post | ApplyTo.Update | ApplyTo.Delete)
-				.Add<byte[]>("/bytes", ApplyTo.Put)
-				.Add<string>("/strings", ApplyTo.Put);
+				.Add<Artefact>("/artefacts", ApplyTo.Put);
+//				.Add<BsonDocument>("/docs", ApplyTo.Put | ApplyTo.Post | ApplyTo.Update | ApplyTo.Delete)
+//				.Add<byte[]>("/bytes", ApplyTo.Put)
+//				.Add<string>("/strings", ApplyTo.Put);
 
 			//					//				.Add<ObjectId>("/artefacts/Id={ToString}", ApplyTo.Get)
 //					.Add<GetQueryRequest>("/artefacts/Query={Expression}", ApplyTo.Get)
