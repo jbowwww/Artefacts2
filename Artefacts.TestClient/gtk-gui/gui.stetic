@@ -12,13 +12,14 @@
     <property name="MemberName" />
     <property name="Title" translatable="yes">Artefacts 2</property>
     <property name="WindowPosition">CenterOnParent</property>
+    <property name="Gravity">SouthWest</property>
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <signal name="ConfigureEvent" handler="OnConfigureEvent" />
+    <signal name="ResizeChecked" handler="OnResizeChecked" />
     <child>
       <widget class="Gtk.VPaned" id="vpaned1">
         <property name="MemberName" />
         <property name="CanFocus">True</property>
-        <property name="Position">660</property>
         <child>
           <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
             <property name="MemberName" />
@@ -43,6 +44,7 @@
             <child>
               <widget class="Gtk.TextView" id="tvHost">
                 <property name="MemberName" />
+                <property name="HeightRequest">44</property>
                 <property name="CanFocus">True</property>
                 <property name="ShowScrollbars">True</property>
                 <property name="Text" translatable="yes" />

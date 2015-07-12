@@ -6,5 +6,8 @@ zz.Excluded/
 #*.csproj
 *~
 *.o
+*.dll
+*.exe
+*.mdb
 */testdata/
 

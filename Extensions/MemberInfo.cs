@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Artefacts
 {
-	public static class MemberInfoExtensions
+	public static class MemberInfo_Ext
 	{
 		/// <summary>
 		/// Checks if the type of <paramref name="instance"/>  has a member equivalent to <paramref name="member"/>
@@ -61,6 +61,11 @@ namespace Artefacts
 			if (member.MemberType == MemberTypes.Property)
 				return ((PropertyInfo)member).GetValue(instance);
 			throw new ArgumentOutOfRangeException("member", "MemberType == " + member.MemberType.ToString());
+		}
+		
+		public static object GetValue(this PropertyInfo property, object instance)
+		{
+			return property.GetValue(instance, new object[] { });
 		}
 	}
 }

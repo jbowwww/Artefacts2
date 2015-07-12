@@ -15,11 +15,11 @@ public partial class MainWindow
 		this.Name = "MainWindow";
 		this.Title = global::Mono.Unix.Catalog.GetString ("Artefacts 2");
 		this.WindowPosition = ((global::Gtk.WindowPosition)(4));
+		this.Gravity = ((global::Gdk.Gravity)(7));
 		// Container child MainWindow.Gtk.Container+ContainerChild
 		this.vpaned1 = new global::Gtk.VPaned ();
 		this.vpaned1.CanFocus = true;
 		this.vpaned1.Name = "vpaned1";
-		this.vpaned1.Position = 660;
 		// Container child vpaned1.Gtk.Paned+PanedChild
 		this.GtkScrolledWindow1 = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindow1.Name = "GtkScrolledWindow1";
@@ -38,6 +38,7 @@ public partial class MainWindow
 		this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 		// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
 		this.tvHost = new global::Gtk.TextView ();
+		this.tvHost.HeightRequest = 44;
 		this.tvHost.CanFocus = true;
 		this.tvHost.Name = "tvHost";
 		this.GtkScrolledWindow.Add (this.tvHost);
@@ -51,5 +52,6 @@ public partial class MainWindow
 		this.Show ();
 		this.DeleteEvent += new global::Gtk.DeleteEventHandler (this.OnDeleteEvent);
 		this.ConfigureEvent += new global::Gtk.ConfigureEventHandler (this.OnConfigureEvent);
+		this.ResizeChecked += new global::System.EventHandler (this.OnResizeChecked);
 	}
 }

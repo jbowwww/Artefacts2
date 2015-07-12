@@ -5,11 +5,10 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}</ProjectGuid>
+    <ProjectGuid>{6A55914A-9A15-4190-9F31-C2B6EE5FD095}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>Artefacts</RootNamespace>
-    <AssemblyName>Artefacts</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <RootNamespace>Extensions</RootNamespace>
+    <AssemblyName>Extensions</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -29,42 +28,31 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
   </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Reference Include="System" />
+    <Compile Include="String.cs" />
+    <Compile Include="MemberInfo.cs" />
+    <Compile Include="Exception.cs" />
+    <Compile Include="Expression.cs" />
+    <Compile Include="Object.cs" />
+    <Compile Include="Type.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Core" />
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Text.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Bson">
-      <HintPath>..\..\..\..\Resources\CS\MongoDB\CSharpDriver-1.9.2\MongoDB.Bson.dll</HintPath>
-    </Reference>
-    <Reference Include="MongoDB.Driver">
-      <HintPath>..\..\..\..\Resources\CS\MongoDB\CSharpDriver-1.9.2\MongoDB.Driver.dll</HintPath>
+    <Reference Include="Serialize.Linq">
+      <HintPath>..\..\..\..\Resources\CS\Serialize.Linq\src\Serialize.Linq\bin\Debug\Serialize.Linq.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Interfaces">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Interfaces.dll</HintPath>
+      <HintPath>..\..\..\..\Resources\CS\ServiceStack\ServiceStack.Text\lib\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack">
       <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Common">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Common.dll</HintPath>
+      <HintPath>..\..\..\..\Resources\CS\ServiceStack\ServiceStack.Text\lib\ServiceStack.Common.dll</HintPath>
     </Reference>
     <Reference Include="ServiceStack.Client">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Client.dll</HintPath>
+      <HintPath>..\..\..\..\Resources\CS\ServiceStack\ServiceStack.Text\lib\ServiceStack.Client.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.Serialization" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Artefact.cs" />
-    <Compile Include="Host.cs" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\Extensions\Extensions.csproj">
-      <Project>{6A55914A-9A15-4190-9F31-C2B6EE5FD095}</Project>
-      <Name>Extensions</Name>
-    </ProjectReference>
   </ItemGroup>
 </Project>
