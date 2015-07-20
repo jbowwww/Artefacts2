@@ -62,7 +62,8 @@ namespace Artefacts.Service
 			
 			container.Register<ArtefactsService>(new ArtefactsService(_output));
 			this.Routes
-				.Add<Artefact>("/artefacts", ApplyTo.Put);
+				.Add<Artefact>("/artefacts", ApplyTo.Put)
+				.Add<BsonDocument>("/artefacts_asBson", ApplyTo.Put);
 //				.Add<BsonDocument>("/docs", ApplyTo.Put | ApplyTo.Post | ApplyTo.Update | ApplyTo.Delete)
 //				.Add<byte[]>("/bytes", ApplyTo.Put)
 //				.Add<string>("/strings", ApplyTo.Put);

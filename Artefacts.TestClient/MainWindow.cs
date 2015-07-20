@@ -91,7 +91,7 @@ public partial class MainWindow: Gtk.Window
 	{
 		//		try
 		//		{
-		Artefact artefact = new Artefact(new { Name = "Test", Desc = "Description" });
+		Artefact artefact = new Artefact(new { Name = "Test", Desc = "Description", testInt = 18, testBool  = false, testObjArray = new object[] { false, 2, "three", null } });
 		byte[] artefactData = MongoDB.Bson.BsonExtensionMethods.ToBson(artefact);
 		string artefactJson = MongoDB.Bson.BsonExtensionMethods.ToJson(artefact);
 		string artefactJson_SS = ServiceStack.StringExtensions.ToJson(artefact);
