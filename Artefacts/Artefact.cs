@@ -31,7 +31,7 @@ namespace Artefacts
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
 	[DataContract(IsReference = true, Namespace = "Artefacts"), Serializable]
-	public class Artefact : JsonObject	// DynamicObject	//, IConvertibleToBsonDocument, ISerializable
+	public class Artefact : DynamicJson
 	{	
 		#region Fields & Properties
 		[IgnoreDataMember, BsonIgnore, NonSerialized]
@@ -40,56 +40,79 @@ namespace Artefacts
 			BindingFlags.GetField | BindingFlags.GetProperty;
 
 //		[IgnoreDataMember, BsonIgnore]
+//		[DataMember]
+//		public BsonDocument _bsonDocument = new BsonDocument();
+		[IgnoreDataMember, BsonIgnore, NonSerialized]
+		private IDictionary<string, object> _fields = new Dictionary<string, object>(4);
+		
+		/// <summary>
+		/// Gets the fields.
+		/// </summary>
 		[DataMember]
-		public BsonDocument _bsonDocument = new BsonDocument();
+		public IDictionary<string, object> Fields {
+			get { return _fields; }
+			set { _fields = new Dictionary<string, object>(value); }
+		}
 		
 		/// <summary>
 		/// Gets or sets the identifier.
 		/// </summary>
 		[BsonRepresentation(BsonType.String), BsonId, DataMember]
 		public string Id {
-			get { return base["_id"]; }
-			set { base["_id"] = value; }
+			get;
+			set;
 		}
+//			get { return base["_id"]; }
+//			set { base["_id"] = value; }
+//		}
 
 		/// <summary>
 		/// Gets or sets the time created.
 		/// </summary>
 //		[IgnoreDataMember]
 		public DateTime TimeCreated {
-			get { return DateTime.Parse(base["TimeCreated"]); }// Id.CreationTime; }
-			set
-			{
-				base["TimeCreated"] = (value).ToString();
-//				if (Id.CreationTime != value)
-//					throw new ArgumentOutOfRangeException("TimeCreated", value, "Does not match Id.CreationTime");
-			}
+			get;
+			set;
 		}
+//			get { return DateTime.Parse(base["TimeCreated"]); }// Id.CreationTime; }
+//			set
+//			{
+//				base["TimeCreated"] = (value).ToString();
+////				if (Id.CreationTime != value)
+////					throw new ArgumentOutOfRangeException("TimeCreated", value, "Does not match Id.CreationTime");
+//			}
+//		}
 
 		/// <summary>
 		/// Gets or sets the time checked.
 		/// </summary>
 		[DataMember]
 		public DateTime TimeChecked {
-			get { return DateTime.Parse(base["TimeChecked"]); }
-			set { base["TimeChecked"] = value.ToString(); }
+			get;
+			set;
 		}
+//			get { return DateTime.Parse(base["TimeChecked"]); }
+//			set { base["TimeChecked"] = value.ToString(); }
+//		}
 
 		/// <summary>
 		/// Gets or sets the time modified.
 		/// </summary>
 		[DataMember]
-public DateTime TimeModified {
-			get { return DateTime.Parse(base["TimeModified"]); }
-			set { base["TimeModified"] = value.ToString(); }
+		public DateTime TimeModified {
+			get;
+			set;
 		}
+//			get { return DateTime.Parse(base["TimeModified"]); }
+//			set { base["TimeModified"] = value.ToString(); }
+//		}
 		#endregion
 
 		#region Constructors
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
-		public Artefact()
+		public Artefact() : base(new KeyValuePair<string, object>[] { })
 		{
 			Id = ObjectId.GenerateNewId().ToString();
 			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
@@ -122,8 +145,8 @@ public DateTime TimeModified {
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 			foreach (MemberInfo member in instance.GetType().GetMembers(_bindingFlags).Where((mi) => mi.MemberType == MemberTypes.Field || mi.MemberType == MemberTypes.Property))
-				base[member.Name] = (member.GetPropertyOrField(instance)).ToString();
-			return base.Count;
+				Fields[member.Name] = (member.GetPropertyOrField(instance)).ToString();
+			return Fields.Count;
 		}
 		
 		/// <summary>
@@ -132,7 +155,7 @@ public DateTime TimeModified {
 		/// <returns>The dynamic member names.</returns>
 //		public override IEnumerable<string> GetDynamicMemberNames()
 //		{
-//			return base.Keys;
+//			return Fields.Keys;
 //		}
 
 		/// <summary>
@@ -143,8 +166,7 @@ public DateTime TimeModified {
 		/// <returns><c>true</c>, if get member was tryed, <c>false</c> otherwise.</returns>
 //		public override bool TryGetMember(GetMemberBinder binder, out object result)
 //		{
-//			result = (base[binder.Name]);
-//			return true;
+//			return Fields.TryGetValue(binder.Name, out result);
 //		}
 
 		/// <summary>
@@ -160,7 +182,7 @@ public DateTime TimeModified {
 		/// </remarks>
 //		public override bool TrySetMember(SetMemberBinder binder, object value)
 //		{
-//			base[binder.Name] = (value);
+//			Fields[binder.Name] = (value);
 //			return true;
 //		}
 
@@ -178,13 +200,21 @@ public DateTime TimeModified {
 		/// </remarks>
 //		public override bool TryCreateInstance(CreateInstanceBinder binder, object[] args, out object result)
 //		{
-//			return base.TryCreateInstance(binder, args, out result);
+//			result = new Artefact();
+//			return true;
 //		}
-//		
-//		
+		
+		/// <summary>
+		/// 
+		/// </summary>
+		/// <param name="binder"> </param>
+		/// <param name="result"> </param>
+		/// <returns></returns>
+		/// <remarks></remarks>
 //		public override bool TryConvert(ConvertBinder binder, out object result)
 //		{
-//			return base.TryConvert(binder, out result);
+//			throw new NotImplementedException();
+////			return base.TryConvert(binder, out result);
 //		}
 		#endregion
 		
@@ -205,8 +235,9 @@ public DateTime TimeModified {
 		/// </summary>
 		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Artefacts.Artefact"/>.</returns>
 		/// <remarks><see cref="System.Object"/> override</remarks>
-//		public override string ToString()
-//		{
+		public override string ToString()
+		{
+			return this.Dump();
 //			StringBuilder sb = new StringBuilder("[Artefact: ");
 //			foreach (KeyValuePair<string, object> field in this)
 //				sb.AppendFormat("{0}={1} ({2} {3}={4})\n",
@@ -215,7 +246,7 @@ public DateTime TimeModified {
 //					field.Key,
 //					BsonTypeMapper.MapToDotNetValue(base[field.Key]));
 //			return sb.ToString();
-//		}
+		}
 		#endregion
 	}
 }

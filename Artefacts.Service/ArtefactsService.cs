@@ -36,7 +36,8 @@ namespace Artefacts.Service
 		public object Put(BsonDocument artefact)
 		{
 			try
-			{_output.WriteLine("BsonDocument artefact: " + artefact.ToString());
+			{
+				_output.WriteLine("BsonDocument artefact: " + artefact.ToString());
 			return null;
 			}
 			
@@ -50,16 +51,17 @@ namespace Artefacts.Service
 		
 		public object Put(Artefact artefact)
 		{
-		try
-			{_output.WriteLine("Artefact artefact: " + artefact.ToString());
+//		try
+//			{
+				_output.WriteLine("Artefact artefact: " + artefact.ToString());
 			return null;
-		}
+//		}
 
-		catch (Exception ex)
-		{
-			_output.WriteLine(ex.ToString());
-		}
-			return null;
+//		catch (Exception ex)
+//		{
+//			_output.WriteLine(ex.ToString());
+//		}
+//			return null;
 //			return default(HttpWebResponse);
 		}
 		
@@ -72,17 +74,17 @@ namespace Artefacts.Service
 		
 		public object Any(object request)
 		{
-			try
-			{
+//			try
+//			{
 				_output.WriteLine("Any ! request: " + request.ToString());
 			return default(HttpWebResponse);
-			}
+//			}
 
-		catch (Exception ex)
-		{
-			_output.WriteLine(ex.ToString());
-		}
-			return null;
+//		catch (Exception ex)
+//		{
+//			_output.WriteLine(ex.ToString());
+//		}
+//			return null;
 		}
 	}
 }
