@@ -9,6 +9,7 @@ using System.Linq;
 using System.Collections.Generic;
 using ServiceStack;
 using System.Net;
+using ServiceStack.Text;
 
 /// <summary>
 /// Main window.
@@ -91,12 +92,12 @@ public partial class MainWindow: Gtk.Window
 	{
 		//		try
 		//		{
-		Artefact artefact = new Artefact(new { Name = "Test", Desc = "Description", testInt = 18, testBool  = false, testObjArray = new object[] { false, 2, "three", null } });
+		dynamic artefact = new Artefact(new { Name = "Test", Desc = "Description", testInt = 18, testBool = false });//, testObjArray = new object[] { false, 2, "three", null } });
 		byte[] artefactData = MongoDB.Bson.BsonExtensionMethods.ToBson(artefact);
 		string artefactJson = MongoDB.Bson.BsonExtensionMethods.ToJson(artefact);
-		string artefactJson_SS = ServiceStack.StringExtensions.ToJson(artefact);
-		string artefactJsv = ServiceStack.StringExtensions.ToJsv(artefact);
-		string artefactCsv = ServiceStack.StringExtensions.ToCsv(artefact);
+//		string artefactJson_SS = ServiceStack.StringExtensions.ToJson(artefact);
+//		string artefactJsv = ServiceStack.StringExtensions.ToJsv(artefact);
+//		string artefactCsv = ServiceStack.StringExtensions.ToCsv(artefact);
 		MongoDB.Bson.BsonDocument bsonDocument = MongoDB.Bson.BsonExtensionMethods.ToBsonDocument(artefact);
 		byte[] bsonDocData = MongoDB.Bson.BsonExtensionMethods.ToBson(bsonDocument);
 		//string bsonDocJson = MongoDB.Bson.BsonExtensionMethods.ToJson(bsonDocument);
@@ -105,9 +106,9 @@ public partial class MainWindow: Gtk.Window
 			new object[] { artefact,					"Artefact" },
 			new object[] { artefactData,				"Mongo BSON" },
 			new object[] { artefactJson,				"Mongo JSON" },
-			new object[] { artefactJson_SS,			"SS JSON" },
-			new object[] { artefactJsv,				"SS JSV" },
-			new object[] { artefactCsv,				"SS CSV" },
+//			new object[] { artefactJson_SS,			"SS JSON" },
+//			new object[] { artefactJsv,				"SS JSV" },
+//			new object[] { artefactCsv,				"SS CSV" },
 			new object[] { bsonDocument,				"Mongo BsonDocument" },
 			new object[] { bsonDocData,				"Mongo BsonDocument -> Mongo BSON" }
 			//new object[] { bsonDocJson,				"Mongo BsonDocument -> Mongo JSON" },
@@ -117,47 +118,47 @@ public partial class MainWindow: Gtk.Window
 		tvClient.Buffer.InsertAtCursor("Data:\n\t" + subjects.Select(
 			o => ((string)((object[])o)[1]).PadRight(32) + (((object[])o)[0].GetType().IsArray ?
 				((object[])o)[0].ToString().Replace("[]", string.Format("[{0}]", ((Array)((object[])o)[0]).Length))
-		                                                :	((object[])o)[0])).Join("\n\t"));//((object[])o)[0]+ "\n\n");
+		                                                :	((object[])o)[0])).Join("\n\t") + "\n");
+		Thread.Sleep(50);
 		
-//		                               "\n\t(Artefact)     " + artefact +
-//		                       "\n\t(BsonDocument) " + bsonDocument +
-//		                       "\n\t(byte[])       " + artefactData.Select(b => string.Format("{0:X2}", b)).Join("") +
-//		                       "\n\t(json)         " + artefactJson +
-//		                       "\n\t(SS json)      " + artefactJson_SS +
-//		                       "\n\t(jsv)          " + artefactJsv +
-//		                       "\n\t(csv)          " + artefactCsv +
-//		                       "\n\n");
-		
-		Client = new ServiceStack.JsonServiceClient(ServiceBaseUrl);
-		string putUrl = artefact.ToPutUrl();
-		tvClient.Buffer.Insert(tvClient.Buffer.EndIter, "Client: " + Client + "\n\tPUT URL: " + putUrl + "\n\n");
-
+		Client = new ServiceStack.JsonServiceClient(ServiceBaseUrl) {
+			RequestFilter = (HttpWebRequest request) => tvClient.Buffer.InsertAtCursor(string.Format(
+				"\nClient.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}\n",
+					request.Method, request.ContentType,  request.ContentLength,
+					request.UserAgent, request.MediaType, request.RequestUri,
+					request.ProtocolVersion, request.Expect, request.Accept)),
+			ResponseFilter = (HttpWebResponse response) => tvClient.Buffer.InsertAtCursor(string.Format(
+				" --> {0} {1}: {2} {3} {5} bytes {4}: {6}\n",
+				response.StatusCode, response.StatusDescription, response.CharacterSet,
+				response.ContentEncoding, response.ContentType, response.ContentLength,
+				response.ReadToEnd())) };
 
 		foreach (object subject in subjects.Select(o => ((object[])o)[0]))
 		{
 			try
 			{
-				tvClient.Buffer.Text += "_client.Put(" + subject + " [" + (subject == null ? "(NULL)" : subject.GetType().FullName) + "] )\n";
-				object result = Client.Put(subject);
-				tvClient.Buffer.Text += "\tresult = " + (result == null ? "(null)" : ((HttpWebResponse)result).ReadToEnd() + "\n");
+				Client.Put(subject);
 			}
 			catch (ServiceStack.WebServiceException wsex)
 			{
-				tvClient.Buffer.Text += wsex.ToString() + "\nServerStackTrace: " + wsex.ServerStackTrace;
+				tvClient.Buffer.Text += string.Format("\nError: {0}: {1}\nStatus: {2}: {3}\nResponse: {4}\n{5}: {6}\n",
+					wsex.ErrorCode, wsex.ErrorMessage, wsex.StatusCode, wsex.StatusDescription, wsex.ResponseBody,
+					!string.IsNullOrWhiteSpace(wsex.ServerStackTrace) ? "ServerStackTrace" : "StackTrace",
+					!string.IsNullOrWhiteSpace(wsex.ServerStackTrace) ? wsex.ServerStackTrace : wsex.StackTrace);
 				for (Exception _wsex = wsex.InnerException; _wsex != null; _wsex = _wsex.InnerException)
 					tvClient.Buffer.Text += "\n" + _wsex.ToString();
 				tvClient.Buffer.Text += "\n";
 			}
 			catch (InvalidOperationException ioex)
 			{
-				tvClient.Buffer.Text += ioex.ToString() + ioex.TargetSite.ToString();
+				tvClient.Buffer.Text += "\n" + ioex.ToString() + ioex.TargetSite.ToString();
 				for (Exception _wsex = ioex.InnerException; _wsex != null; _wsex = _wsex.InnerException)
 					tvClient.Buffer.Text += "\n" + _wsex.ToString();
 				tvClient.Buffer.Text += "\n";
 			}
 			catch (Exception ex)
 			{
-				tvClient.Buffer.Text += ex.ToString();	
+				tvClient.Buffer.Text += "\n" + ex.ToString();	
 				for (Exception _wsex = ex.InnerException; _wsex != null; _wsex = _wsex.InnerException)	
 					tvClient.Buffer.Text += "\n" + _wsex.ToString();
 				tvClient.Buffer.Text += "\n";
@@ -167,11 +168,6 @@ public partial class MainWindow: Gtk.Window
 				tvClient.Buffer.Text += "\n";
 			}
 		}
-		//		}
-		//		catch (Exception ex)
-		//		{
-		//			tvClient.Buffer.Text += ex.ToString();	
-		//		}
 	}
 	#endregion
 }

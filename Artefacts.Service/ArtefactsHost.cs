@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System;
 using System.IO;
 using ServiceStack.Text;
+using System.Dynamic;
 
 namespace Artefacts.Service
 {
@@ -26,11 +27,13 @@ namespace Artefacts.Service
 			: base("Artefacts",
 			       typeof(ArtefactsService).Assembly,
 			       typeof(Artefact).Assembly,
-			typeof(BsonDocument).Assembly)
+			       typeof(Dictionary<string,object>).Assembly,
+			typeof(BsonDocument).Assembly,
+			       typeof(DynamicObject).Assembly)
 		{
 			_output = output;
-			JsConfig.ConvertObjectTypesIntoStringDictionary = true;
-//			JsConfig.Dump<JsConfig>();
+//			JsConfig.ConvertObjectTypesIntoStringDictionary = true;
+//			JsConfig.Dump();
 		}
 
 		/// <summary>
@@ -50,19 +53,23 @@ namespace Artefacts.Service
 				DebugMode = true,
 				ReturnsInnerException = true,
 				AllowPartialResponses = true,
-				Return204NoContentForEmptyResponse = true
-//				EmbeddedResourceBaseTypes = new List<Type>(new Type[] {
-//					typeof(Artefact), typeof(BsonValue) })
-//					typeof(Artefacts.FileSystem.Disk),
-//					typeof(Artefacts.FileSystem.Drive),
-//					typeof(Artefacts.FileSystem.Directory),
-//					typeof(Artefacts.FileSystem.File),
-//					typeof(Artefacts.FileSystem.FileSystemEntry)});
+//				Return204NoContentForEmptyResponse = true,
+				EmbeddedResourceBaseTypes = new List<Type>(new Type[] {
+					typeof(DynamicObject), typeof(Dictionary<string,object>),
+					typeof(Artefact), typeof(BsonValue),
+					typeof(Artefacts.FileSystem.Disk),
+					typeof(Artefacts.FileSystem.Drive),
+					typeof(Artefacts.FileSystem.Directory),
+					typeof(Artefacts.FileSystem.File),
+					typeof(Artefacts.FileSystem.FileSystemEntry)}),
+				UseBclJsonSerializers = true
 			});
 			
 			container.Register<ArtefactsService>(new ArtefactsService(_output));
 			this.Routes
-				.Add<Artefact>("/artefacts", ApplyTo.Put)
+//				.Add<Artefact>("/artefacts", ApplyTo.Put)
+					.Add<dynamic>("/artefacts", ApplyTo.Put)
+
 				.Add<BsonDocument>("/artefacts_asBson", ApplyTo.Put);
 //				.Add<BsonDocument>("/docs", ApplyTo.Put | ApplyTo.Post | ApplyTo.Update | ApplyTo.Delete)
 //				.Add<byte[]>("/bytes", ApplyTo.Put)

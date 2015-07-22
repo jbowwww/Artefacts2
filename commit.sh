@@ -17,13 +17,13 @@ git add -Av .
 git commit -m "`cat .commit_message_current.txt`"
 
 #push all files (verbosely)
-git push -v # --all
+git push -v --all
 
 #Create tar backup
 DATE=`date +%y%m%d-%H%M`;	#Get date string formatted for use in a backup filename
 MSG=`cat .commit_message_current.txt | sed 's/ \(.\)\{1\}/\u\1/g'`
 cd ..
-tar -cvzf Backups/Artefacts-$DATE-$MSG.tar.gz Artefacts;
+tar -cvzf Backups/Artefacts2-$DATE-$MSG.tar.gz Artefacts2/;
 cd Artefacts
 
 echo "Commit done.\n"

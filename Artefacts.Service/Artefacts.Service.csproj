@@ -19,7 +19,7 @@
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
@@ -51,6 +51,7 @@
     </Reference>
     <Reference Include="System.Web" />
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -62,6 +63,10 @@
     <ProjectReference Include="..\Artefacts\Artefacts.csproj">
       <Project>{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}</Project>
       <Name>Artefacts</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Plugins\FileSystem\ArtefactFileSystem.csproj">
+      <Project>{5B486604-0B8B-4214-99DB-C36A69168F5B}</Project>
+      <Name>ArtefactFileSystem</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

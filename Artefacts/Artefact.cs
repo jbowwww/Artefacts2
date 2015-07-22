@@ -30,69 +30,82 @@ namespace Artefacts
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
-	[DataContract(IsReference = true, Namespace = "Artefacts"), Serializable]
-	public class Artefact : JsonObject	// DynamicObject	//, IConvertibleToBsonDocument, ISerializable
+//	[DataContract(IsReference = true, Namespace = "Artefacts")]
+	public class Artefact : DynamicObject//, ISerializable	//, IConvertibleToBsonDocument
 	{	
 		#region Fields & Properties
-		[IgnoreDataMember, BsonIgnore, NonSerialized]
-		private BindingFlags _bindingFlags =
-			BindingFlags.Public | BindingFlags.Instance |
-			BindingFlags.GetField | BindingFlags.GetProperty;
-
+//		[IgnoreDataMember, BsonIgnore, NonSerialized]
+		private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
+		DynamicJson k;
 //		[IgnoreDataMember, BsonIgnore]
-		[DataMember]
-		public BsonDocument _bsonDocument = new BsonDocument();
+//		[DataMember]
+//		public BsonDocument _bsonDocument = new BsonDocument();
+//		[DataMember, BsonExtraElements]
+		public Dictionary<string, object> ArtefactData {// get; set; }
+			get { return _artefactData ?? (_artefactData = new Dictionary<string, object>()); }
+			set { _artefactData = new Dictionary<string, object>(value); }
+		}
+//		[IgnoreDataMember, BsonIgnore, NonSerialized]
+		private Dictionary<string, object> _artefactData;
 		
 		/// <summary>
 		/// Gets or sets the identifier.
 		/// </summary>
-		[BsonRepresentation(BsonType.String), BsonId, DataMember]
+//		[DataMember, BsonId, BsonRepresentation(BsonType.String)]
 		public string Id {
-			get { return base["_id"]; }
-			set { base["_id"] = value; }
+			get;
+			set;
 		}
+//			get { return (string)ArtefactData["Id"]; }
+//			set { ArtefactData["Id"] = value; }
+//		}
 
 		/// <summary>
 		/// Gets or sets the time created.
 		/// </summary>
-//		[IgnoreDataMember]
+//		[DataMember, BsonRequired]
 		public DateTime TimeCreated {
-			get { return DateTime.Parse(base["TimeCreated"]); }// Id.CreationTime; }
-			set
-			{
-				base["TimeCreated"] = (value).ToString();
-//				if (Id.CreationTime != value)
-//					throw new ArgumentOutOfRangeException("TimeCreated", value, "Does not match Id.CreationTime");
-			}
+			get;
+			set;
 		}
+//			get { return (DateTime)ArtefactData["TimeCreated"]; }
+//			set { ArtefactData["TimeCreated"] = value; }
+//		}
 
 		/// <summary>
 		/// Gets or sets the time checked.
 		/// </summary>
-		[DataMember]
+//		[DataMember, BsonRequired]
 		public DateTime TimeChecked {
-			get { return DateTime.Parse(base["TimeChecked"]); }
-			set { base["TimeChecked"] = value.ToString(); }
+			get;
+			set;
 		}
+//			get { return (DateTime)ArtefactData["TimeChecked"]; }
+//			set { ArtefactData["TimeChecked"] = value; }
+//		}
 
 		/// <summary>
 		/// Gets or sets the time modified.
 		/// </summary>
-		[DataMember]
-public DateTime TimeModified {
-			get { return DateTime.Parse(base["TimeModified"]); }
-			set { base["TimeModified"] = value.ToString(); }
+//		[DataMember, BsonRequired]
+		public DateTime TimeModified {
+			get;
+			set;
 		}
+//			get { return (DateTime)ArtefactData["TimeModified"]; }
+//			set { ArtefactData["TimeModified"] = value; }
+//		}
 		#endregion
 
-		#region Constructors
+		#region Construction / Initialisation
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
 		public Artefact()
 		{
-			Id = ObjectId.GenerateNewId().ToString();
-			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+			ArtefactData = new Dictionary<string, object>();
+//			Id = ObjectId.GenerateNewId().ToString();
+//			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
 		}
 		
 		/// <summary>
@@ -101,6 +114,8 @@ public DateTime TimeModified {
 		/// <param name="instance">Instance.</param>
 		public Artefact(object instance = null) : this()
 		{
+			Id = ObjectId.GenerateNewId().ToString();
+			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
 			if (instance == null)
 				throw new ArgumentNullException("value");
 			if (!instance.GetType().IsClass)
@@ -108,10 +123,7 @@ public DateTime TimeModified {
 			if (instance != null)
 				SetInstance(instance);
 		}
-		#endregion
-
-		#region Methods
-		#region DynamicObject overrides
+		
 		/// <summary>
 		/// Sets the instance.
 		/// </summary>
@@ -122,17 +134,20 @@ public DateTime TimeModified {
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 			foreach (MemberInfo member in instance.GetType().GetMembers(_bindingFlags).Where((mi) => mi.MemberType == MemberTypes.Field || mi.MemberType == MemberTypes.Property))
-				base[member.Name] = (member.GetPropertyOrField(instance)).ToString();
-			return base.Count;
+				ArtefactData[member.Name] = (member.GetPropertyOrField(instance)).ToString();
+			return ArtefactData.Count;
 		}
-		
+		#endregion
+
+		#region Methods
+		#region DynamicObject overrides
 		/// <summary>
 		/// Gets the dynamic member names.
 		/// </summary>
 		/// <returns>The dynamic member names.</returns>
 //		public override IEnumerable<string> GetDynamicMemberNames()
 //		{
-//			return base.Keys;
+//			return ArtefactData.Keys;
 //		}
 
 		/// <summary>
@@ -143,8 +158,7 @@ public DateTime TimeModified {
 		/// <returns><c>true</c>, if get member was tryed, <c>false</c> otherwise.</returns>
 //		public override bool TryGetMember(GetMemberBinder binder, out object result)
 //		{
-//			result = (base[binder.Name]);
-//			return true;
+//			return ArtefactData.TryGetValue(binder.Name, out result);
 //		}
 
 		/// <summary>
@@ -160,7 +174,7 @@ public DateTime TimeModified {
 		/// </remarks>
 //		public override bool TrySetMember(SetMemberBinder binder, object value)
 //		{
-//			base[binder.Name] = (value);
+//			ArtefactData[binder.Name] = value;
 //			return true;
 //		}
 
@@ -189,6 +203,22 @@ public DateTime TimeModified {
 		#endregion
 		
 		#region Serialization / data handling
+		/// <Docs>To be added: an object of type 'SerializationInfo'</Docs>
+		/// <summary>
+		/// To be added
+		/// </summary>
+		/// <param name="info">Info.</param>
+		/// <param name="context">Context.</param>
+		/// <remarks>ISerializable implementation</remarks>
+//		public void GetObjectData(SerializationInfo info, StreamingContext context)
+//		{
+//			info.SetType(typeof(Artefact));
+//			foreach (KeyValuePair<string, object> data in ArtefactData)
+//			{
+//				info.AddValue(data.Key, data.Value);	//, data.Value == null ? typeof(System.Object) : data.Value.GetType());
+//			}
+//		}
+
 		/// <summary>
 		/// Converts this object to a BsonDocument.
 		/// </summary>
@@ -205,17 +235,15 @@ public DateTime TimeModified {
 		/// </summary>
 		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Artefacts.Artefact"/>.</returns>
 		/// <remarks><see cref="System.Object"/> override</remarks>
-//		public override string ToString()
-//		{
-//			StringBuilder sb = new StringBuilder("[Artefact: ");
-//			foreach (KeyValuePair<string, object> field in this)
-//				sb.AppendFormat("{0}={1} ({2} {3}={4})\n",
-//					field.Key, field.Value.ToString(),
-//					base[field.Key].BsonType.ToString(),
-//					field.Key,
-//					BsonTypeMapper.MapToDotNetValue(base[field.Key]));
-//			return sb.ToString();
-//		}
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder("[Artefact: ");
+			foreach (KeyValuePair<string, object> field in ArtefactData)
+				sb.AppendFormat("{0}={1} ", field.Key, field.Value,
+					(field.Value == null ? typeof(object) : field.Value.GetType()).FullName);
+			sb.Remove(sb.Length - 2, 1).Append("]");
+			return sb.ToString();
+		}
 		#endregion
 	}
 }

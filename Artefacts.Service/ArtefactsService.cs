@@ -5,10 +5,11 @@ using System.IO;
 using System.Web;
 using System.Net;
 using ServiceStack;
+using System.Runtime.CompilerServices;
 
 namespace Artefacts.Service
 {
-	public class ArtefactsService : ServiceStack.IService, IPut<Artefact>
+	public class ArtefactsService : ServiceStack.Service//, IPut<Artefact>
 	{
 		private TextWriter _output = null;
 		
@@ -35,34 +36,51 @@ namespace Artefacts.Service
 
 		public object Put(BsonDocument artefact)
 		{
-			try
-			{_output.WriteLine("BsonDocument artefact: " + artefact.ToString());
+//			try
+//			{
+				_output.WriteLine("BsonDocument artefact: " + artefact.ToString());
 			return null;
-			}
-			
-			catch (Exception ex)
-			{
-				_output.WriteLine(ex.ToString());
-			}
+//			}
+//			
+//			catch (Exception ex)
+//			{
+//				_output.WriteLine(ex.ToString());
+//			}
 			return null;
 //			return default(HttpWebResponse);
 		}
+		
+//		public object Put(Artefact artefact)
+//		{
+//		try
+//			{
+//				_output.WriteLine("Artefact artefact: " + artefact.ToString());
+//			return null;
+//		}
+//
+//		catch (Exception ex)
+//		{
+//			_output.WriteLine(ex.ToString());
+//		}
+//			return null;
+//			return default(HttpWebResponse);
+//		}
 		
 		public object Put(Artefact artefact)
-		{
-		try
-			{_output.WriteLine("Artefact artefact: " + artefact.ToString());
-			return null;
-		}
-
-		catch (Exception ex)
-		{
-			_output.WriteLine(ex.ToString());
-		}
-			return null;
-//			return default(HttpWebResponse);
-		}
-		
+					{
+					try
+						{
+							_output.WriteLine("Artefact artefact: " + artefact.ToString());
+						return null;
+					}
+			
+					catch (Exception ex)
+					{
+						_output.WriteLine(ex.ToString());
+					}
+						return null;
+						return default(HttpWebResponse);
+					}
 //		public object Put(object artefact)
 //		{
 //			_output.WriteLine("object artefact: " + artefact.ToString());
@@ -72,16 +90,16 @@ namespace Artefacts.Service
 		
 		public object Any(object request)
 		{
-			try
-			{
+//			try
+//			{
 				_output.WriteLine("Any ! request: " + request.ToString());
 			return default(HttpWebResponse);
-			}
-
-		catch (Exception ex)
-		{
-			_output.WriteLine(ex.ToString());
-		}
+//			}
+//
+//		catch (Exception ex)
+//		{
+//			_output.WriteLine(ex.ToString());
+//		}
 			return null;
 		}
 	}
