@@ -30,71 +30,57 @@ namespace Artefacts
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
-//	[DataContract(IsReference = true, Namespace = "Artefacts")]
-	public class Artefact : DynamicObject//, ISerializable	//, IConvertibleToBsonDocument
+	[Serializable]
+	public class Artefact : DynamicObject, ISerializable, IConvertibleToBsonDocument
 	{	
 		#region Fields & Properties
-//		[IgnoreDataMember, BsonIgnore, NonSerialized]
-		private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
-		DynamicJson k;
-//		[IgnoreDataMember, BsonIgnore]
-//		[DataMember]
-//		public BsonDocument _bsonDocument = new BsonDocument();
-//		[DataMember, BsonExtraElements]
-		public Dictionary<string, object> ArtefactData {// get; set; }
+		[NonSerialized] private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
+		[NonSerialized] private Dictionary<string, object> _artefactData;
+		
+		/// <summary>
+		/// Gets or sets the artefact data.
+		/// </summary>
+		[BsonExtraElements]
+		public Dictionary<string, object> ArtefactData {
 			get { return _artefactData ?? (_artefactData = new Dictionary<string, object>()); }
 			set { _artefactData = new Dictionary<string, object>(value); }
 		}
-//		[IgnoreDataMember, BsonIgnore, NonSerialized]
-		private Dictionary<string, object> _artefactData;
-		
+				
 		/// <summary>
 		/// Gets or sets the identifier.
 		/// </summary>
-//		[DataMember, BsonId, BsonRepresentation(BsonType.String)]
+		[BsonId, BsonRepresentation(BsonType.String)]
 		public string Id {
-			get;
-			set;
+			get { return (string)ArtefactData["Id"]; }
+			set { ArtefactData["Id"] = value; }
 		}
-//			get { return (string)ArtefactData["Id"]; }
-//			set { ArtefactData["Id"] = value; }
-//		}
 
 		/// <summary>
 		/// Gets or sets the time created.
 		/// </summary>
-//		[DataMember, BsonRequired]
+		[BsonRequired]
 		public DateTime TimeCreated {
-			get;
-			set;
+			get { return (DateTime)ArtefactData["TimeCreated"]; }
+			set { ArtefactData["TimeCreated"] = value; }
 		}
-//			get { return (DateTime)ArtefactData["TimeCreated"]; }
-//			set { ArtefactData["TimeCreated"] = value; }
-//		}
 
 		/// <summary>
 		/// Gets or sets the time checked.
 		/// </summary>
-//		[DataMember, BsonRequired]
+		[BsonRequired]
 		public DateTime TimeChecked {
-			get;
-			set;
+			get { return (DateTime)ArtefactData["TimeChecked"]; }
+			set { ArtefactData["TimeChecked"] = value; }
 		}
-//			get { return (DateTime)ArtefactData["TimeChecked"]; }
-//			set { ArtefactData["TimeChecked"] = value; }
-//		}
 
 		/// <summary>
 		/// Gets or sets the time modified.
 		/// </summary>
-//		[DataMember, BsonRequired]
+		[BsonRequired]
 		public DateTime TimeModified {
-			get;
-			set;
+			get { return (DateTime)ArtefactData["TimeModified"]; }
+			set { ArtefactData["TimeModified"] = value; }
 		}
-//			get { return (DateTime)ArtefactData["TimeModified"]; }
-//			set { ArtefactData["TimeModified"] = value; }
-//		}
 		#endregion
 
 		#region Construction / Initialisation
@@ -104,8 +90,8 @@ namespace Artefacts
 		public Artefact()
 		{
 			ArtefactData = new Dictionary<string, object>();
-//			Id = ObjectId.GenerateNewId().ToString();
-//			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+			Id = ObjectId.GenerateNewId().ToString();
+			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
 		}
 		
 		/// <summary>
@@ -133,7 +119,10 @@ namespace Artefacts
 		{
 			if (instance == null)
 				throw new ArgumentNullException("instance");
-			foreach (MemberInfo member in instance.GetType().GetMembers(_bindingFlags).Where((mi) => mi.MemberType == MemberTypes.Field || mi.MemberType == MemberTypes.Property))
+			foreach (MemberInfo member in instance.GetType().GetMembers(_bindingFlags)
+			         .Where((mi) =>
+			       mi.MemberType == MemberTypes.Field ||
+			       mi.MemberType == MemberTypes.Property))
 				ArtefactData[member.Name] = (member.GetPropertyOrField(instance)).ToString();
 			return ArtefactData.Count;
 		}
@@ -145,10 +134,10 @@ namespace Artefacts
 		/// Gets the dynamic member names.
 		/// </summary>
 		/// <returns>The dynamic member names.</returns>
-//		public override IEnumerable<string> GetDynamicMemberNames()
-//		{
-//			return ArtefactData.Keys;
-//		}
+		public override IEnumerable<string> GetDynamicMemberNames()
+		{
+			return ArtefactData.Keys;
+		}
 
 		/// <summary>
 		/// Tries the get member.
@@ -156,10 +145,10 @@ namespace Artefacts
 		/// <param name="binder">Binder.</param>
 		/// <param name="result">Result.</param>
 		/// <returns><c>true</c>, if get member was tryed, <c>false</c> otherwise.</returns>
-//		public override bool TryGetMember(GetMemberBinder binder, out object result)
-//		{
-//			return ArtefactData.TryGetValue(binder.Name, out result);
-//		}
+		public override bool TryGetMember(GetMemberBinder binder, out object result)
+		{
+			return ArtefactData.TryGetValue(binder.Name, out result);
+		}
 
 		/// <summary>
 		/// Tries the set member.
@@ -172,11 +161,11 @@ namespace Artefacts
 		/// ie you would (if value is a non-primitive class type) create a new Artefact
 		/// in this method 
 		/// </remarks>
-//		public override bool TrySetMember(SetMemberBinder binder, object value)
-//		{
-//			ArtefactData[binder.Name] = value;
-//			return true;
-//		}
+		public override bool TrySetMember(SetMemberBinder binder, object value)
+		{
+			ArtefactData[binder.Name] = value;
+			return true;
+		}
 
 		/// <summary>
 		/// Tries the create instance.
@@ -190,16 +179,21 @@ namespace Artefacts
 		/// because this method called when a new Artefact is created?
 		/// 		ie a = new Artefact(typed value client side)
 		/// </remarks>
-//		public override bool TryCreateInstance(CreateInstanceBinder binder, object[] args, out object result)
-//		{
-//			return base.TryCreateInstance(binder, args, out result);
-//		}
-//		
-//		
-//		public override bool TryConvert(ConvertBinder binder, out object result)
-//		{
-//			return base.TryConvert(binder, out result);
-//		}
+		public override bool TryCreateInstance(CreateInstanceBinder binder, object[] args, out object result)
+		{
+			return base.TryCreateInstance(binder, args, out result);
+		}
+		
+		/// <summary>
+		/// Tries the convert.
+		/// </summary>
+		/// <returns><c>true</c>, if convert was tryed, <c>false</c> otherwise.</returns>
+		/// <param name="binder">Binder.</param>
+		/// <param name="result">Result.</param>
+		public override bool TryConvert(ConvertBinder binder, out object result)
+		{
+			return base.TryConvert(binder, out result);
+		}
 		#endregion
 		
 		#region Serialization / data handling
@@ -210,24 +204,24 @@ namespace Artefacts
 		/// <param name="info">Info.</param>
 		/// <param name="context">Context.</param>
 		/// <remarks>ISerializable implementation</remarks>
-//		public void GetObjectData(SerializationInfo info, StreamingContext context)
-//		{
-//			info.SetType(typeof(Artefact));
-//			foreach (KeyValuePair<string, object> data in ArtefactData)
-//			{
-//				info.AddValue(data.Key, data.Value);	//, data.Value == null ? typeof(System.Object) : data.Value.GetType());
-//			}
-//		}
+		public void GetObjectData(SerializationInfo info, StreamingContext context)
+		{
+			info.SetType(typeof(Artefact));
+			foreach (KeyValuePair<string, object> data in ArtefactData)
+			{
+				info.AddValue(data.Key, data.Value);	//, data.Value == null ? typeof(System.Object) : data.Value.GetType());
+			}
+		}
 
 		/// <summary>
 		/// Converts this object to a BsonDocument.
 		/// </summary>
 		/// <returns>A <see cref="BsonDocument"/></returns>
 		/// <remarks><see cref="IConvertibleToBsonDocument"/> implementation</remarks>
-//		public BsonDocument ToBsonDocument()
-//		{
-//			return base;
-//		}
+		public BsonDocument ToBsonDocument()
+		{
+			return new BsonDocument(ArtefactData);
+		}
 		#endregion
 		
 		/// <summary>

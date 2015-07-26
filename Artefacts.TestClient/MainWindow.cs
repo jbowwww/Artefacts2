@@ -127,11 +127,22 @@ public partial class MainWindow: Gtk.Window
 					request.Method, request.ContentType,  request.ContentLength,
 					request.UserAgent, request.MediaType, request.RequestUri,
 					request.ProtocolVersion, request.Expect, request.Accept)),
+//			GlobalRequestFilter = (HttpWebRequest request) => tvClient.Buffer.InsertAtCursor(string.Format(
+//				"\nClient.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}\n",
+//				request.Method, request.ContentType,  request.ContentLength,
+//				request.UserAgent, request.MediaType, request.RequestUri,
+//				request.ProtocolVersion, request.Expect, request.Accept)),
 			ResponseFilter = (HttpWebResponse response) => tvClient.Buffer.InsertAtCursor(string.Format(
 				" --> {0} {1}: {2} {3} {5} bytes {4}: {6}\n",
 				response.StatusCode, response.StatusDescription, response.CharacterSet,
 				response.ContentEncoding, response.ContentType, response.ContentLength,
-				response.ReadToEnd())) };
+				response.ReadToEnd())),
+//			GlobalResponseFilter = (HttpWebResponse response) => tvClient.Buffer.InsertAtCursor(string.Format(
+//				" --> {0} {1}: {2} {3} {5} bytes {4}: {6}\n",
+//				response.StatusCode, response.StatusDescription, response.CharacterSet,
+//				response.ContentEncoding, response.ContentType, response.ContentLength,
+//				response.ReadToEnd()))
+		};
 
 		foreach (object subject in subjects.Select(o => ((object[])o)[0]))
 		{
@@ -140,7 +151,7 @@ public partial class MainWindow: Gtk.Window
 				Client.Put(subject);
 			}
 			catch (ServiceStack.WebServiceException wsex)
-			{
+			{ 
 				tvClient.Buffer.Text += string.Format("\nError: {0}: {1}\nStatus: {2}: {3}\nResponse: {4}\n{5}: {6}\n",
 					wsex.ErrorCode, wsex.ErrorMessage, wsex.StatusCode, wsex.StatusDescription, wsex.ResponseBody,
 					!string.IsNullOrWhiteSpace(wsex.ServerStackTrace) ? "ServerStackTrace" : "StackTrace",
