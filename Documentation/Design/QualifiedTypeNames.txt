@@ -1,0 +1,2 @@
+ServiceStack.Text.dll
+	ServiceStack.AutoMappingUtils

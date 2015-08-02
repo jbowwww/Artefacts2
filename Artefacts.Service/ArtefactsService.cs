@@ -50,37 +50,37 @@ namespace Artefacts.Service
 //			return default(HttpWebResponse);
 		}
 		
-//		public object Put(Artefact artefact)
-//		{
-//		try
-//			{
-//				_output.WriteLine("Artefact artefact: " + artefact.ToString());
-//			return null;
-//		}
-//
-//		catch (Exception ex)
-//		{
-//			_output.WriteLine(ex.ToString());
-//		}
-//			return null;
-//			return default(HttpWebResponse);
-//		}
-		
 		public object Put(Artefact artefact)
-					{
-					try
-						{
-							_output.WriteLine("Artefact artefact: " + artefact.ToString());
-						return null;
-					}
-			
-					catch (Exception ex)
-					{
-						_output.WriteLine(ex.ToString());
-					}
-						return null;
-						return default(HttpWebResponse);
-					}
+		{
+		try
+			{
+				_output.WriteLine("Artefact artefact: " + artefact.ToString());
+			return null;
+		}
+
+		catch (Exception ex)
+		{
+			_output.WriteLine(ex.ToString());
+		}
+			return null;
+//			return default(HttpWebResponse);e
+		}
+		
+//		public object Put(Artefact artefact)
+//					{
+//					try
+//						{
+//				_output.WriteLine("Artefact artefact\n{\n\tpublic class ArtefactsService : ServiceStack.Service, IPut<Artefact>\n\t{\n\t\tprivate TextWriter _output = null;\n\t\t: " + ((Artefact)artefact).ToString());
+//						return null;
+//					}
+//			
+//					catch (Exception ex)
+//					{
+//						_output.WriteLine(ex.ToString());
+//					}
+////						return null;
+//						return default(HttpWebResponse);
+//					}
 //		public object Put(object artefact)
 //		{
 //			_output.WriteLine("object artefact: " + artefact.ToString());

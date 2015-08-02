@@ -10,6 +10,8 @@ using System;
 using System.IO;
 using ServiceStack.Text;
 using System.Dynamic;
+using System.Text;
+using System.Threading;
 
 namespace Artefacts.Service
 {
@@ -18,6 +20,40 @@ namespace Artefacts.Service
 	/// </summary>
 	public class ArtefactsHost : AppHostHttpListenerBase
 	{
+		#region Static members
+		private static bool _appHostThreadExit = false;
+
+		protected static ArtefactsHost AppHost = null;
+
+		public static void StartHost(string serviceBaseUrl, TextWriter output)
+		{
+//			StringBuilder sb = new StringBuilder(4096);
+			new Thread(() =>  {
+				AppHost = new ArtefactsHost(output); /*new StringWriter(sb)*/ 
+				output.Write(string.Format("Starting application host at {0} ... ", serviceBaseUrl));
+				AppHost.Init().Start(serviceBaseUrl);
+				output.WriteLine("OK");
+				while (!System.Threading.Volatile.Read(ref _appHostThreadExit))	// || sb.Length > 0)
+				{
+//					string s = sb.ToString();
+//					sb.Clear();
+//					tvHost.Buffer.InsertAtCursor(s);
+					Thread.Sleep(248);
+				}
+				output.Write("Application host exit flag set, exiting ... ");
+				AppHost.Stop();
+				output.WriteLine("OK");
+			}) {
+				Priority = ThreadPriority.BelowNormal
+			}.Start();
+		}
+		
+		public static void StopHost()
+		{
+			System.Threading.Volatile.Write(ref _appHostThreadExit, true);
+		}
+		#endregion // Static members
+		
 		private TextWriter _output = null;
 		
 		/// <summary>
@@ -62,13 +98,17 @@ namespace Artefacts.Service
 					typeof(Artefacts.FileSystem.Directory),
 					typeof(Artefacts.FileSystem.File),
 					typeof(Artefacts.FileSystem.FileSystemEntry)}),
-				UseBclJsonSerializers = true
+				UseBclJsonSerializers = true		// So I think I only need this currently because I am using a dynamic
+													// type as my DTO. When I start using [CRUD]Artefact request DTOs, they
+													// will be non-dynamic and contain a dictionary of member values.
+													// That could still be implemented in a number of ways but I think that
+													// is the general approach needed.
 			});
 			
 			container.Register<ArtefactsService>(new ArtefactsService(_output));
 			this.Routes
 //				.Add<Artefact>("/artefacts", ApplyTo.Put)
-					.Add<dynamic>("/artefacts", ApplyTo.Put)
+						.Add<dynamic>("/artefacts", ApplyTo.Put)
 
 				.Add<BsonDocument>("/artefacts_asBson", ApplyTo.Put);
 //				.Add<BsonDocument>("/docs", ApplyTo.Put | ApplyTo.Post | ApplyTo.Update | ApplyTo.Delete)

@@ -6,6 +6,9 @@
   </configuration>
   <import>
     <widget-library name="glade-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+    <widget-library name="../../Artefacts/bin/Debug/Artefacts.dll" />
+    <widget-library name="../../Artefacts.Service/bin/Debug/Artefacts.Service.dll" />
+    <widget-library name="../../bin/Debug/Plugins/ArtefactFileSystem.dll" />
     <widget-library name="../bin/Debug/Artefacts.TestClient.exe" internal="true" />
   </import>
   <widget class="Gtk.Window" id="MainWindow" design-size="1369 857">

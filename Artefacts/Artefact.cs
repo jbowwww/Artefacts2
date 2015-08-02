@@ -23,15 +23,14 @@ namespace Artefacts
 	/// 		- Avoids handling full serialization twice - client side (ServiceStack) and server side (into MongoDB)
 	/// 		- No flexibility, depends on MongoDB reference
 	/// 		- Not really how it should be done if service is REST
-	/// 			- JSON more appopriate - can probably convert relatively cheaply from BsonDocument to JSON
+	/// 			- JSON more appopriate - caUseBclJsonSerializersn probably convert relatively cheaply from BsonDocument to JSON
 	/// 	- Iterate on elements in the document and add them to SerializationInfo in GetObjectData
 	/// 		- ServiceStack can then serialize as it wishes/ how its configured / which client is being
 	/// 		  used (JSON, JSV, ProtoBuf, ...)
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
-	[Serializable]
-	public class Artefact : DynamicObject, ISerializable, IConvertibleToBsonDocument
+	public class Artefact : DynamicObject, IConvertibleToBsonDocument, IReturn<object>
 	{	
 		#region Fields & Properties
 		[NonSerialized] private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
@@ -87,11 +86,23 @@ namespace Artefacts
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
+//		[OnDeserializing]
 		public Artefact()
 		{
 			ArtefactData = new Dictionary<string, object>();
 			Id = ObjectId.GenerateNewId().ToString();
 			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
+		/// </summary>
+		/// <param name="info">Info.</param>
+		/// <param name="context">Context.</param>
+		public Artefact(SerializationInfo info, StreamingContext context) : this()
+		{
+			foreach (SerializationEntry data in info)
+				ArtefactData[data.Name] = data.Value;
 		}
 		
 		/// <summary>
@@ -181,7 +192,8 @@ namespace Artefacts
 		/// </remarks>
 		public override bool TryCreateInstance(CreateInstanceBinder binder, object[] args, out object result)
 		{
-			return base.TryCreateInstance(binder, args, out result);
+			result = new Artefact((SerializationInfo)args[0], (StreamingContext)args[0]);
+			return true;
 		}
 		
 		/// <summary>
@@ -197,22 +209,6 @@ namespace Artefacts
 		#endregion
 		
 		#region Serialization / data handling
-		/// <Docs>To be added: an object of type 'SerializationInfo'</Docs>
-		/// <summary>
-		/// To be added
-		/// </summary>
-		/// <param name="info">Info.</param>
-		/// <param name="context">Context.</param>
-		/// <remarks>ISerializable implementation</remarks>
-		public void GetObjectData(SerializationInfo info, StreamingContext context)
-		{
-			info.SetType(typeof(Artefact));
-			foreach (KeyValuePair<string, object> data in ArtefactData)
-			{
-				info.AddValue(data.Key, data.Value);	//, data.Value == null ? typeof(System.Object) : data.Value.GetType());
-			}
-		}
-
 		/// <summary>
 		/// Converts this object to a BsonDocument.
 		/// </summary>
@@ -222,7 +218,6 @@ namespace Artefacts
 		{
 			return new BsonDocument(ArtefactData);
 		}
-		#endregion
 		
 		/// <summary>
 		/// Returns a <see cref="System.String"/> that represents the current <see cref="Artefacts.Artefact"/>.
@@ -231,13 +226,12 @@ namespace Artefacts
 		/// <remarks><see cref="System.Object"/> override</remarks>
 		public override string ToString()
 		{
-			StringBuilder sb = new StringBuilder("[Artefact: ");
+			StringBuilder sb = new StringBuilder("[Artefact:");
 			foreach (KeyValuePair<string, object> field in ArtefactData)
-				sb.AppendFormat("{0}={1} ", field.Key, field.Value,
-					(field.Value == null ? typeof(object) : field.Value.GetType()).FullName);
-			sb.Remove(sb.Length - 2, 1).Append("]");
-			return sb.ToString();
+				sb.AppendFormat(" {0}={1}", field.Key, field.Value);
+			return sb.Append("]").ToString();
 		}
+		#endregion
 		#endregion
 	}
 }
