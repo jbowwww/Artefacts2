@@ -91,14 +91,16 @@ namespace Artefacts.Service
 				AllowPartialResponses = true,
 //				Return204NoContentForEmptyResponse = true,
 				EmbeddedResourceBaseTypes = new List<Type>(new Type[] {
-					typeof(DynamicObject), typeof(Dictionary<string,object>),
-					typeof(Artefact), typeof(BsonValue),
-					typeof(Artefacts.FileSystem.Disk),
-					typeof(Artefacts.FileSystem.Drive),
-					typeof(Artefacts.FileSystem.Directory),
-					typeof(Artefacts.FileSystem.File),
-					typeof(Artefacts.FileSystem.FileSystemEntry)}),
-				UseBclJsonSerializers = true		// So I think I only need this currently because I am using a dynamic
+//					typeof(DynamicObject), typeof(Dictionary<string,object>),
+//					typeof(ArtefactData),
+//					typeof(Artefact), typeof(BsonValue),
+//					typeof(Artefacts.FileSystem.Disk),
+//					typeof(Artefacts.FileSystem.Drive),
+//					typeof(Artefacts.FileSystem.Directory),
+//					typeof(Artefacts.FileSystem.File),
+//					typeof(Artefacts.FileSystem.FileSystemEntry)
+				})
+//				UseBclJsonSerializers = true		// So I think I only need this currently because I am using a dynamic
 													// type as my DTO. When I start using [CRUD]Artefact request DTOs, they
 													// will be non-dynamic and contain a dictionary of member values.
 													// That could still be implemented in a number of ways but I think that
@@ -107,8 +109,8 @@ namespace Artefacts.Service
 			
 			container.Register<ArtefactsService>(new ArtefactsService(_output));
 			this.Routes
-//				.Add<Artefact>("/artefacts", ApplyTo.Put)
-						.Add<dynamic>("/artefacts", ApplyTo.Put)
+				.Add<Artefact>("/artefacts", ApplyTo.Put)
+//						.Add<dynamic>("/artefacts", ApplyTo.Put)
 
 				.Add<BsonDocument>("/artefacts_asBson", ApplyTo.Put);
 //				.Add<BsonDocument>("/docs", ApplyTo.Put | ApplyTo.Post | ApplyTo.Update | ApplyTo.Delete)

@@ -37,7 +37,7 @@ namespace Artefacts.TestClient
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 				              response.ContentEncoding, response.ContentType, response.ContentLength,
 				              response.ReadToEnd())) };
-			bufferWriter.WriteLine("OK");
+			bufferWriter.Write("OK\n");
 			bufferWriter.Write("Creating test Artefact ... ");
 			_artefact = new Artefact(new {
 				Name = "Test",
@@ -45,14 +45,15 @@ namespace Artefacts.TestClient
 				testInt = 18,
 				testBool = false
 			});//, testObjArray = new object[] { false, 2, "three", null } });
-			bufferWriter.WriteLine(ServiceStack.TextExtensions.SerializeToString(_artefact));
+			bufferWriter.Write(ServiceStack.StringExtensions.ToJson(_artefact) + "\n");
 		}
 
-		private void DoClientPut(object argument)
+		private void DoClientPut(object argument, string name = "[Unknown]")
 		{
 			try
 			{
 				// Don't need to receive and output response because _client already has request/response filters for that
+				_bufferWriter.Write("DoClientPut: {0}: {1}\n", name, argument.GetType().FullName);
 				_client.Put(argument);
 			}
 			catch (ServiceStack.WebServiceException wsex)
@@ -89,9 +90,15 @@ namespace Artefacts.TestClient
 		[Test]
 		public void PutArtefact()
 		{
-			DoClientPut(_artefact);
+			DoClientPut(_artefact, "_artefact");
 		}
 
+		[Test]
+		public void PutArtefactData()
+		{
+			DoClientPut(_artefact.Data, "_artefact.Data");
+		}
+		
 		[Test]
 		public void PutArtefactAlternativeSerializations()
 		{
@@ -123,8 +130,8 @@ namespace Artefacts.TestClient
 			                                                :	((object[])o)[0])).Join("\n\t") + "\n");
 			Thread.Sleep(50);
 
-			foreach (object subject in subjects)
-				DoClientPut(subject);
+			foreach (object[] subject in subjects)
+				DoClientPut(subject[0], (string)subject[1]);
 		}
 	}
 }

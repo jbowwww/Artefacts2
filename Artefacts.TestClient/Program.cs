@@ -19,6 +19,7 @@ namespace Artefacts.TestClient
 			/* Client test code - need to figure out how to use TestFixtureAttirbute (et al) properly, with parameters etc */
 			ArtefactsTestClient client = new ArtefactsTestClient(ServiceBaseUrl, new TextBufferWriter(win.ClientTextBuffer));
 			client.PutArtefact();
+			client.PutArtefactData();
 			client.PutArtefactAlternativeSerializations();
 			
 			

@@ -16,7 +16,6 @@ namespace Artefacts.Service
 		public ArtefactsService(TextWriter output)
 		{
 			_output = output;
-			_output.WriteLine("Testing");
 		}
 		
 		
@@ -33,37 +32,53 @@ namespace Artefacts.Service
 //			//			return null;
 //			return default(HttpWebResponse);
 //		}
+		
+		public object Put(ArtefactData data)
+		{
+			try
+			{
+				_output.WriteLine("ArtefactData data: " + data.ToString());
+				return null;
+			}
+
+			catch (Exception ex)
+			{
+				_output.WriteLine(ex.ToString());
+			}
+			return null;
+			//			return default(HttpWebResponse);e
+		}
 
 		public object Put(BsonDocument artefact)
 		{
-//			try
-//			{
+			try
+			{
 				_output.WriteLine("BsonDocument artefact: " + artefact.ToString());
 			return null;
-//			}
-//			
-//			catch (Exception ex)
-//			{
-//				_output.WriteLine(ex.ToString());
-//			}
-			return null;
-//			return default(HttpWebResponse);
+			}
+			
+			catch (Exception ex)
+			{
+				_output.WriteLine(ex.ToString());
+			}
+//			return null;
+			return default(HttpWebResponse);
 		}
 		
 		public object Put(Artefact artefact)
 		{
-		try
+			try
 			{
 				_output.WriteLine("Artefact artefact: " + artefact.ToString());
-			return null;
-		}
+				return null;
+			}
 
-		catch (Exception ex)
-		{
-			_output.WriteLine(ex.ToString());
-		}
-			return null;
-//			return default(HttpWebResponse);e
+			catch (Exception ex)
+			{
+				_output.WriteLine(ex.ToString());
+			}
+				return null;
+	//			return default(HttpWebResponse);e
 		}
 		
 //		public object Put(Artefact artefact)
