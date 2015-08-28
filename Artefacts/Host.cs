@@ -7,7 +7,7 @@ namespace Artefacts
 	/// <summary>
 	/// Host.
 	/// </summary>
-	public class Host
+	public class Host : IEquatable<Host>
 	{
 		#region Static members
 		/// <summary>
@@ -71,5 +71,22 @@ namespace Artefacts
 			if (hostComponents.Length > 1)
 				Domain = hostComponents[0];
 		}
+
+		#region IEquatable implementation
+
+		public bool Equals(Host other)
+		{
+			return string.Equals(HostId, other.HostId);
+		}
+
+		public override bool Equals(object other)
+		{
+			if (other == null || Object.ReferenceEquals(this, other))
+				return true;
+			if (!typeof(Host).IsAssignableFrom(other.GetType()))
+				return false;
+			return Equals((Host)other);
+		}
+		#endregion
 	}
 }

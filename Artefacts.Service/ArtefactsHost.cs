@@ -12,6 +12,7 @@ using ServiceStack.Text;
 using System.Dynamic;
 using System.Text;
 using System.Threading;
+using Serialize.Linq.Nodes;
 
 namespace Artefacts.Service
 {
@@ -65,7 +66,9 @@ namespace Artefacts.Service
 			       typeof(Artefact).Assembly,
 			       typeof(Dictionary<string,object>).Assembly,
 			typeof(BsonDocument).Assembly,
-			       typeof(DynamicObject).Assembly)
+			       typeof(DynamicObject).Assembly,
+			typeof(ExpressionNode).Assembly,
+			typeof(Artefacts.FileSystem.Disk).Assembly)
 		{
 			_output = output;
 //			JsConfig.ConvertObjectTypesIntoStringDictionary = true;
@@ -108,11 +111,12 @@ namespace Artefacts.Service
 			});
 			
 			container.Register<ArtefactsService>(new ArtefactsService(_output));
-			this.Routes
-				.Add<Artefact>("/artefacts", ApplyTo.Put)
-//						.Add<dynamic>("/artefacts", ApplyTo.Put)
-
-				.Add<BsonDocument>("/artefacts_asBson", ApplyTo.Put);
+//			this.Routes
+//				.Add<Artefact>("/artefacts", ApplyTo.Put)
+////						.Add<dynamic>("/artefacts", ApplyTo.Put)
+//
+//				.Add<BsonDocument>("/artefacts_asBson", ApplyTo.Put)
+//					.Add<MatchArtefactRequest>("/artefacts/match", ApplyTo.Get);
 //				.Add<BsonDocument>("/docs", ApplyTo.Put | ApplyTo.Post | ApplyTo.Update | ApplyTo.Delete)
 //				.Add<byte[]>("/bytes", ApplyTo.Put)
 //				.Add<string>("/strings", ApplyTo.Put);

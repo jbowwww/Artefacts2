@@ -30,6 +30,7 @@ namespace Artefacts
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
+	[DataContract]
 	public class Artefact : DynamicObject, IConvertibleToBsonDocument, IReturn<object>
 	{	
 		#region Fields & Properties
@@ -54,6 +55,20 @@ namespace Artefacts
 			set { Data["Id"] = value; }
 		}
 
+		/// <summary>
+		/// Gets the "primary key" data member in the artefact, used to test artefacts already in the repo
+		/// with client instances for equality/equivalence.
+		/// </summary>
+		public object Key {
+			get
+			{
+				return
+						Data.ContainsKey("Name") ? Data["Name"]
+					:	Data.ContainsKey("name") ? Data["name"]
+					:	null;
+			}
+		}
+		
 		/// <summary>
 		/// Gets or sets the time created.
 		/// </summary>

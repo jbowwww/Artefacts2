@@ -6,6 +6,10 @@ using System.Web;
 using System.Net;
 using ServiceStack;
 using System.Runtime.CompilerServices;
+using ServiceStack.Text;
+using System.Linq.Expressions;
+using Serialize.Linq.Nodes;
+using Serialize.Linq.Serializers;
 
 namespace Artefacts.Service
 {
@@ -16,6 +20,7 @@ namespace Artefacts.Service
 		public ArtefactsService(TextWriter output)
 		{
 			_output = output;
+//			JsConfig<Expression>.DeSerializeFn = s => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).DeserializeText(s);
 		}
 		
 		
@@ -33,7 +38,7 @@ namespace Artefacts.Service
 //			return default(HttpWebResponse);
 //		}
 		
-		public object Put(ArtefactData data)
+		public object Put(ArtefactDataOperation data)
 		{
 			try
 			{
@@ -102,6 +107,18 @@ namespace Artefacts.Service
 //			//			return null;
 //			return default(HttpWebResponse);
 //		}
+		
+		public Artefact Get(MatchArtefactRequest request)
+		{
+			try {
+			_output.WriteLine(request.Match != null ? request.Match.ToString() : "(null)");
+			}
+			catch(Exception ex)
+			{
+				;
+			}
+			return null;
+		}
 		
 		public object Any(object request)
 		{

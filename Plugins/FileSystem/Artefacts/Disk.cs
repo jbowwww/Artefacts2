@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Reflection;
 
 namespace Artefacts.FileSystem
 {
@@ -118,7 +119,7 @@ namespace Artefacts.FileSystem
 			if (!typeof(Disk).IsAssignableFrom(obj.GetType()))
 				return false;
 			Disk d = (Disk)obj;
-			return string.Equals(Serial, d.Serial);
+			return Host == Host.Current && string.Equals(Name, d.Name);
 		}
 
 		/// <summary>
@@ -145,7 +146,7 @@ namespace Artefacts.FileSystem
 					UseShellExecute = false,
 					Arguments = string.Concat("info --name=", Name)
 				});
-			udevadmProcess.WaitForExit(1600);
+			udevadmProcess.WaitForExit(444);
 			string udevadmOutput;
 			while (!string.IsNullOrEmpty(udevadmOutput = udevadmProcess.StandardOutput.ReadLine())
 				&&	(string.IsNullOrEmpty(Serial) || string.IsNullOrEmpty(Model)))

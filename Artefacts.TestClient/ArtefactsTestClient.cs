@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Net;
+using Artefacts.FileSystem;
+using Artefacts.Service;
 
 namespace Artefacts.TestClient
 {
@@ -132,6 +134,32 @@ namespace Artefacts.TestClient
 
 			foreach (object[] subject in subjects)
 				DoClientPut(subject[0], (string)subject[1]);
+		}
+
+		/// <summary>
+		/// TODO: Next step needed is expression visitor to remove local variable
+		/// </summary>
+		[Test]
+		public void PutArtefact_Disk_New()
+		{
+			ArtefactsClient client = new ArtefactsClient(_serviceBaseUrl, _bufferWriter);
+			foreach (Disk disk in Disk.Disks)
+			{
+				//TODO: SOme way of using simple standard syntax such as new DIsk() or above .Disks static property
+				// where this new instance can be passed to a client proxy that translates it as necessary
+				// (e.g. Artefact[Data][Operation], posts to server, which via response indicates whether it created
+				// this new artefact, it already found one (how to specify a unique arbitrary key for any artefact type??)
+				// and updated it (return some/all differing values??) or it exists but was identical (all properties??)
+				
+				// One possible way
+				Disk newDisk = client.Sync<Disk>(d => (d.Name == disk.Name), () => disk);
+				
+				// Another possible way If Disk implements IEquatable<T>
+//				client.Sync<Disk>(disk);
+				
+				// SImilar to above but without generic parameter
+//				client.Sync(disk);
+			}
 		}
 	}
 }
