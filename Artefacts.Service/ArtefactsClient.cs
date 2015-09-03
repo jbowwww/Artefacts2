@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
+using ServiceStack.Text;
 
 namespace Artefacts.Service
 {
@@ -36,17 +37,11 @@ namespace Artefacts.Service
 				              response.ContentEncoding, response.ContentType, response.ContentLength,
 				              response.ReadToEnd())) };
 //			JsConfig<Expression>.SerializeFn = e => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).SerializeText(e);
-			
+			JsConfig<Artefact>.SerializeFn = a => a.Data.SerializeToString();
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJson<DataDictionary>() };
 			bufferWriter.Write("OK\n");
 		}
 		
-		/// Function that checks if an instance is equivalent 
-		/// This was initial idea but better to just use IEquatable.Equals??
-		public delegate bool Identify<T>(T instance);
-		
-		// Use this or constructor/initialiser, ???
-		public delegate T Create<T>();
-		
 		/// <summary>
 		/// Gets or creates an artefact 
 		/// Haven't decided return type yet (SS DTO? Some sanitised/interpreted result based on DTO obtained in this method?)
@@ -54,24 +49,29 @@ namespace Artefacts.Service
 		/// <param name="identify">Identify.</param>
 		/// <param name="create">Create.</param>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-//		public T Sync<T>(Identify<T> identify, Create<T> create)
-//		{
-//			return default(T);	
-//		}
-		
-		/// <summary>
-		/// Gets or creates an artefact 
-		/// Haven't decided return type yet (SS DTO? Some sanitised/interpreted result based on DTO obtained in this method?)
-		/// </summary>
-		/// <param name="identify">Identify.</param>
-		/// <param name="create">Create.</param>
-		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T Sync<T>(Expression<Func<T, bool>> match, Expression<Func<T>> create)
+		/// <remarks>
+		/// TODO: Consider if create param delegate should really be named pushInstance or something? Because it might not
+		/// have to be a creation delegate. It might just have an instance already (like I think ArtefactTestClient does)
+		/// to push to server if an equivalent does not already exist
+		/// Is "Put()" the right HTTP verb I should be using for this method? ie "put this at [uri]", whether it exists or not
+		/// as opposed to "Post()" which *might* (check!:)) mean "Post this new object [optionally at uri] and
+		/// error out if exists"???
+		/// </remarks>
+		public T Sync<T>(Expression<Func<T, bool>> match, Func<T> create) where T : new()
 		{
+			_bufferWriter.WriteLine("Sync<{0}>(match: {1}, create: {2})", typeof(T).FullName, match.ToString(), create.ToString());
+			string collectionName = typeof(T).FullName;
 			MatchArtefactRequest request = new MatchArtefactRequest() { Match = new ClientQueryVisitor().Visit(match) };
-			Artefact repositoryArtefact = _serviceClient.Get<Artefact>(request);
-			
-			return default(T);
+			Artefact artefact =
+				_serviceClient.Get<Artefact>(request) ??
+				new Artefact(create != null ? create() : default(T)) {
+					Collection = typeof(T).Name		// TODO: <-- ? Manually use T.name in URL which becomes the collection name on server side
+				};
+			if (artefact.State == ArtefactState.Created)
+				_serviceClient.Put(artefact);
+			T instance = artefact.As<T>();
+			_artefacts[instance] = artefact;
+			return instance;
 		}
 		
 		/// <summary>

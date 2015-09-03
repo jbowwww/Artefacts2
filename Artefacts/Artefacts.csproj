@@ -66,7 +66,8 @@
     <Compile Include="Artefact.cs" />
     <Compile Include="Host.cs" />
     <Compile Include="TextBufferWriter.cs" />
-    <Compile Include="ArtefactData.cs" />
+    <Compile Include="DataDictionary.cs" />
+    <Compile Include="ArtefactState.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -3,13 +3,13 @@ using System.Collections.Generic;
 
 namespace Artefacts
 {
-	public class ArtefactData : Dictionary<string, object>
+	public class DataDictionary : Dictionary<string, object>
 	{
-		public ArtefactData()
+		public DataDictionary()
 		{
 		}
 
-		public ArtefactData(Dictionary<string, object> values)
+		public DataDictionary(Dictionary<string, object> values)
 		{
 			AddValues(values);
 		}

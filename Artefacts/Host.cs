@@ -88,5 +88,14 @@ namespace Artefacts
 			return Equals((Host)other);
 		}
 		#endregion
+		
+		public override string ToString()
+		{
+			return HostId;// string.Format("[Host: HostId={0}, Machine={1}, Domain={2}, ConnectionId={3}, Connected={4}, ConnectTime={5}, ConnectionAge={6}]", HostId, Machine, Domain, ConnectionId, Connected, ConnectTime, ConnectionAge);
+		}
+		public static implicit operator Host(string host)
+		{
+			return new Host(host);
+		}
 	}
 }

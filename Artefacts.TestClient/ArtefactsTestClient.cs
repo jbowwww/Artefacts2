@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Net;
+using Artefacts;
 using Artefacts.FileSystem;
 using Artefacts.Service;
+using ServiceStack.Text;
 
 namespace Artefacts.TestClient
 {
@@ -39,15 +41,17 @@ namespace Artefacts.TestClient
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 				              response.ContentEncoding, response.ContentType, response.ContentLength,
 				              response.ReadToEnd())) };
-			bufferWriter.Write("OK\n");
-			bufferWriter.Write("Creating test Artefact ... ");
+			bufferWriter.WriteLine("OK\n");
+			bufferWriter.WriteLine("Creating test Artefact ... ");
 			_artefact = new Artefact(new {
 				Name = "Test",
 				Desc = "Description",
 				testInt = 18,
 				testBool = false
 			});//, testObjArray = new object[] { false, 2, "three", null } });
-			bufferWriter.Write(ServiceStack.StringExtensions.ToJson(_artefact) + "\n");
+			bufferWriter.WriteLine("\tJSON: " + ServiceStack.StringExtensions.ToJson(_artefact));
+			bufferWriter.WriteLine("\tBSON: " + _artefact.ToBsonDocument());
+			bufferWriter.WriteLine();
 		}
 
 		private void DoClientPut(object argument, string name = "[Unknown]")
@@ -95,13 +99,13 @@ namespace Artefacts.TestClient
 			DoClientPut(_artefact, "_artefact");
 		}
 
-		[Test]
+//		[Test]
 		public void PutArtefactData()
 		{
 			DoClientPut(_artefact.Data, "_artefact.Data");
 		}
 		
-		[Test]
+//		[Test]
 		public void PutArtefactAlternativeSerializations()
 		{
 			byte[] artefactData = MongoDB.Bson.BsonExtensionMethods.ToBson(_artefact);
@@ -153,6 +157,8 @@ namespace Artefacts.TestClient
 				
 				// One possible way
 				Disk newDisk = client.Sync<Disk>(d => (d.Name == disk.Name), () => disk);
+				
+				_bufferWriter.WriteLine(newDisk.SerializeAndFormat());
 				
 				// Another possible way If Disk implements IEquatable<T>
 //				client.Sync<Disk>(disk);

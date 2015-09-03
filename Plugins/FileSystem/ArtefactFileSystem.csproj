@@ -124,5 +124,9 @@
       <Project>{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}</Project>
       <Name>Artefacts</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Extensions\Extensions.csproj">
+      <Project>{6A55914A-9A15-4190-9F31-C2B6EE5FD095}</Project>
+      <Name>Extensions</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

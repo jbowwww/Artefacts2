@@ -21,7 +21,7 @@ namespace Artefacts.Service
 	/// so it can be simply serialized by SS by using <see cref="CollectionDataContract"/>
 	/// </summary>
 	[CollectionDataContract]
-	public class ArtefactDataOperation : ArtefactData
+	public class ArtefactDataOperation : DataDictionary
 	{
 		public ArtefactDataOperationType Operation {
 			get { return (ArtefactDataOperationType)base["_operation"]; }
@@ -33,7 +33,12 @@ namespace Artefacts.Service
 			set { base["_timestamp"] = value; }
 		}
 		
-		public ArtefactDataOperation(ArtefactDataOperationType operation, ArtefactData data)
+		public ArtefactDataOperation()
+		{
+			
+		}
+		
+		public ArtefactDataOperation(ArtefactDataOperationType operation, DataDictionary data)
 		{
 			Operation = operation;
 			// TODO: Any other way to do this where members don't have to be copied to new instance?

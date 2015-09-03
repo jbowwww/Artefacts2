@@ -5,6 +5,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Reflection;
 using System.Text;
+using System.Dynamic;
+using System.Linq.Expressions;
 
 namespace Artefacts
 {
@@ -82,6 +84,7 @@ namespace Artefacts
 			}
 		}
 
+		
 		/// <summary>
 		/// Formats the <see cref="System.Object"/> to a <see cref="System.String"/>
 		/// </summary>
@@ -136,7 +139,20 @@ namespace Artefacts
 
 			StringBuilder sb = new StringBuilder();
 
-			if (type.GetInterface("ISerializable") != null && (type.GetInterface("IEnumerable") == null || type.Namespace.StartsWith("Artefacts")))
+			if (type.IsSubclassOf(typeof(DynamicObject)))
+			{
+				DynamicObject objAsDynamic = (DynamicObject)obj;
+				context.IncrementIndent();
+				sb.Append(string.Concat("[", type.FullName, " as DynamicObject]"));
+				foreach (string member in objAsDynamic.GetDynamicMemberNames())
+				{
+					object memberValue =
+						objAsDynamic.GetMetaObject(Expression.PropertyOrField(Expression.Constant(objAsDynamic), member)).Value;
+					
+					sb.AppendFormat("\n{0}{1}: {2}", context.Indent2, member, FormatString(memberValue, context));
+				}
+			}
+			else if (type.GetInterface("ISerializable") != null && (type.GetInterface("IEnumerable") == null || type.Namespace.StartsWith("Artefacts")))
 			{
 				SerializationInfo info = new SerializationInfo(type, new FormatterConverter());
 				ISerializable objAsSerializable = (ISerializable)obj;

@@ -21,6 +21,9 @@ namespace Artefacts.Service
 		{
 			_output = output;
 //			JsConfig<Expression>.DeSerializeFn = s => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).DeserializeText(s);
+			JsConfig<Artefact>.SerializeFn = a => a.Data.SerializeToString();
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJson<DataDictionary>() };
+
 		}
 		
 		
@@ -38,11 +41,11 @@ namespace Artefacts.Service
 //			return default(HttpWebResponse);
 //		}
 		
-		public object Put(ArtefactDataOperation data)
+		public object Put(DataDictionary data)
 		{
 			try
 			{
-				_output.WriteLine("ArtefactData data: " + data.ToString());
+				_output.WriteLine("DataDictionary data: " + data.Dump());
 				return null;
 			}
 
@@ -111,7 +114,7 @@ namespace Artefacts.Service
 		public Artefact Get(MatchArtefactRequest request)
 		{
 			try {
-			_output.WriteLine(request.Match != null ? request.Match.ToString() : "(null)");
+				_output.WriteLine(request.Match != null ? request.Match.ToString() : "(null)");
 			}
 			catch(Exception ex)
 			{
@@ -125,7 +128,7 @@ namespace Artefacts.Service
 //			try
 //			{
 				_output.WriteLine("Any ! request: " + request.ToString());
-			return default(HttpWebResponse);
+				return default(HttpWebResponse);
 //			}
 //
 //		catch (Exception ex)
