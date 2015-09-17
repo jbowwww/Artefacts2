@@ -5,17 +5,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Net;
-using Artefacts;
 using Artefacts.FileSystem;
 using Artefacts.Service;
+<<<<<<< HEAD
 using ServiceStack.Text;
+using MongoDB.Bson;
+=======
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 
 namespace Artefacts.TestClient
 {
 	[TestFixture]
 	public class ArtefactsTestClient
 	{
-		private TextBufferWriter _bufferWriter;
+		private TextBufferWriter _bw;
 
 		private string _serviceBaseUrl;
 
@@ -27,9 +30,9 @@ namespace Artefacts.TestClient
 		public ArtefactsTestClient(string serviceBaseUrl, TextBufferWriter bufferWriter)
 		{
 			//			_client = client;
-			_bufferWriter = bufferWriter;
+			_bw = bufferWriter;
 			_serviceBaseUrl = serviceBaseUrl;
-			_bufferWriter.Write(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
+			_bw.Write(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_client = new ServiceStack.JsonServiceClient(_serviceBaseUrl) {
 				RequestFilter = (HttpWebRequest request) => bufferWriter.Write(
 					string.Format("\nClient.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}\n",
@@ -41,17 +44,18 @@ namespace Artefacts.TestClient
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 				              response.ContentEncoding, response.ContentType, response.ContentLength,
 				              response.ReadToEnd())) };
-			bufferWriter.WriteLine("OK\n");
-			bufferWriter.WriteLine("Creating test Artefact ... ");
+			bufferWriter.Write("OK\n");
+			bufferWriter.Write("Creating test Artefact ... ");
 			_artefact = new Artefact(new {
 				Name = "Test",
 				Desc = "Description",
 				testInt = 18,
 				testBool = false
 			});//, testObjArray = new object[] { false, 2, "three", null } });
-			bufferWriter.WriteLine("\tJSON: " + ServiceStack.StringExtensions.ToJson(_artefact));
-			bufferWriter.WriteLine("\tBSON: " + _artefact.ToBsonDocument());
-			bufferWriter.WriteLine();
+<<<<<<< HEAD
+=======
+			bufferWriter.Write(ServiceStack.StringExtensions.ToJson(_artefact) + "\n");
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 		}
 
 		private void DoClientPut(object argument, string name = "[Unknown]")
@@ -59,53 +63,65 @@ namespace Artefacts.TestClient
 			try
 			{
 				// Don't need to receive and output response because _client already has request/response filters for that
-				_bufferWriter.Write("DoClientPut: {0}: {1}\n", name, argument.GetType().FullName);
+				_bw.Write("DoClientPut: {0}: {1}\n", name, argument.GetType().FullName);
 				_client.Put(argument);
 			}
 			catch (ServiceStack.WebServiceException wsex)
 			{ 
-				_bufferWriter.Write(
+				_bw.Write(
 					string.Format("\nError: {0}: {1}\nStatus: {2}: {3}\nResponse: {4}\n{5}: {6}\n",
 				              wsex.ErrorCode, wsex.ErrorMessage, wsex.StatusCode, wsex.StatusDescription, wsex.ResponseBody,
 				              !string.IsNullOrWhiteSpace(wsex.ServerStackTrace) ? "ServerStackTrace" : "StackTrace",
 				              !string.IsNullOrWhiteSpace(wsex.ServerStackTrace) ? wsex.ServerStackTrace : wsex.StackTrace));
 				for (Exception _wsex = wsex.InnerException; _wsex != null; _wsex = _wsex.InnerException)
-					_bufferWriter.Write("\n" + _wsex.ToString());
-				_bufferWriter.Write("\n");
+					_bw.Write("\n" + _wsex.ToString());
+				_bw.Write("\n");
 			}
 			catch (InvalidOperationException ioex)
 			{
-				_bufferWriter.Write("\n" + ioex.ToString() + ioex.TargetSite.ToString());
+				_bw.Write("\n" + ioex.ToString() + ioex.TargetSite.ToString());
 				for (Exception _wsex = ioex.InnerException; _wsex != null; _wsex = _wsex.InnerException)
-					_bufferWriter.Write("\n" + _wsex.ToString());
-				_bufferWriter.Write("\n");
+					_bw.Write("\n" + _wsex.ToString());
+				_bw.Write("\n");
 			}
 			catch (Exception ex)
 			{
-				_bufferWriter.Write("\n" + ex.ToString());	
+				_bw.Write("\n" + ex.ToString());	
 				for (Exception _wsex = ex.InnerException; _wsex != null; _wsex = _wsex.InnerException)	
-					_bufferWriter.Write("\n" + _wsex.ToString());
-				_bufferWriter.Write("\n");
+					_bw.Write("\n" + _wsex.ToString());
+				_bw.Write("\n");
 			}
 			finally
 			{
-				_bufferWriter.Write("\n");
+				_bw.Write("\n");
 			}
 		}
 
+		[Test]
+		public void PrintFormatSamples()
+		{
+			//			bufferWriter.WriteLine("\tDump: " + _artefact.Dump() + "\t\t_artefact.ToBsonDocument()");
+			_bw.WriteLine("\tServiceStack.StringExtensions.ToJson(_artefact) : " + ServiceStack.StringExtensions.ToJson(_artefact));
+			_bw.WriteLine("\tServiceStack.StringExtensions.ToJsv(_artefact) : " + ServiceStack.StringExtensions.ToJsv(_artefact));
+			_bw.WriteLine("\tServiceStack.StringExtensions.ToXml(_artefact) : " + ServiceStack.StringExtensions.ToXml(_artefact));
+			_bw.WriteLine("\tServiceStack.StringExtensions.ToCsv(_artefact) : " + ServiceStack.StringExtensions.ToCsv(_artefact));
+			_bw.WriteLine("\t" + typeof(BsonDocument).FullName + " : " + _artefact.ToBsonDocument());
+			_bw.WriteLine();
+		}
+		
 		[Test]
 		public void PutArtefact()
 		{
 			DoClientPut(_artefact, "_artefact");
 		}
 
-//		[Test]
+		[Test]
 		public void PutArtefactData()
 		{
 			DoClientPut(_artefact.Data, "_artefact.Data");
 		}
 		
-//		[Test]
+		[Test]
 		public void PutArtefactAlternativeSerializations()
 		{
 			byte[] artefactData = MongoDB.Bson.BsonExtensionMethods.ToBson(_artefact);
@@ -130,7 +146,7 @@ namespace Artefacts.TestClient
 				//			new object[] { bsonDocJson_SS,			"Mongo BsonDocument -> SS JSON" }
 			});
 
-			_bufferWriter.Write("Data:\n\t" + subjects.Select(
+			_bw.Write("Data:\n\t" + subjects.Select(
 				o => ((string)((object[])o)[1]).PadRight(32) + (((object[])o)[0].GetType().IsArray ?
 			                                                ((object[])o)[0].ToString().Replace("[]", string.Format("[{0}]", ((Array)((object[])o)[0]).Length))
 			                                                :	((object[])o)[0])).Join("\n\t") + "\n");
@@ -146,7 +162,7 @@ namespace Artefacts.TestClient
 		[Test]
 		public void PutArtefact_Disk_New()
 		{
-			ArtefactsClient client = new ArtefactsClient(_serviceBaseUrl, _bufferWriter);
+			ArtefactsClient client = new ArtefactsClient(_serviceBaseUrl, _bw);
 			foreach (Disk disk in Disk.Disks)
 			{
 				//TODO: SOme way of using simple standard syntax such as new DIsk() or above .Disks static property
@@ -157,8 +173,11 @@ namespace Artefacts.TestClient
 				
 				// One possible way
 				Disk newDisk = client.Sync<Disk>(d => (d.Name == disk.Name), () => disk);
-				
-				_bufferWriter.WriteLine(newDisk.SerializeAndFormat());
+<<<<<<< HEAD
+				newDisk.GetId();
+				_bw.WriteLine(newDisk.SerializeAndFormat());
+=======
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 				
 				// Another possible way If Disk implements IEquatable<T>
 //				client.Sync<Disk>(disk);

@@ -30,24 +30,36 @@ namespace Artefacts
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
+<<<<<<< HEAD
 //	[DataContract]
-	[CollectionDataContract]
+//	[CollectionDataContract]
 //	[Route("/{Collection}/{Name}")]
 	public class Artefact : DynamicObject//, IDictionary<string, object>
+=======
+	[DataContract]
+	public class Artefact : DynamicObject, IConvertibleToBsonDocument, IReturn<object>
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 	{	
 		#region Fields & Properties
-		private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
-		private DataDictionary _artefactData;
-		private DataDictionary _persistedData;
-		private string _uri = null;
+		[NonSerialized] private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
+		[NonSerialized] private ArtefactData _artefactData;
 		
+		/// <summary>
+		/// Gets or sets the artefact data.
+		/// </summary>
+//		[BsonExtraElements]
+		public ArtefactData Data {
+			get { return _artefactData ?? (_artefactData = new ArtefactData()); }
+			set { _artefactData = new ArtefactData(value); }
+		}
+				
 		/// <summary>
 		/// Gets or sets the identifier.
 		/// </summary>
-		//		[BsonId, BsonRepresentation(BsonType.String)]
-		//		[DataMember(Order = 1)]
+		[BsonId, BsonRepresentation(BsonType.String)]
 		public string Id {
-			get { return (string)Data["_id"]; }
+<<<<<<< HEAD
+			get { return (string)(Data.ContainsKey("_id") ? Data["_id"] : string.Empty); }	//Data["_id"]; }
 			set { Data["_id"] = value; }
 		}
 
@@ -68,83 +80,67 @@ namespace Artefacts
 		public string Collection {
 			get;
 			set;
+=======
+			get { return (string)Data["Id"]; }
+			set { Data["Id"] = value; }
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 		}
 
 		/// <summary>
 		/// Gets the "primary key" data member in the artefact, used to test artefacts already in the repo
 		/// with client instances for equality/equivalence.
 		/// </summary>
-		//		[DataMember(Order = 2)]
-		public string Name {
+		public object Key {
 			get
 			{
 				return
-					Data.ContainsKey("Name") ? (string)Data["Name"]
-					:	Data.ContainsKey("name") ? (string)Data["name"]
+						Data.ContainsKey("Name") ? Data["Name"]
+					:	Data.ContainsKey("name") ? Data["name"]
 					:	null;
 			}
+<<<<<<< HEAD
 			set
 			{
 				if (value != Name)
 					throw new ArgumentOutOfRangeException("value", value, "Should match field in Data");
 			}
 		}
-
+		
 		/// <summary>
 		/// Gets the <see cref="ArtefactState"/> of this artefact
 		/// </summary>
 		public ArtefactState State {
 			get;
 			private set;
+=======
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 		}
 		
 		/// <summary>
 		/// Gets or sets the time created.
 		/// </summary>
-		//		[BsonRequired]
-		//		[DataMember(Order = 5)]
+		[BsonRequired]
 		public DateTime TimeCreated {
-			get { return (DateTime)Data["_timeCreated"]; }
-			set { Data["_timeCreated"] = value; }
+			get { return (DateTime)Data["TimeCreated"]; }
+			set { Data["TimeCreated"] = value; }
 		}
 
 		/// <summary>
 		/// Gets or sets the time checked.
 		/// </summary>
-		//		[BsonRequired]
-		//		[DataMember(Order = 6)]
+		[BsonRequired]
 		public DateTime TimeChecked {
-			get { return (DateTime)Data["_timeChecked"]; }
-			set { Data["_timeChecked"] = value; }
+			get { return (DateTime)Data["TimeChecked"]; }
+			set { Data["TimeChecked"] = value; }
 		}
 
 		/// <summary>
 		/// Gets or sets the time modified.
 		/// </summary>
-		//		[BsonRequired]
-		//		[DataMember(Order = 7)]
+		[BsonRequired]
 		public DateTime TimeModified {
-			get { return (DateTime)Data["_timeModified"]; }
-			set { Data["_timeModified"] = value; }
-		}
-
-		/// <summary>
-		/// Gets or sets the artefact data.
-		/// </summary>
-//		[BsonExtraElements]
-//		[DataMember(Order = 8)]
-		public DataDictionary Data {
-			get { return _artefactData ?? (_artefactData = new DataDictionary()); }
-			set { _artefactData = new DataDictionary(value); }
-		}
-		
-		/// <summary>
-		/// Gets or sets the persisted data.
-		/// </summary>
-		/// <value>The persisted data.</value>
-		public DataDictionary PersistedData {
-			get { return _persistedData ?? (_persistedData = new DataDictionary()); }
-			set { _persistedData = new DataDictionary(value); }
+			get { return (DateTime)Data["TimeModified"]; }
+			set { Data["TimeModified"] = value; }
 		}
 		#endregion
 
@@ -152,64 +148,47 @@ namespace Artefacts
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
+		[OnDeserializing]
+		public void OnDeserializing()
+		{
+			Data = new ArtefactData();
+			Id = ObjectId.GenerateNewId().ToString();
+			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+		}
+				
 		public Artefact()
 		{
+<<<<<<< HEAD
+			State = ArtefactState.Unknown;
 			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
 			Id = ObjectId.GenerateNewId(TimeCreated).ToString();
 				// ^ if this is only used when d's'ing S'side won't this new ID be useless??
-			State = ArtefactState.Unknown;
-			Data = new DataDictionary();
-			PersistedData = new DataDictionary();
+=======
+			Data = new ArtefactData();
+			Id = ObjectId.GenerateNewId().ToString();
+			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
 		/// <param name="instance">Instance.</param>
-		public Artefact(object instance) : this()
+		public Artefact(object instance = null) : this()
 		{
-			State = ArtefactState.Created;
+<<<<<<< HEAD
+=======
+			Id = ObjectId.GenerateNewId().ToString();
+			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 			if (instance == null)
 				throw new ArgumentNullException("value");
 			if (!instance.GetType().IsClass)
 				throw new ArgumentOutOfRangeException("value", "Not a class type");
 			if (instance != null)
 				SetInstance(instance);
+			State = ArtefactState.Created;
 		}
-		#endregion
-
-		#region Data handling
-		/// <summary>
-		/// Raises the serialized event.
-		/// </summary>
-		[OnSerialized]
-		private void OnSerialized()
-		{
-			PersistedData.AddValues(Data);
-			Data.Clear();
-			State = ArtefactState.Current;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
-		/// </summary>
-		[OnDeserializing]
-		private void OnDeserializing()
-		{
-			Data = new DataDictionary();
-			PersistedData = new DataDictionary();
-			//			Id = ObjectId.GenerateNewId().ToString();
-			//			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
-		}
-
-		/// <summary>
-		/// Raises the deserialized event.
-		/// </summary>
-		[OnDeserialized]
-		private void OnDeserialized()
-		{
-			State = ArtefactState.Current;
-		}	
 		
 		/// <summary>
 		/// Sets the instance.
@@ -242,6 +221,59 @@ namespace Artefacts
 			}
 			return Data.Count;
 		}
+<<<<<<< HEAD
+		#endregion
+
+		#region Data handling
+		private void OnSerializing()
+		{
+			State = ArtefactState.Serializing;
+		}
+		
+		/// <summary>
+		/// Raises the serialized event.
+		/// </summary>
+		[OnSerialized]
+		private void OnSerialized()
+		{
+			PersistedData.AddValues(Data);
+			Data.Clear();
+			State = ArtefactState.Current;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
+		/// </summary>
+		[OnDeserializing]
+		private void OnDeserializing()
+		{
+			State = ArtefactState.Deserializing;
+//			Data = new DataDictionary();
+//			PersistedData = new DataDictionary();
+			//			Id = ObjectId.GenerateNewId().ToString();
+			//			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+		}
+
+		/// <summary>
+		/// Raises the deserialized event.
+		/// </summary>
+		[OnDeserialized]
+		private void OnDeserialized()
+		{
+			State = ArtefactState.Current;
+		}	
+=======
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
+		
+		/// <summary>
+		/// Serializes the and format.
+		/// </summary>
+<<<<<<< HEAD
+		/// <returns>The and format.</returns>
+		public string SerializeAndFormat()
+		{
+			return ServiceStack.Text.TypeSerializer.SerializeToString<Artefact>(this);
+		}
 		
 		/// <summary>
 		/// As this instance.
@@ -264,14 +296,15 @@ namespace Artefacts
 		}
 
 		/// <summary>
-		/// Serializes the and format.
+		/// Converts this object to a BsonDocument.
 		/// </summary>
-		/// <returns>The and format.</returns>
-		public string SerializeAndFormat()
+		/// <returns>A <see cref="BsonDocument"/></returns>
+		/// <remarks><see cref="IConvertibleToBsonDocument"/> implementation</remarks>
+		public BsonDocument ToBsonDocument()
 		{
-			return ServiceStack.Text.TypeSerializer.SerializeToString<Artefact>(this);
+			return new BsonDocument(Data);
 		}
-		
+
 		/// <summary>
 		/// Returns a <see cref="System.String"/> that represents the current <see cref="Artefacts.Artefact"/>.
 		/// </summary>
@@ -284,18 +317,192 @@ namespace Artefacts
 				sb.AppendFormat(" {0}={1}", field.Key, field.Value);
 			return sb.Append("]").ToString();
 		}
+		#endregion
+
+		#region IDictionary implementation
+		/// <summary>
+		/// Add the specified key and value.
+		/// </summary>
+		/// <param name="key">Key.</param>
+		/// <param name="value">Value.</param>
+		public void Add(string key, object value)
+		{
+			Data.Add(key, value);
+		}
+
+		/// <Docs>The key to locate in the current instance.</Docs>
+		/// <para>Determines whether the current instance contains an entry with the specified key.</para>
+		/// <summary>
+		/// Containses the key.
+		/// </summary>
+		/// <returns><c>true</c>, if key was containsed, <c>false</c> otherwise.</returns>
+		/// <param name="key">Key.</param>
+		public bool ContainsKey(string key)
+		{
+			return Data.ContainsKey(key) || PersistedData.ContainsKey(key);
+		}
+
+		/// <Docs>The item to remove from the current collection.</Docs>
+		/// <para>Removes the first occurrence of an item from the current collection.</para>
+		/// <summary>
+		/// Remove the specified key.
+		/// </summary>
+		/// <param name="key">Key.</param>
+		public bool Remove(string key)
+		{
+			return Data.Remove(key) || PersistedData.Remove(key); 
+		}
+
+		/// <Docs>To be added.</Docs>
+		/// <summary>
+		/// To be added.
+		/// </summary>
+		/// <remarks>To be added.</remarks>
+		/// <returns><c>true</c>, if get value was tryed, <c>false</c> otherwise.</returns>
+		/// <param name="key">Key.</param>
+		/// <param name="value">Value.</param>
+		public bool TryGetValue(string key, out object value)
+		{
+			return Data.TryGetValue(key, out value) || PersistedData.TryGetValue(key, out value);
+		}
 
 		/// <summary>
-		/// Converts this object to a BsonDocument.
+		/// Gets or sets the <see cref="Artefacts.Artefact"/> at the specified index.
 		/// </summary>
-		/// <returns>A <see cref="BsonDocument"/></returns>
-		/// <remarks><see cref="IConvertibleToBsonDocument"/> implementation</remarks>
-		public BsonDocument ToBsonDocument()
-		{
-			return new BsonDocument(Data);
+		/// <param name="index">Index.</param>
+		public object this[string index] {
+			get { return Data.ContainsKey(index) ? Data[index] : PersistedData[index]; }
+			set { Data[index] = value; }
+		}
+
+		/// <summary>
+		/// Gets the keys.
+		/// </summary>
+		/// <value>The keys.</value>
+		public ICollection<string> Keys {
+			get {
+				List<string> keys = new List<string>(Data.Keys);
+				keys.AddRange(PersistedData.Keys);
+				return keys;
+			}
+		}
+
+		/// <summary>
+		/// Gets the values.
+		/// </summary>
+		/// <value>The values.</value>
+		public ICollection<object> Values {
+			get {
+				List<object> values = new List<object>(Data.Values);
+				values.Add(PersistedData.Values);
+				return values;
+			}
 		}
 		#endregion
 
+		#region ICollection implementation
+		/// <Docs>The item to add to the current collection.</Docs>
+		/// <para>Adds an item to the current collection.</para>
+		/// <remarks>To be added.</remarks>
+		/// <exception cref="System.NotSupportedException">The current collection is read-only.</exception>
+		/// <summary>
+		/// Add the specified item.
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public void Add(KeyValuePair<string, object> item)
+		{
+			Data.Add(item.Key, item.Value);
+		}
+
+		/// <summary>
+		/// Clear this instance.
+		/// </summary>
+		public void Clear()
+		{
+			Data.Clear();
+			PersistedData.Clear();
+		}
+
+		/// <Docs>The object to locate in the current collection.</Docs>
+		/// <para>Determines whether the current collection contains a specific value.</para>
+		/// <summary>
+		/// Contains the specified item.
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public bool Contains(KeyValuePair<string, object> item)
+		{
+			return Data.Contains(item) || PersistedData.Contains(item);
+		}
+
+		/// <summary>
+		/// Copies to.
+		/// </summary>
+		/// <param name="array">Array.</param>
+		/// <param name="arrayIndex">Array index.</param>
+		public void CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+		{
+			((ICollection<KeyValuePair<string, object>>)Data).CopyTo(array, arrayIndex);
+			((ICollection<KeyValuePair<string, object>>)PersistedData).CopyTo(array, arrayIndex + Data.Count);
+		}
+
+		/// <Docs>The item to remove from the current collection.</Docs>
+		/// <para>Removes the first occurrence of an item from the current collection.</para>
+		/// <summary>
+		/// Remove the specified item.
+		/// </summary>
+		/// <param name="item">Item.</param>
+		public bool Remove(KeyValuePair<string, object> item)
+		{
+			return Data.Remove(item.Key) || PersistedData.Remove(item.Key);
+		}
+
+		/// <summary>
+		/// Gets the count.
+		/// </summary>
+		/// <value>The count.</value>
+		public int Count {
+			get { return Data.Count + PersistedData.Count; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating whether this instance is read only.
+		/// </summary>
+		/// <value><c>true</c> if this instance is read only; otherwise, <c>false</c>.</value>
+		public bool IsReadOnly {
+			get { return false; }
+		}
+		#endregion
+
+		#region IEnumerable implementation
+		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+		{
+			return Data.Concat(PersistedData).GetEnumerator();
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return (IEnumerator)GetEnumerator();
+		}
+		#endregion
+		
+=======
+		/// <returns>The instance.</returns>
+		/// <param name="instance">Instance.</param>
+		public int SetInstance(object instance)
+		{
+			if (instance == null)
+				throw new ArgumentNullException("instance");
+			foreach (MemberInfo member in instance.GetType().GetMembers(_bindingFlags)
+			         .Where((mi) =>
+			       mi.MemberType == MemberTypes.Field ||
+			       mi.MemberType == MemberTypes.Property))
+				Data[member.Name] = (member.GetPropertyOrField(instance)).ToString();
+			return Data.Count;
+		}
+		#endregion
+
+		#region Methods
+>>>>>>> parent of 77346bb... Updated client/server with JsConfig<Artefact>.Serializer (or something) to a custom serializer that srializes what it wants of the Artefact intsances (shuld be easy to experiment and customise this). Client proxy has Sync<T>() method which checks a predicate to see if equiv artefact already exists, if not creates one usign another predicate.
 		#region DynamicObject overrides
 		/// <summary>
 		/// Gets the dynamic member names.
@@ -314,7 +521,7 @@ namespace Artefacts
 		/// <returns><c>true</c>, if get member was tryed, <c>false</c> otherwise.</returns>
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
-			return Data.TryGetValue(binder.Name, out result) || PersistedData.TryGetValue(binder.Name, out result);
+			return Data.TryGetValue(binder.Name, out result);
 		}
 
 		/// <summary>
@@ -351,7 +558,7 @@ namespace Artefacts
 			result = args.Length == 1 ? new Artefact(args[0]) : new Artefact();
 			return true;
 		}
-
+		
 		/// <summary>
 		/// Tries the convert.
 		/// </summary>
@@ -362,6 +569,32 @@ namespace Artefacts
 		{
 			return base.TryConvert(binder, out result);
 		}
+		#endregion
+		
+		#region Serialization / data handling
+		/// <summary>
+		/// Converts this object to a BsonDocument.
+		/// </summary>
+		/// <returns>A <see cref="BsonDocument"/></returns>
+		/// <remarks><see cref="IConvertibleToBsonDocument"/> implementation</remarks>
+		public BsonDocument ToBsonDocument()
+		{
+			return new BsonDocument(Data);
+		}
+		
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="Artefacts.Artefact"/>.
+		/// </summary>
+		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Artefacts.Artefact"/>.</returns>
+		/// <remarks><see cref="System.Object"/> override</remarks>
+		public override string ToString()
+		{
+			StringBuilder sb = new StringBuilder("[Artefact:");
+			foreach (KeyValuePair<string, object> field in Data)
+				sb.AppendFormat(" {0}={1}", field.Key, field.Value);
+			return sb.Append("]").ToString();
+		}
+		#endregion
 		#endregion
 	}
 }

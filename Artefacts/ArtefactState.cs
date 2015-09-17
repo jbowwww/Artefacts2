@@ -8,7 +8,9 @@ namespace Artefacts
 		Current,			// This artefact instance's data is equal to what has been pushed into the repostiroy
 		Modified,			// This artefact instance's data has been modified since last pushed to repo
 		Stale,				// This artefact instance's data is out of date and older than what exists in the repo
-		Deleted				// This artefact instance represents an artefact that has now been deleted from the repo
+		Deleted,			// This artefact instance represents an artefact that has now been deleted from the repo
+		Serializing,
+		Deserializing
 	};
 }
 

@@ -63,21 +63,9 @@ namespace Artefacts
 			throw new ArgumentOutOfRangeException("member", "MemberType == " + member.MemberType.ToString());
 		}
 		
-		public static object GetValue(this MemberInfo member, object instance)
+		public static object GetValue(this PropertyInfo property, object instance)
 		{
-			return
-				member.MemberType == MemberTypes.Property	? ((PropertyInfo)member).GetValue(instance, new object[] { })
-			:	member.MemberType == MemberTypes.Field 		? ((FieldInfo)member).GetValue(instance) : null;
-		}
-		
-		public static void SetValue(this MemberInfo member, object instance, object value)
-		{
-			if (member.MemberType == MemberTypes.Property)
-				((PropertyInfo)member).SetValue(instance, Convert.ChangeType(value, ((PropertyInfo)member).PropertyType));
-			else if (member.MemberType == MemberTypes.Field)
-				((FieldInfo)member).SetValue(instance, Convert.ChangeType(value, ((FieldInfo)member).FieldType));
-			else
-				throw new MemberAccessException(string.Format("Wrong member type ({0}) for member \"{1}\"", member.MemberType, member.Name));
+			return property.GetValue(instance, new object[] { });
 		}
 	}
 }
