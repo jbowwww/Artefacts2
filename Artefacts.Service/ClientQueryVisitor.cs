@@ -18,6 +18,11 @@ namespace Artefacts.Service
 		{
 		}
 
+		protected override Expression VisitConstant(ConstantExpression c)
+		{
+			return base.VisitConstant(c);
+			
+		}
 		protected override Expression VisitMemberAccess(MemberExpression m)
 		{
 			Expression mExpression = Visit(m.Expression);

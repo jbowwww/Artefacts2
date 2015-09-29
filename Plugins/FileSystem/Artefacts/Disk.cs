@@ -52,7 +52,7 @@ namespace Artefacts.FileSystem
 				{
 					Disk disk = new Disk()
 					{
-						Host = host,
+						Host = null,//host,
 						Name = tokens[0],
 						Size = long.Parse(tokens[3])
 					};

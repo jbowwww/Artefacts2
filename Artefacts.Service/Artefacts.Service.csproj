@@ -68,6 +68,10 @@
       <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.ServiceModel.dll</HintPath>
     </Reference>
     <Reference Include="System.Net" />
+    <Reference Include="gtk-sharp, Version=2.12.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f">
+      <Private>False</Private>
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -79,20 +83,20 @@
     <Compile Include="ArtefactsClient.cs" />
     <Compile Include="ClientQueryVisitor.cs" />
     <Compile Include="ExpressionVisitor.cs" />
+    <Compile Include="Artefact.cs" />
+    <Compile Include="ArtefactState.cs" />
+    <Compile Include="DataDictionary.cs" />
+    <Compile Include="Host.cs" />
+    <Compile Include="TextBufferWriter.cs" />
+    <Compile Include="Extensions\Exception.cs" />
+    <Compile Include="Extensions\Expression.cs" />
+    <Compile Include="Extensions\MemberInfo.cs" />
+    <Compile Include="Extensions\Object.cs" />
+    <Compile Include="Extensions\String.cs" />
+    <Compile Include="Extensions\Type.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Artefacts\Artefacts.csproj">
-      <Project>{C9BF95DB-1B02-4AE7-B549-C12963A5DF2B}</Project>
-      <Name>Artefacts</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Plugins\FileSystem\ArtefactFileSystem.csproj">
-      <Project>{5B486604-0B8B-4214-99DB-C36A69168F5B}</Project>
-      <Name>ArtefactFileSystem</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Extensions\Extensions.csproj">
-      <Project>{6A55914A-9A15-4190-9F31-C2B6EE5FD095}</Project>
-      <Name>Extensions</Name>
-    </ProjectReference>
+    <Folder Include="Extensions\" />
   </ItemGroup>
 </Project>

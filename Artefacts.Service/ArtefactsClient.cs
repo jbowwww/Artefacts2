@@ -17,6 +17,7 @@ namespace Artefacts.Service
 
 		private IServiceClient _serviceClient;
 		
+		
 		private readonly Dictionary<object, Artefact> _artefacts = new Dictionary<object, Artefact>();
 		
 		public ArtefactsClient(string serviceBaseUrl, TextWriter bufferWriter)
@@ -60,11 +61,17 @@ namespace Artefacts.Service
 		public T Sync<T>(Expression<Func<T, bool>> match, Func<T> create) where T : new()
 		{
 			_bufferWriter.WriteLine("Sync<{0}>(match: {1}, create: {2})", typeof(T).FullName, match.ToString(), create.ToString());
+
+			if (create == null)
+				throw new ArgumentNullException("create");
+			if (match == null)
+				throw new ArgumentNullException("match");
+			
 			string collectionName = typeof(T).FullName;
-			MatchArtefactRequest request = new MatchArtefactRequest() { Match = new ClientQueryVisitor().Visit(match) };
-			Artefact artefact =
-				_serviceClient.Get<Artefact>(request) ??
-				new Artefact(create != null ? create() : default(T)) {
+			MatchArtefactRequest request = new MatchArtefactRequest(match);
+			Artefact artefact = _serviceClient.Get<Artefact>(request);
+			if (artefact == null)
+				artefact = new Artefact(create != null ? create() : default(T), this) {
 					Collection = typeof(T).Name		// TODO: <-- ? Manually use T.name in URL which becomes the collection name on server side
 				};
 			if (artefact.State == ArtefactState.Created)
@@ -126,7 +133,7 @@ namespace Artefacts.Service
 		{
 			return _artefacts.ContainsKey(instance) ?
 				_artefacts[instance]
-			:	(_artefacts[instance] = new Artefact(instance));
+			:	(_artefacts[instance] = new Artefact(instance, this));
 		}
 	}
 }

@@ -62,13 +62,13 @@ namespace Artefacts.Service
 		/// </summary>
 		public ArtefactsHost(TextWriter output)
 			: base("Artefacts",
-			       typeof(ArtefactsService).Assembly,
-			       typeof(Artefact).Assembly,
-			       typeof(Dictionary<string,object>).Assembly,
-			typeof(BsonDocument).Assembly,
-			       typeof(DynamicObject).Assembly,
-			typeof(ExpressionNode).Assembly,
-			typeof(Artefacts.FileSystem.Disk).Assembly)
+			       typeof(ArtefactsService).Assembly)
+//			       typeof(Artefact).Assembly,
+//			       typeof(Dictionary<string,object>).Assembly,
+//			typeof(BsonDocument).Assembly,
+//			       typeof(DynamicObject).Assembly,
+//			typeof(ExpressionNode).Assembly,
+//			typeof(Artefacts.FileSystem.Disk).Assembly)
 		{
 			_output = output;
 //			JsConfig.ConvertObjectTypesIntoStringDictionary = true;

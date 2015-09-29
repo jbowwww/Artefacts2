@@ -11,6 +11,7 @@ using MongoDB.Bson.Serialization.Attributes;
 using ServiceStack;
 using System.Text;
 using ServiceStack.Text;
+using Artefacts.Service;
 
 namespace Artefacts
 {
@@ -30,10 +31,12 @@ namespace Artefacts
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
+	
 //	[DataContract]
-	[CollectionDataContract]
+//	[CollectionDataContract]
 //	[Route("/{Collection}/{Name}")]
-	public class Artefact : DynamicObject//, IDictionary<string, object>
+//	[BsonDictionaryOptions]
+	public class Artefact : DynamicObject, IConvertibleToBsonDocument//, IDictionary<string, object>
 	{	
 		#region Fields & Properties
 		private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
@@ -41,10 +44,12 @@ namespace Artefacts
 		private DataDictionary _persistedData;
 		private string _uri = null;
 		
+		private ArtefactsClient _client = null;
+		
 		/// <summary>
 		/// Gets or sets the identifier.
 		/// </summary>
-		//		[BsonId, BsonRepresentation(BsonType.String)]
+				[BsonId, BsonRepresentation(BsonType.String)]
 		//		[DataMember(Order = 1)]
 		public string Id {
 			get { return (string)Data["_id"]; }
@@ -95,7 +100,7 @@ namespace Artefacts
 		/// </summary>
 		public ArtefactState State {
 			get;
-			private set;
+			set;
 		}
 		
 		/// <summary>
@@ -104,8 +109,8 @@ namespace Artefacts
 		//		[BsonRequired]
 		//		[DataMember(Order = 5)]
 		public DateTime TimeCreated {
-			get { return (DateTime)Data["_timeCreated"]; }
-			set { Data["_timeCreated"] = value; }
+			get;// { return (DateTime)Data["_timeCreated"]; }
+			set;// { Data["_timeCreated"] = value; }
 		}
 
 		/// <summary>
@@ -114,8 +119,8 @@ namespace Artefacts
 		//		[BsonRequired]
 		//		[DataMember(Order = 6)]
 		public DateTime TimeChecked {
-			get { return (DateTime)Data["_timeChecked"]; }
-			set { Data["_timeChecked"] = value; }
+			get;// { return (DateTime)Data["_timeChecked"]; }
+			set;// { Data["_timeChecked"] = value; }
 		}
 
 		/// <summary>
@@ -124,14 +129,14 @@ namespace Artefacts
 		//		[BsonRequired]
 		//		[DataMember(Order = 7)]
 		public DateTime TimeModified {
-			get { return (DateTime)Data["_timeModified"]; }
-			set { Data["_timeModified"] = value; }
+			get;// { return (DateTime)Data["_timeModified"]; }
+			set;// { Data["_timeModified"] = value; }
 		}
 
 		/// <summary>
 		/// Gets or sets the artefact data.
 		/// </summary>
-//		[BsonExtraElements]
+		[BsonExtraElements]
 //		[DataMember(Order = 8)]
 		public DataDictionary Data {
 			get { return _artefactData ?? (_artefactData = new DataDictionary()); }
@@ -157,18 +162,19 @@ namespace Artefacts
 			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
 			Id = ObjectId.GenerateNewId(TimeCreated).ToString();
 				// ^ if this is only used when d's'ing S'side won't this new ID be useless??
-			State = ArtefactState.Unknown;
-			Data = new DataDictionary();
-			PersistedData = new DataDictionary();
+//			State = ArtefactState.Unknown;
+//			Data = new DataDictionary();
+//			PersistedData = new DataDictionary();
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
 		/// <param name="instance">Instance.</param>
-		public Artefact(object instance) : this()
+		public Artefact(object instance, ArtefactsClient client = null) : this()
 		{
 			State = ArtefactState.Created;
+			_client = client;
 			if (instance == null)
 				throw new ArgumentNullException("value");
 			if (!instance.GetType().IsClass)
@@ -196,8 +202,8 @@ namespace Artefacts
 		[OnDeserializing]
 		private void OnDeserializing()
 		{
-			Data = new DataDictionary();
-			PersistedData = new DataDictionary();
+//			Data = new DataDictionary();
+//			PersistedData = new DataDictionary();
 			//			Id = ObjectId.GenerateNewId().ToString();
 			//			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
 		}
@@ -299,11 +305,13 @@ namespace Artefacts
 		#region DynamicObject overrides
 		/// <summary>
 		/// Gets the dynamic member names.
-		/// </summary>
+		/// </summary>=
 		/// <returns>The dynamic member names.</returns>
 		public override IEnumerable<string> GetDynamicMemberNames()
 		{
-			return Data.Keys;
+			List<string> names = new List<string>(Data.Keys);
+			names.AddRange(PersistedData.Keys);
+			return names;
 		}
 
 		/// <summary>
@@ -330,7 +338,15 @@ namespace Artefacts
 		/// </remarks>
 		public override bool TrySetMember(SetMemberBinder binder, object value)
 		{
-			Data[binder.Name] = value;
+			try {	// not sure if I really need this, just randomly thought i'd try it out?
+				if (Data.ContainsKey(binder.Name) && Data[binder.Name] != value)
+					State = ArtefactState.Modified;
+				Data[binder.Name] = value;
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
 			return true;
 		}
 

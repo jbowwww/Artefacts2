@@ -63,17 +63,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Artefact.cs" />
-    <Compile Include="Host.cs" />
-    <Compile Include="TextBufferWriter.cs" />
-    <Compile Include="DataDictionary.cs" />
-    <Compile Include="ArtefactState.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <ProjectReference Include="..\Extensions\Extensions.csproj">
-      <Project>{6A55914A-9A15-4190-9F31-C2B6EE5FD095}</Project>
-      <Name>Extensions</Name>
-    </ProjectReference>
-  </ItemGroup>
 </Project>

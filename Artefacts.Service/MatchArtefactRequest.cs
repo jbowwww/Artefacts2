@@ -11,6 +11,7 @@ using Serialize.Linq.Serializers;
 using Serialize.Linq;
 using Serialize.Linq.Nodes;
 using Serialize.Linq.Extensions;
+using Serialize.Linq.Interfaces;
 
 namespace Artefacts.Service
 {
@@ -18,6 +19,11 @@ namespace Artefacts.Service
 	[Route("/artefacts/{Data}", "GET")]
 	public class MatchArtefactRequest
 	{
+		static private ExpressionVisitor _expressionVisitor = new ClientQueryVisitor();
+
+		private ITextSerializer _serializer = null;
+		private ExpressionVisitor _visitor = null;
+		
 		[DataMember(Order=1)]
 		public string Data { get; set; }
 		
@@ -28,12 +34,18 @@ namespace Artefacts.Service
 			}
 			set
 			{
-				Data = value.ToExpressionNode().ToJson<ExpressionNode>();
-					new JsonSerializer().Serialize<ExpressionNode>(value.ToExpressionNode());
+				Data = _serializer.Serialize(_visitor.Visit(value).ToExpressionNode());
+				//.ToJson<ExpressionNode>();
+				//	new JsonSerializer().Serialize<ExpressionNode>(value.ToExpressionNode());
 			}
 		}
 		
-		public MatchArtefactRequest() {}
+		public MatchArtefactRequest(Expression match = null, ExpressionVisitor visitor = null, ITextSerializer serializer = null)
+		{
+			this._serializer = serializer ?? new JsonSerializer();
+			this._visitor = visitor ?? _expressionVisitor;	// new ClientQueryVisitor();
+			this.Match = match ?? Expression.Default(typeof(bool));
+		}
 	}
 }
 

@@ -30,14 +30,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="String.cs" />
-    <Compile Include="MemberInfo.cs" />
-    <Compile Include="Exception.cs" />
-    <Compile Include="Expression.cs" />
-    <Compile Include="Object.cs" />
-    <Compile Include="Type.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Reference Include="System.Core" />
     <Reference Include="Serialize.Linq">
       <HintPath>..\..\..\..\Resources\CS\Serialize.Linq\src\Serialize.Linq\bin\Debug\Serialize.Linq.dll</HintPath>

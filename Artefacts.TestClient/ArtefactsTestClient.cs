@@ -93,7 +93,7 @@ namespace Artefacts.TestClient
 			}
 		}
 
-		[Test]
+//		[Test]
 		public void PutArtefact()
 		{
 			DoClientPut(_artefact, "_artefact");
