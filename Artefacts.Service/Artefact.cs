@@ -8,10 +8,12 @@ using ServiceStack.Text.Json;
 using MongoDB.Bson;
 using System.Collections;
 using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson.Serialization.Serializers;
 using ServiceStack;
 using System.Text;
 using ServiceStack.Text;
 using Artefacts.Service;
+using MongoDB.Bson.Serialization;
 
 namespace Artefacts
 {
@@ -32,12 +34,22 @@ namespace Artefacts
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
 	
-//	[DataContract]
+	[DataContract]
 //	[CollectionDataContract]
 //	[Route("/{Collection}/{Name}")]
 //	[BsonDictionaryOptions]
+//	[BsonSerializer(typeof(TypeSerializer))]//ObjectSerializer))]
 	public class Artefact : DynamicObject, IConvertibleToBsonDocument//, IDictionary<string, object>
-	{	
+	{
+//		static Artefact()
+//		{
+//			BsonClassMap.RegisterClassMap<Artefact>(
+//				classMap => {
+//					classMap.MapIdMember<ObjectId>((a) => a.Id);
+//				});
+////					>((a) => a.Uri);//.MapExtraElementsProperty("Data");
+//		}
+		
 		#region Fields & Properties
 		private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
 		private DataDictionary _artefactData;
@@ -51,10 +63,14 @@ namespace Artefacts
 		/// </summary>
 				[BsonId, BsonRepresentation(BsonType.String)]
 		//		[DataMember(Order = 1)]
-		public string Id {
-			get { return (string)Data["_id"]; }
-			set { Data["_id"] = value; }
+		public ObjectId Id {
+			get { return Data.ContainsKey("_id") ? ObjectId.Parse((string)Data["_id"]) : ObjectId.Parse((string)PersistedData["_id"]); }
+			set { Data["_id"] = value.ToString(); }
 		}
+//		public string /*ObjectId*/ Id {
+//			get { return Data.ContainsKey("_id") ? (string)/*(ObjectId)*/Data["_id"] : (string)/*(ObjectId)*/PersistedData["_id"]; }
+//			set { Data["_id"] = value; }
+//		}
 
 //		[DataMember(Order = 4)]
 		public string Uri {
@@ -107,7 +123,9 @@ namespace Artefacts
 		/// Gets or sets the time created.
 		/// </summary>
 		//		[BsonRequired]
-		//		[DataMember(Order = 5)]
+		
+		[BsonDateTimeOptions(Representation = BsonType.String)]
+//		[DataMember(Order = 5)]
 		public DateTime TimeCreated {
 			get;// { return (DateTime)Data["_timeCreated"]; }
 			set;// { Data["_timeCreated"] = value; }
@@ -118,6 +136,7 @@ namespace Artefacts
 		/// </summary>
 		//		[BsonRequired]
 		//		[DataMember(Order = 6)]
+		[BsonDateTimeOptions(Representation = BsonType.String)]
 		public DateTime TimeChecked {
 			get;// { return (DateTime)Data["_timeChecked"]; }
 			set;// { Data["_timeChecked"] = value; }
@@ -128,6 +147,7 @@ namespace Artefacts
 		/// </summary>
 		//		[BsonRequired]
 		//		[DataMember(Order = 7)]
+		[BsonDateTimeOptions(Representation = BsonType.String)]
 		public DateTime TimeModified {
 			get;// { return (DateTime)Data["_timeModified"]; }
 			set;// { Data["_timeModified"] = value; }
@@ -147,6 +167,7 @@ namespace Artefacts
 		/// Gets or sets the persisted data.
 		/// </summary>
 		/// <value>The persisted data.</value>
+		[BsonIgnore]
 		public DataDictionary PersistedData {
 			get { return _persistedData ?? (_persistedData = new DataDictionary()); }
 			set { _persistedData = new DataDictionary(value); }
@@ -160,7 +181,7 @@ namespace Artefacts
 		public Artefact()
 		{
 			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
-			Id = ObjectId.GenerateNewId(TimeCreated).ToString();
+			Id = ObjectId.GenerateNewId(TimeCreated);//.ToString();
 				// ^ if this is only used when d's'ing S'side won't this new ID be useless??
 //			State = ArtefactState.Unknown;
 //			Data = new DataDictionary();
@@ -181,6 +202,15 @@ namespace Artefacts
 				throw new ArgumentOutOfRangeException("value", "Not a class type");
 			if (instance != null)
 				SetInstance(instance);
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
+		/// </summary>
+		/// <param name="data">Data.</param>
+		internal Artefact(DataDictionary data)
+		{
+			PersistedData = data;
 		}
 		#endregion
 
@@ -229,15 +259,15 @@ namespace Artefacts
 		/// </remarks>
 		private int SetInstance(object instance)
 		{
-			if (instance == null)
-				throw new ArgumentNullException("instance");
+//			if (instance == null)
+//				throw new ArgumentNullException("instance");
 			foreach (MemberInfo member in instance.GetType().GetMembers(_bindingFlags)
 			         .Where((mi) =>
 			       mi.MemberType == MemberTypes.Field ||
 			       mi.MemberType == MemberTypes.Property))
 			{
 				object value = member.GetPropertyOrField(instance);
-				Type valueType = value.GetType();
+				Type valueType = value != null ? value.GetType() : typeof(object);
 				//				if (value != null && valueType.IsClass()
 				//				 &&	valueType != typeof(string)
 				//				 &&	valueType != typeof(DateTime)

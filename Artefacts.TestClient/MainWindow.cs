@@ -60,7 +60,11 @@ public partial class MainWindow: Gtk.Window
 	{
 		int width, height;
 		GetSize(out width, out height);
-		vpaned1.Position = height - 128;
+		vpaned1.Position = height - 256;	// = vpaned1.MinPosition
+//		vpaned1.MaxPosition = height - vpaned1.MinPosition;
+		
+		
+		
 	}
 	#endregion
 

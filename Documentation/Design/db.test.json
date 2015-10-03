@@ -1,0 +1,14 @@
+{ "_id" : ObjectId("560e4e19eba14e305a99482e"), "Uri" : "sda", "Collection" :
+null, "Name" : "sda", "State" : 2, "TimeCreated" :
+ISODate("2015-10-02T09:27:53.791Z"), "TimeChecked" :
+ISODate("2015-10-02T09:27:53.791Z"), "TimeModified" :
+ISODate("2015-10-02T09:27:53.791Z"), "_id" :
+ObjectId("560e4e19eba14e305a99482e"), "Serial" : "CVCV4275046Z120BGN", "Name" :
+"sda", "Size" : "120034123776", "Model" : "INTEL_SSDSC2CW120A3", "PersistedData" : {  } } {
+"_id" : ObjectId("560e4e1aeba14e305a994830"), "Uri" : "sdb", "Collection" :
+null, "Name" : "sdb", "State" : 2, "TimeCreated" :
+ISODate("2015-10-02T09:27:54.079Z"), "TimeChecked" :
+ISODate("2015-10-02T09:27:54.079Z"), "TimeModified" :
+ISODate("2015-10-02T09:27:54.079Z"), "_id" :
+ObjectId("560e4e1aeba14e305a994830"), "Serial" : "S2H7JD2Z907350", "Name" :
+"sdb", "Size" : "2000398934016", "Model" : "SAMSUNG_HD204UI", "PersistedData" : {  } }

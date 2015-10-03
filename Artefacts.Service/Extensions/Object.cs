@@ -15,6 +15,13 @@ namespace Artefacts
 	/// </summary>
 	public static class Object_Ext
 	{
+		
+		public static Type GetType(this object o)
+		{
+			return o != null ? o.GetType() : typeof(object);
+		}
+		
+		
 		///
 		internal class FormatStringContext
 		{

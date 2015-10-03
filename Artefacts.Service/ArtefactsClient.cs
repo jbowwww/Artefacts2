@@ -27,18 +27,26 @@ namespace Artefacts.Service
 			_serviceBaseUrl = serviceBaseUrl;
 			_bufferWriter.Write(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_serviceClient = new ServiceStack.JsonServiceClient(_serviceBaseUrl) {
-				RequestFilter = (HttpWebRequest request) => bufferWriter.Write(
-					string.Format("\nClient.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}\n",
+				RequestFilter = (HttpWebRequest request) => {
+//					Stream bStream = new BufferedStream(request.GetRequestStream());
+					bufferWriter.Write(
+						string.Format("\nClient.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}\n{9}\n",
 				              request.Method, request.ContentType,  request.ContentLength,
 				              request.UserAgent, request.MediaType, request.RequestUri,
-				              request.ProtocolVersion, request.Expect, request.Accept)),
+				              request.ProtocolVersion, request.Expect, request.Accept,
+						string.Format("\tHeaders: {0}", request.Headers.ToString()),
+						request.Method == "GET" ? string.Empty : string.Format("\tBody: {0}", request.ToString())));//request.GetRequestStream()..ReadLines().Join("\n"))
+				/* "--not implemented--" /*bStream.ReadLines().Join("\n")*/// ));
+				},
+//				              request.ContentLength != 0 ? string.Empty
+//				              : string.Format("\tBody: {0}", request.GetRequestStream().ReadAsync(.ToString()))),
 				ResponseFilter = (HttpWebResponse response) => bufferWriter.Write(
 					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}: {6}\n",
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 				              response.ContentEncoding, response.ContentType, response.ContentLength,
 				              response.ReadToEnd())) };
 //			JsConfig<Expression>.SerializeFn = e => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).SerializeText(e);
-			JsConfig<Artefact>.SerializeFn = a => a.Data.SerializeToString();
+			JsConfig<Artefact>.SerializeFn = a => a.Data.SerializeToString();	//a.ToBsonDocument();
 			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJson<DataDictionary>() };
 			bufferWriter.Write("OK\n");
 		}
