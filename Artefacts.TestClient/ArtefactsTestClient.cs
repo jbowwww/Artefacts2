@@ -50,7 +50,7 @@ namespace Artefacts.TestClient
 				testBool = false
 			});//, testObjArray = new object[] { false, 2, "three", null } });
 			bufferWriter.WriteLine("\tJSON: " + ServiceStack.StringExtensions.ToJson(_artefact));
-			bufferWriter.WriteLine("\tBSON: " + _artefact.ToBsonDocument());
+		//	bufferWriter.WriteLine("\tBSON: " + _artefact.ToBsonDocument());
 			bufferWriter.WriteLine();
 		}
 
@@ -93,7 +93,7 @@ namespace Artefacts.TestClient
 			}
 		}
 
-//		[Test]
+		[Test]
 		public void PutArtefact()
 		{
 			DoClientPut(_artefact, "_artefact");

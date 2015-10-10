@@ -30,7 +30,7 @@ namespace Artefacts
 			public object Current;
 			public Hashtable FormattedObjects = new Hashtable();
 			public int MaxDepth = 2;
-			public int OutputWidth = Console.WindowWidth;
+			public int OutputWidth = Console.BufferWidth/*WindowWidth*/ == 0 ? 80 : Console.BufferWidth;//.OutputWidth;
 			public int IndentLevel = 0;
 			public string IndentString = "   ";
 			public string Indent { get { return IndentString.Repeat(IndentLevel); } }

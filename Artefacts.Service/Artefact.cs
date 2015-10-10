@@ -4,16 +4,13 @@ using System.Dynamic;
 using System.Reflection;
 using System.Linq;
 using System.Runtime.Serialization;
-using ServiceStack.Text.Json;
 using MongoDB.Bson;
-using System.Collections;
 using MongoDB.Bson.Serialization.Attributes;
-using MongoDB.Bson.Serialization.Serializers;
 using ServiceStack;
-using System.Text;
 using ServiceStack.Text;
+using System.Text;
 using Artefacts.Service;
-using MongoDB.Bson.Serialization;
+using System.Diagnostics;
 
 namespace Artefacts
 {
@@ -34,21 +31,25 @@ namespace Artefacts
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
 	
-	[DataContract]
+//	[DataContract]
 //	[CollectionDataContract]
 //	[Route("/{Collection}/{Name}")]
 //	[BsonDictionaryOptions]
-//	[BsonSerializer(typeof(TypeSerializer))]//ObjectSerializer))]
-	public class Artefact : DynamicObject, IConvertibleToBsonDocument//, IDictionary<string, object>
+//	[BsonSerializer(typeof(ServiceStack.Text.TypeSerializer))]//ObjectSerializer))]
+	public class Artefact : DynamicObject, IConvertibleToBsonDocument	//, IDictionary<string, object>
 	{
-//		static Artefact()
-//		{
+		static Artefact()
+		{
+		// Mongo classmap setup
 //			BsonClassMap.RegisterClassMap<Artefact>(
 //				classMap => {
 //					classMap.MapIdMember<ObjectId>((a) => a.Id);
 //				});
-////					>((a) => a.Uri);//.MapExtraElementsProperty("Data");
-//		}
+//					>((a) => a.Uri);//.MapExtraElementsProperty("Data");
+//		// SS classmap setup?
+			JsConfig.TryToParsePrimitiveTypeValues = true;
+			JsConfig.TryToParseNumericType = true;
+		}
 		
 		#region Fields & Properties
 		private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
@@ -61,18 +62,15 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the identifier.
 		/// </summary>
-				[BsonId, BsonRepresentation(BsonType.String)]
-		//		[DataMember(Order = 1)]
+//		[BsonId]	//, BsonRepresentation(BsonType.String)]
+//		[DataMember(Order = 1)]
 		public ObjectId Id {
-			get { return Data.ContainsKey("_id") ? ObjectId.Parse((string)Data["_id"]) : ObjectId.Parse((string)PersistedData["_id"]); }
-			set { Data["_id"] = value.ToString(); }
+			get;// { return Data.ContainsKey("_id") ? ObjectId.Parse((string)Data["_id"]) : ObjectId.Parse((string)PersistedData["_id"]); }
+			set ;//{ Data["_id"] = value.ToString(); }
 		}
-//		public string /*ObjectId*/ Id {
-//			get { return Data.ContainsKey("_id") ? (string)/*(ObjectId)*/Data["_id"] : (string)/*(ObjectId)*/PersistedData["_id"]; }
-//			set { Data["_id"] = value; }
-//		}
 
 //		[DataMember(Order = 4)]
+//		[BsonRequired]
 		public string Uri {
 			get
 			{
@@ -95,7 +93,8 @@ namespace Artefacts
 		/// Gets the "primary key" data member in the artefact, used to test artefacts already in the repo
 		/// with client instances for equality/equivalence.
 		/// </summary>
-		//		[DataMember(Order = 2)]
+//		[BsonRequired]
+//		[DataMember(Order = 2)]
 		public string Name {
 			get
 			{
@@ -114,6 +113,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets the <see cref="ArtefactState"/> of this artefact
 		/// </summary>
+//		[BsonRequired]
 		public ArtefactState State {
 			get;
 			set;
@@ -122,9 +122,8 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time created.
 		/// </summary>
-		//		[BsonRequired]
-		
-		[BsonDateTimeOptions(Representation = BsonType.String)]
+//		[BsonRequired]
+//		[BsonDateTimeOptions(Representation = BsonType.String)]
 //		[DataMember(Order = 5)]
 		public DateTime TimeCreated {
 			get;// { return (DateTime)Data["_timeCreated"]; }
@@ -134,9 +133,9 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time checked.
 		/// </summary>
-		//		[BsonRequired]
-		//		[DataMember(Order = 6)]
-		[BsonDateTimeOptions(Representation = BsonType.String)]
+//				[BsonRequired]
+//				[DataMember(Order = 6)]
+//		[BsonDateTimeOptions(Representation = BsonType.String)]
 		public DateTime TimeChecked {
 			get;// { return (DateTime)Data["_timeChecked"]; }
 			set;// { Data["_timeChecked"] = value; }
@@ -145,9 +144,9 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time modified.
 		/// </summary>
-		//		[BsonRequired]
-		//		[DataMember(Order = 7)]
-		[BsonDateTimeOptions(Representation = BsonType.String)]
+//				[BsonRequired]
+//				[DataMember(Order = 7)]
+//		[BsonDateTimeOptions(Representation = BsonType.String)]
 		public DateTime TimeModified {
 			get;// { return (DateTime)Data["_timeModified"]; }
 			set;// { Data["_timeModified"] = value; }
@@ -156,8 +155,9 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the artefact data.
 		/// </summary>
-		[BsonExtraElements]
+//		[BsonExtraElements]
 //		[DataMember(Order = 8)]
+		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		public DataDictionary Data {
 			get { return _artefactData ?? (_artefactData = new DataDictionary()); }
 			set { _artefactData = new DataDictionary(value); }
@@ -167,7 +167,8 @@ namespace Artefacts
 		/// Gets or sets the persisted data.
 		/// </summary>
 		/// <value>The persisted data.</value>
-		[BsonIgnore]
+//		[BsonIgnore]
+		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
 		public DataDictionary PersistedData {
 			get { return _persistedData ?? (_persistedData = new DataDictionary()); }
 			set { _persistedData = new DataDictionary(value); }
@@ -203,15 +204,6 @@ namespace Artefacts
 			if (instance != null)
 				SetInstance(instance);
 		}
-		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
-		/// </summary>
-		/// <param name="data">Data.</param>
-		internal Artefact(DataDictionary data)
-		{
-			PersistedData = data;
-		}
 		#endregion
 
 		#region Data handling
@@ -232,10 +224,7 @@ namespace Artefacts
 		[OnDeserializing]
 		private void OnDeserializing()
 		{
-//			Data = new DataDictionary();
-//			PersistedData = new DataDictionary();
-			//			Id = ObjectId.GenerateNewId().ToString();
-			//			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+			// TODO: TimeRetrieved
 		}
 
 		/// <summary>
@@ -259,6 +248,7 @@ namespace Artefacts
 		/// </remarks>
 		private int SetInstance(object instance)
 		{
+//			SerializationInfo;
 //			if (instance == null)
 //				throw new ArgumentNullException("instance");
 			foreach (MemberInfo member in instance.GetType().GetMembers(_bindingFlags)
@@ -328,7 +318,21 @@ namespace Artefacts
 		/// <remarks><see cref="IConvertibleToBsonDocument"/> implementation</remarks>
 		public BsonDocument ToBsonDocument()
 		{
-			return new BsonDocument(Data);
+			BsonDocument document = new BsonDocument();
+			foreach (KeyValuePair<string, object> data in Data)
+			{
+				object value = data.Value;
+				Type valueType = value != null ? value.GetType() : typeof(object);
+				BsonValue bsonValue;
+				if (valueType == typeof(long))
+					bsonValue = BsonInt64.Create(value);
+				else if (valueType == typeof(int))
+					bsonValue = BsonInt32.Create(value);
+				else
+					bsonValue = BsonValue.Create(value);
+				document.Add(data.Key, bsonValue);
+			}
+			return document;
 		}
 		#endregion
 

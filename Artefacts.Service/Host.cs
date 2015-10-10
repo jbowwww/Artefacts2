@@ -89,6 +89,11 @@ namespace Artefacts
 		}
 		#endregion
 		
+		public override int GetHashCode()
+		{
+			return HostId.GetHashCode();
+		}
+		
 		public override string ToString()
 		{
 			return HostId;// string.Format("[Host: HostId={0}, Machine={1}, Domain={2}, ConnectionId={3}, Connected={4}, ConnectTime={5}, ConnectionAge={6}]", HostId, Machine, Domain, ConnectionId, Connected, ConnectTime, ConnectionAge);

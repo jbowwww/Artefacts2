@@ -34,9 +34,9 @@ namespace Artefacts.Service
 				              request.Method, request.ContentType,  request.ContentLength,
 				              request.UserAgent, request.MediaType, request.RequestUri,
 				              request.ProtocolVersion, request.Expect, request.Accept,
-						string.Format("\tHeaders: {0}", request.Headers.ToString()),
-						request.Method == "GET" ? string.Empty : string.Format("\tBody: {0}", request.ToString())));//request.GetRequestStream()..ReadLines().Join("\n"))
-				/* "--not implemented--" /*bStream.ReadLines().Join("\n")*/// ));
+							string.Format("\tHeaders: {0}", request.Headers.ToString())));
+//						request.Method == "GET" ? string.Empty : string.Format("\tBody: {0}", request.ToString())));//request.GetRequestStream()..ReadLines().Join("\n"))
+//				/* "--not implemented--" /*bStream.ReadLines().Join("\n")*/// ));
 				},
 //				              request.ContentLength != 0 ? string.Empty
 //				              : string.Format("\tBody: {0}", request.GetRequestStream().ReadAsync(.ToString()))),
@@ -44,10 +44,12 @@ namespace Artefacts.Service
 					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}: {6}\n",
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 				              response.ContentEncoding, response.ContentType, response.ContentLength,
-				              response.ReadToEnd())) };
+				              response.ReadToEnd()))
+			};
 //			JsConfig<Expression>.SerializeFn = e => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).SerializeText(e);
-			JsConfig<Artefact>.SerializeFn = a => a.Data.SerializeToString();	//a.ToBsonDocument();
-			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJson<DataDictionary>() };
+			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJsv();//.SerializeToString();	//a.ToBsonDocument();
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };
+			
 			bufferWriter.Write("OK\n");
 		}
 		

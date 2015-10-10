@@ -35,40 +35,20 @@ namespace Artefacts.Service
 			
 			// ServiceStack setup
 //			JsConfig<Expression>.DeSerializeFn = s => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).DeserializeText(s);
-			JsConfig<Artefact>.SerializeFn = a => a.Data.SerializeToString();
-			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJson<DataDictionary>() };
+		JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a.Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
 
 			// Storage (Mongo) setup
-			_mClientSettings = new MongoClientSettings() { };
-			
-			// TODO: Settings
+			_mClientSettings = new MongoClientSettings() { };		// TODO: Settings
 			_mClient = new MongoClient("server=localhost");
-//			_output.Write(_mClient.ToString());//.Dump());
-//			_mClient.Settings.ConvertTo<>();
+			_output.WriteLine("mClient: " + _mClient.ToString());//.FormatString(3, "  "));//.Dump());
 			_mDb = new MongoDatabase(_mClient.GetServer(), "Artefacts", new MongoDatabaseSettings());
 			
 			_mcArtefacts = _mDb.GetCollection<Artefact>("Artefacts");
-			
+			MongoCollection c;
 			
 			
 		}
-		
-		
-//		public object Put(DataDictionary data)
-//		{
-//			try
-//			{
-//				_output.WriteLine("DataDictionary data: " + data.Dump());
-//				return null;
-//			}
-//
-//			catch (Exception ex)
-//			{
-//				_output.WriteLine(ex.ToString());
-//			}
-//			return null;
-//			//			return default(HttpWebResponse);e
-//		}
 
 		public object Put(Artefact artefact)
 		{
@@ -76,8 +56,13 @@ namespace Artefacts.Service
 			{
 				_output.WriteLine("Artefact artefact: " + artefact.ToString());
 				artefact.State = ArtefactState.Current;
-				WriteConcernResult result = _mcArtefacts.Insert(
-					artefact);
+				// TODO: Look at inserting into Mongo using JSON received as service?
+//				Request.GetRawBody(
+//				BsonDocument.Parse();
+				
+				WriteConcernResult result = // _mcArtefacts.Insert(artefact);
+//				_mcArtefacts.Insert<DataDictionary>(artefact.Data);
+					_mcArtefacts.Insert<BsonDocument>(BsonDocument.Create(artefact.Data));
 				return result.ToString();//.SerializeToString();
 			}
 
