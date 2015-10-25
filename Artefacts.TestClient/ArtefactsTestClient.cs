@@ -41,7 +41,7 @@ namespace Artefacts.TestClient
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 				              response.ContentEncoding, response.ContentType, response.ContentLength,
 				              response.ReadToEnd())) };
-			bufferWriter.WriteLine("OK\n");
+			bufferWriter.WriteLine(_client.ToString());
 			bufferWriter.WriteLine("Creating test Artefact ... ");
 			_artefact = new Artefact(new {
 				Name = "Test",
@@ -50,7 +50,7 @@ namespace Artefacts.TestClient
 				testBool = false
 			});//, testObjArray = new object[] { false, 2, "three", null } });
 			bufferWriter.WriteLine("\tJSON: " + ServiceStack.StringExtensions.ToJson(_artefact));
-		//	bufferWriter.WriteLine("\tBSON: " + _artefact.ToBsonDocument());
+			bufferWriter.WriteLine("\tBSON: " + _artefact.ToBsonDocument());
 			bufferWriter.WriteLine();
 		}
 
@@ -93,7 +93,8 @@ namespace Artefacts.TestClient
 			}
 		}
 
-		[Test]
+		#region Old inactive tests
+//		[Test]
 		public void PutArtefact()
 		{
 			DoClientPut(_artefact, "_artefact");
@@ -139,6 +140,7 @@ namespace Artefacts.TestClient
 			foreach (object[] subject in subjects)
 				DoClientPut(subject[0], (string)subject[1]);
 		}
+		#endregion
 
 		/// <summary>
 		/// TODO: Next step needed is expression visitor to remove local variable
@@ -156,10 +158,15 @@ namespace Artefacts.TestClient
 				// and updated it (return some/all differing values??) or it exists but was identical (all properties??)
 				
 				// One possible way
+//				Artefact newDisk = client.Sync<Artefact>(d => (d.Name == disk.Name), () => new Artefact(disk));
 				Disk newDisk = client.Sync<Disk>(d => (d.Name == disk.Name), () => disk);
 				
-				_bufferWriter.WriteLine(newDisk.SerializeAndFormat());
+				_bufferWriter.WriteLine("newDisk = " + newDisk.FormatString());	//.ToJsv());
+					//newDisk.SerializeAndFormat());
 				
+				object testResult = _client.Get<QueryResults>(QueryRequest.Make<Disk>(d => (d.Name == "sda")));
+				;
+//				Artefact oldDisk = client.Sync
 				// Another possible way If Disk implements IEquatable<T>
 //				client.Sync<Disk>(disk);
 				

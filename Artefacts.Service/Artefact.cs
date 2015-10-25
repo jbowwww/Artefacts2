@@ -11,6 +11,7 @@ using ServiceStack.Text;
 using System.Text;
 using Artefacts.Service;
 using System.Diagnostics;
+using MongoDB.Bson.Serialization;
 
 namespace Artefacts
 {
@@ -38,14 +39,16 @@ namespace Artefacts
 //	[BsonSerializer(typeof(ServiceStack.Text.TypeSerializer))]//ObjectSerializer))]
 	public class Artefact : DynamicObject, IConvertibleToBsonDocument	//, IDictionary<string, object>
 	{
+		// TODO: Merge/refactor this code to be grouped with code to config SS's JSON serializer
 		static Artefact()
 		{
 		// Mongo classmap setup
-//			BsonClassMap.RegisterClassMap<Artefact>(
-//				classMap => {
-//					classMap.MapIdMember<ObjectId>((a) => a.Id);
-//				});
-//					>((a) => a.Uri);//.MapExtraElementsProperty("Data");
+			BsonClassMap.RegisterClassMap<Artefact>(
+				classMap => {
+				classMap.MapIdMember<ObjectId>((a) => a.Id);
+				classMap.MapExtraElementsProperty("Data");
+				});
+//					>((a) => a.Uri);//
 //		// SS classmap setup?
 			JsConfig.TryToParsePrimitiveTypeValues = true;
 			JsConfig.TryToParseNumericType = true;
@@ -153,6 +156,15 @@ namespace Artefacts
 		}
 
 		/// <summary>
+		/// Timestamp when last this <see cref="Artefact"/> was saved/sent to server
+		/// </summary>
+		/// <value>The time saved.</value>
+		public DateTime TimeSaved {
+			get;
+			set;
+		}
+		
+		/// <summary>
 		/// Gets or sets the artefact data.
 		/// </summary>
 //		[BsonExtraElements]
@@ -184,7 +196,7 @@ namespace Artefacts
 			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
 			Id = ObjectId.GenerateNewId(TimeCreated);//.ToString();
 				// ^ if this is only used when d's'ing S'side won't this new ID be useless??
-//			State = ArtefactState.Unknown;
+			State = ArtefactState.Unknown;
 //			Data = new DataDictionary();
 //			PersistedData = new DataDictionary();
 		}
@@ -210,6 +222,7 @@ namespace Artefacts
 		/// <summary>
 		/// Raises the serialized event.
 		/// </summary>
+		/// <remarks>Used (only) by SS, not MOngo?? </remarks>
 		[OnSerialized]
 		private void OnSerialized()
 		{
@@ -225,6 +238,7 @@ namespace Artefacts
 		private void OnDeserializing()
 		{
 			// TODO: TimeRetrieved
+			;
 		}
 
 		/// <summary>
@@ -276,7 +290,8 @@ namespace Artefacts
 		public T As<T>() where T : new()
 		{
 			T instance = new T();
-			foreach (KeyValuePair<string, object> data in Data)
+			IEnumerable<KeyValuePair<string, object>> combinedData = Data.Concat(PersistedData);
+			foreach (KeyValuePair<string, object> data in combinedData)
 			{
 				if (!data.Key.StartsWith("_"))
 				{
@@ -306,7 +321,8 @@ namespace Artefacts
 		public override string ToString()
 		{
 			StringBuilder sb = new StringBuilder("[Artefact:");
-			foreach (KeyValuePair<string, object> field in Data)
+			IEnumerable<KeyValuePair<string, object>> combinedData = Data.Concat(PersistedData);
+			foreach (KeyValuePair<string, object> field in combinedData)
 				sb.AppendFormat(" {0}={1}", field.Key, field.Value);
 			return sb.Append("]").ToString();
 		}
@@ -319,7 +335,8 @@ namespace Artefacts
 		public BsonDocument ToBsonDocument()
 		{
 			BsonDocument document = new BsonDocument();
-			foreach (KeyValuePair<string, object> data in Data)
+			IEnumerable<KeyValuePair<string, object>> combinedData = Data.Concat(PersistedData);
+			foreach (KeyValuePair<string, object> data in combinedData)
 			{
 				object value = data.Value;
 				Type valueType = value != null ? value.GetType() : typeof(object);

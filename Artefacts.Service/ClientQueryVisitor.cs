@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using System.Collections;
 using System.Collections.ObjectModel;
+using MongoDB.Bson;
 
 namespace Artefacts.Service
 {
@@ -26,16 +27,26 @@ namespace Artefacts.Service
 		protected override Expression VisitMemberAccess(MemberExpression m)
 		{
 			Expression mExpression = Visit(m.Expression);
-			if (mExpression != null && mExpression.NodeType == ExpressionType.Constant && ((ConstantExpression)mExpression).Value != null)
+			if (mExpression != null)
 			{
-				const BindingFlags bf = BindingFlags.GetField | BindingFlags.GetProperty
-				                        | BindingFlags.Instance | BindingFlags.Static
-				                        | BindingFlags.Public | BindingFlags.NonPublic;
-				return Expression.Constant(
-					m.Member.DeclaringType.InvokeMember(
-					m.Member.Name, bf, null,
-					(mExpression as ConstantExpression).Value,
-					new object[] {}), m.Type);
+				if (mExpression.Type.IsAutoClass || (mExpression.NodeType == ExpressionType.Constant && ((ConstantExpression)mExpression).Value != null))
+				{
+					const BindingFlags bf = BindingFlags.GetField | BindingFlags.GetProperty
+						| BindingFlags.Instance | BindingFlags.Static
+						| BindingFlags.Public | BindingFlags.NonPublic;
+					return Expression.Constant(
+						m.Member.DeclaringType.InvokeMember(
+						m.Member.Name, bf, null,
+						(mExpression as ConstantExpression).Value,
+						new object[] { }), m.Type);
+				}
+				// Gets unknown parameter exception - must have to change the local var definition in the lambda as well I guess (too hard? other/better ways?)
+//				else if (mExpression.NodeType == ExpressionType.Parameter)
+//				{
+//					return Expression.Property(
+////						.MakeMemberAccess(
+//						Expression.Parameter(typeof(Artefact)), m.Member.Name);
+//				}
 			}
 			return base.VisitMemberAccess(m);
 		}

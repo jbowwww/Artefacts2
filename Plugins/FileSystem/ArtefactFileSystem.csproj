@@ -120,9 +120,9 @@
     <None Include="Client\FileSystemAgent.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Artefacts.Service\Artefacts.Service.csproj">
-      <Project>{916B70EF-EA98-43E0-A713-6061773C9596}</Project>
-      <Name>Artefacts.Service</Name>
+    <ProjectReference Include="..\..\Artefacts\Artefacts.csproj">
+      <Project>{55514DDE-1ED4-4C4F-B99B-9AB9EF2D2E56}</Project>
+      <Name>Artefacts</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>

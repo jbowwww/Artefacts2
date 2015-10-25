@@ -88,7 +88,6 @@
     <Compile Include="Artefact.cs" />
     <Compile Include="ArtefactState.cs" />
     <Compile Include="DataDictionary.cs" />
-    <Compile Include="Host.cs" />
     <Compile Include="TextBufferWriter.cs" />
     <Compile Include="Extensions\Exception.cs" />
     <Compile Include="Extensions\Expression.cs" />
@@ -96,9 +95,24 @@
     <Compile Include="Extensions\Object.cs" />
     <Compile Include="Extensions\String.cs" />
     <Compile Include="Extensions\Type.cs" />
+    <Compile Include="QueryResults.cs" />
+    <Compile Include="QueryRequest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Extensions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="QueryBuilderVisitor.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Plugins\FileSystem\ArtefactFileSystem.csproj">
+      <Project>{5B486604-0B8B-4214-99DB-C36A69168F5B}</Project>
+      <Name>ArtefactFileSystem</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Artefacts\Artefacts.csproj">
+      <Project>{55514DDE-1ED4-4C4F-B99B-9AB9EF2D2E56}</Project>
+      <Name>Artefacts</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

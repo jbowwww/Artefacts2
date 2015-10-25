@@ -6,6 +6,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Collections.Generic;
 using ServiceStack.Text;
+using MongoDB.Driver;
+using MongoDB.Driver.Builders;
+using MongoDB.Bson;
 
 namespace Artefacts.Service
 {
@@ -26,11 +29,11 @@ namespace Artefacts.Service
 			_bufferWriter = bufferWriter;
 			_serviceBaseUrl = serviceBaseUrl;
 			_bufferWriter.Write(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
-			_serviceClient = new ServiceStack.JsonServiceClient(_serviceBaseUrl) {
+			_serviceClient = new ServiceStack.JsvServiceClient(_serviceBaseUrl) {
 				RequestFilter = (HttpWebRequest request) => {
 //					Stream bStream = new BufferedStream(request.GetRequestStream());
 					bufferWriter.Write(
-						string.Format("\nClient.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}\n{9}\n",
+						string.Format("\nClient.{0} HTTP {6} {2} bytes {1} Expect {7} Accept {8} {5}\n",//\n{9}\n",
 				              request.Method, request.ContentType,  request.ContentLength,
 				              request.UserAgent, request.MediaType, request.RequestUri,
 				              request.ProtocolVersion, request.Expect, request.Accept,
@@ -41,18 +44,43 @@ namespace Artefacts.Service
 //				              request.ContentLength != 0 ? string.Empty
 //				              : string.Format("\tBody: {0}", request.GetRequestStream().ReadAsync(.ToString()))),
 				ResponseFilter = (HttpWebResponse response) => bufferWriter.Write(
-					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}: {6}\n",
+					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}\n",
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
-				              response.ContentEncoding, response.ContentType, response.ContentLength,
-				              response.ReadToEnd()))
+				              response.ContentEncoding, response.ContentType, response.ContentLength))
+//				              response.ReadToEnd())),	// reading stream makes it unavailable for SS??
 			};
 //			JsConfig<Expression>.SerializeFn = e => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).SerializeText(e);
-			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJsv();//.SerializeToString();	//a.ToBsonDocument();
-			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };
+//			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJson();//.SerializeToString();	//a.ToBsonDocument();
+//			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };
+			
+			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a.Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { PersistedData = a.FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
+//			JsConfig<QueryDocument>.SerializeFn = q => StringExtensions.ToJsv<QueryDocument>(q);//q.ToJson(); //((BsonDocument)q).AsByteArray;
+//			JsConfig<QueryDocument>.DeSerializeFn = q => q.FromJsv<QueryDocument>();
+//			JsConfig<IMongoQuery>.SerializeFn = q => StringExtensions.ToJsv<IMongoQuery>(q);//q.ToJson(); //((BsonDocument)q).AsByteArray;
+//			JsConfig<IMongoQuery>.DeSerializeFn = q => q.FromJsv<QueryDocument>();
 			
 			bufferWriter.Write("OK\n");
 		}
 		
+		/// <summary>
+		/// Gets the <see cref="Artefact"/> associated with this instance, or creates a new one
+		/// Note creatinga  new <see cref="Artefact"/> instance does not create one on the server necessarily,
+		/// it may use the new instance to retrieve pre-existing data.
+		/// </summary>
+		/// <returns>The pre-existing or newly created artefact.</returns>
+		/// <param name="instance">Instance.</param>
+		public Artefact GetOrCreateArtefact(object instance)
+		{
+			if (!_artefacts.ContainsKey(instance))
+			{
+				Artefact newArtefact = new Artefact(instance, this);
+				_artefacts[instance] = newArtefact;
+			}
+			return _artefacts[instance];
+		}
+		
+		/// 
 		/// <summary>
 		/// Gets or creates an artefact 
 		/// Haven't decided return type yet (SS DTO? Some sanitised/interpreted result based on DTO obtained in this method?)
@@ -76,10 +104,11 @@ namespace Artefacts.Service
 				throw new ArgumentNullException("create");
 			if (match == null)
 				throw new ArgumentNullException("match");
-			
-			string collectionName = typeof(T).FullName;
-			MatchArtefactRequest request = new MatchArtefactRequest(match);
-			Artefact artefact = _serviceClient.Get<Artefact>(request);
+//			QueryDocument query = (QueryDocument) Query<T>.Where(match);
+//			string collectionName = typeof(T).FullName;
+				MatchArtefactRequest query = new MatchArtefactRequest(match);
+//			Artefact artefact = _serviceClient.Get<Artefact>(request);
+			Artefact artefact = _serviceClient.Get<Artefact>(query);//.FirstOrDefault();
 			if (artefact == null)
 				artefact = new Artefact(create != null ? create() : default(T), this) {
 					Collection = typeof(T).Name		// TODO: <-- ? Manually use T.name in URL which becomes the collection name on server side
@@ -91,7 +120,7 @@ namespace Artefacts.Service
 			return instance;
 		}
 		
-		/// <summary>
+		///<summary>
 		/// Gets or creates an artefact 
 		/// Haven't decided return type yet (SS DTO? Some sanitised/interpreted result based on DTO obtained in this method?)
 		/// </summary>
@@ -104,7 +133,13 @@ namespace Artefacts.Service
 		/// </returns>
 		public bool Sync<T>(T instance)
 		{
-			Artefact artefact = GetArtefact(instance);
+			Artefact artefact = GetOrCreateArtefact(instance);
+			return Sync(artefact);
+		}
+		
+		
+		public bool Sync(Artefact artefact)
+		{
 			
 			return false;
 		}
@@ -120,30 +155,6 @@ namespace Artefacts.Service
 		{
 
 			return null;
-		}
-		
-		/// <summary>
-		/// Gets or creates an artefact 
-		/// Haven't decided return type yet (SS DTO? Some sanitised/interpreted result based on DTO obtained in this method?)
-		/// </summary>
-		/// <param name="identify">Identify.</param>
-		/// <param name="create">Create.</param>
-		/// <typeparam name="T">The 1st type parameter.</typeparam>
-//		public T Sync<T>(Create<T> create)
-//		{
-//			
-//		}
-		
-		/// <summary>
-		/// Gets the <see cref="Artefact"/> associated with this instance
-		/// </summary>
-		/// <returns>The artefact.</returns>
-		/// <param name="instance">Instance.</param>
-		public Artefact GetArtefact(object instance)
-		{
-			return _artefacts.ContainsKey(instance) ?
-				_artefacts[instance]
-			:	(_artefacts[instance] = new Artefact(instance, this));
 		}
 	}
 }

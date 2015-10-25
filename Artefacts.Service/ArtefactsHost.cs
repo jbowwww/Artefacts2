@@ -13,6 +13,8 @@ using System.Dynamic;
 using System.Text;
 using System.Threading;
 using Serialize.Linq.Nodes;
+using System.Linq.Expressions;
+using MongoDB.Driver;
 
 namespace Artefacts.Service
 {
@@ -62,13 +64,18 @@ namespace Artefacts.Service
 		/// </summary>
 		public ArtefactsHost(TextWriter output)
 			: base("Artefacts",
-			       typeof(ArtefactsService).Assembly)
+			       typeof(ArtefactsService).Assembly,
 //			       typeof(Artefact).Assembly,
+			       typeof(Func<>).Assembly,
 //			       typeof(Dictionary<string,object>).Assembly,
 //			typeof(BsonDocument).Assembly,
 //			       typeof(DynamicObject).Assembly,
-//			typeof(ExpressionNode).Assembly,
-//			typeof(Artefacts.FileSystem.Disk).Assembly)
+			typeof(ExpressionNode).Assembly,
+			       typeof(IMongoQuery).Assembly,
+			       typeof(BsonDocument).Assembly,
+			       typeof(Expression).Assembly,
+			       typeof(Artefacts.Host).Assembly,
+			typeof(Artefacts.FileSystem.Disk).Assembly)
 		{
 			_output = output;
 //			JsConfig.ConvertObjectTypesIntoStringDictionary = true;
@@ -112,6 +119,7 @@ namespace Artefacts.Service
 			
 			container.Register<ArtefactsService>(new ArtefactsService(_output));
 //			this.Routes
+//				.Add<Artefact>("/artefacts/
 //				.Add<Artefact>("/artefacts", ApplyTo.Put)
 ////						.Add<dynamic>("/artefacts", ApplyTo.Put)
 //

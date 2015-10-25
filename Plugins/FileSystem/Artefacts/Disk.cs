@@ -119,7 +119,9 @@ namespace Artefacts.FileSystem
 			if (!typeof(Disk).IsAssignableFrom(obj.GetType()))
 				return false;
 			Disk d = (Disk)obj;
-			return Host == Host.Current && string.Equals(Name, d.Name);
+//			return Host == Host.Current && string.Equals(Name, d.Name);
+//			return string.Equals(Name, d.Name);
+			return string.Equals(Serial, d.Serial);
 		}
 
 		/// <summary>
