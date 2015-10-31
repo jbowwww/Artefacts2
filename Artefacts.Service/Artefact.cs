@@ -54,16 +54,17 @@ namespace Artefacts
 			JsConfig.TryToParseNumericType = true;
 		}
 		
-		#region Fields & Properties
+		#region Private fields
 		private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
 		private DataDictionary _artefactData;
 		private DataDictionary _persistedData;
 		private string _uri = null;
-		
 		private ArtefactsClient _client = null;
+		#endregion
 		
+		#region Fields & Properties
 		/// <summary>
-		/// Gets or sets the identifier.
+		/// Gets or sets the artefact's identifier.
 		/// </summary>
 //		[BsonId]	//, BsonRepresentation(BsonType.String)]
 //		[DataMember(Order = 1)]
@@ -72,20 +73,26 @@ namespace Artefacts
 			set ;//{ Data["_id"] = value.ToString(); }
 		}
 
+		/// <summary>
+		/// Gets or sets the artefact's URI
+		/// </summary>
 //		[DataMember(Order = 4)]
 //		[BsonRequired]
-		public string Uri {
-			get
-			{
-				return _uri ?? (_uri = PathUtils.CombinePaths(Collection, Name));
-			}
-			set
-			{
-				Name = value.Substring(value.IndexOf('/') + 1);
-				Collection = value.Substring(0, value.Length - Name.Length - 1);
-			}
-		}
+//		public string Uri {
+//			get
+//			{
+//				return _uri ?? (_uri = PathUtils.CombinePaths(Collection, Name));
+//			}
+//			set
+//			{
+//				Name = value.Substring(value.IndexOf('/') + 1);
+//				Collection = value.Substring(0, value.Length - Name.Length - 1);
+//			}
+//		}
 		
+		/// <summary>
+		/// Gets or sets the server-side collection name
+		/// </summary>
 		//		[DataMember(Order = 3)]
 		public string Collection {
 			get;
@@ -98,20 +105,20 @@ namespace Artefacts
 		/// </summary>
 //		[BsonRequired]
 //		[DataMember(Order = 2)]
-		public string Name {
-			get
-			{
-				return
-					Data.ContainsKey("Name") ? (string)Data["Name"]
-					:	Data.ContainsKey("name") ? (string)Data["name"]
-					:	null;
-			}
-			set
-			{
-				if (value != Name)
-					throw new ArgumentOutOfRangeException("value", value, "Should match field in Data");
-			}
-		}
+//		public string Name {
+//			get
+//			{
+//				return
+//					Data.ContainsKey("Name") ? (string)Data["Name"]
+//					:	Data.ContainsKey("name") ? (string)Data["name"]
+//					:	null;
+//			}
+//			set
+//			{
+//				if (value != Name)
+//					throw new ArgumentOutOfRangeException("value", value, "Should match field in Data");
+//			}
+//		}
 
 		/// <summary>
 		/// Gets the <see cref="ArtefactState"/> of this artefact
@@ -158,7 +165,6 @@ namespace Artefacts
 		/// <summary>
 		/// Timestamp when last this <see cref="Artefact"/> was saved/sent to server
 		/// </summary>
-		/// <value>The time saved.</value>
 		public DateTime TimeSaved {
 			get;
 			set;
@@ -169,7 +175,7 @@ namespace Artefacts
 		/// </summary>
 //		[BsonExtraElements]
 //		[DataMember(Order = 8)]
-		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+		[DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
 		public DataDictionary Data {
 			get { return _artefactData ?? (_artefactData = new DataDictionary()); }
 			set { _artefactData = new DataDictionary(value); }
@@ -180,10 +186,40 @@ namespace Artefacts
 		/// </summary>
 		/// <value>The persisted data.</value>
 //		[BsonIgnore]
-		[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
+		[DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
 		public DataDictionary PersistedData {
 			get { return _persistedData ?? (_persistedData = new DataDictionary()); }
 			set { _persistedData = new DataDictionary(value); }
+		}
+		
+		/// <summary>
+		/// Get or set a data member with the given name
+		/// </summary>
+		/// <param name="name">Name.</param>
+		public object this[string name] {
+			get
+			{
+				object result;
+				if (!(Data.TryGetValue(name, out result) || PersistedData.TryGetValue(name, out result)))
+				    throw new ArgumentOutOfRangeException("name", name, "Not found in Data or PersistedData dictionaries");
+				return result;
+			}
+			set
+			{
+				if (PersistedData.ContainsKey(name))
+				{
+					if (PersistedData[name] != value)
+					{
+						PersistedData.Remove(name);
+						Data[name] = value;
+						State = ArtefactState.Modified;
+					}
+				}
+				else
+				{
+					Data[name] = value;		// Can I assume here that state is already = ArtefactState.Modified?
+				}
+			}
 		}
 		#endregion
 
@@ -220,37 +256,6 @@ namespace Artefacts
 
 		#region Data handling
 		/// <summary>
-		/// Raises the serialized event.
-		/// </summary>
-		/// <remarks>Used (only) by SS, not MOngo?? </remarks>
-		[OnSerialized]
-		private void OnSerialized()
-		{
-			PersistedData.AddValues(Data);
-			Data.Clear();
-			State = ArtefactState.Current;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
-		/// </summary>
-		[OnDeserializing]
-		private void OnDeserializing()
-		{
-			// TODO: TimeRetrieved
-			;
-		}
-
-		/// <summary>
-		/// Raises the deserialized event.
-		/// </summary>
-		[OnDeserialized]
-		private void OnDeserialized()
-		{
-			State = ArtefactState.Current;
-		}	
-		
-		/// <summary>
 		/// Sets the instance.
 		/// </summary>
 		/// <returns>The instance.</returns>
@@ -260,7 +265,7 @@ namespace Artefacts
 		/// and it should remain in that state until pushed to repo for first time ??
 		/// ie Artefacts are immutable? answer = NO. Just can't keep setting multiple different instances.
 		/// </remarks>
-		private int SetInstance(object instance)
+		public int SetInstance(object instance)
 		{
 //			SerializationInfo;
 //			if (instance == null)
@@ -303,15 +308,38 @@ namespace Artefacts
 			}
 			return instance;
 		}
+		
+		/// <summary>
+		/// Raises the serialized event.
+		/// </summary>
+		/// <remarks>Used (only) by SS, not MOngo?? </remarks>
+		[OnSerialized]
+		private void OnSerialized()
+		{
+			PersistedData.AddValues(Data);
+			Data.Clear();
+			State = ArtefactState.Current;
+		}
 
 		/// <summary>
-		/// Serializes the and format.
+		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
-		/// <returns>The and format.</returns>
-		public string SerializeAndFormat()
+		[OnDeserializing]
+		private void OnDeserializing()
 		{
-			return ServiceStack.Text.TypeSerializer.SerializeToString<Artefact>(this);
+			// TODO: TimeRetrieved
+			;
 		}
+
+		/// <summary>
+		/// Raises the deserialized event.
+		/// </summary>
+		[OnDeserialized]
+		private void OnDeserialized()
+		{
+			State = ArtefactState.Current;
+		}
+		#endregion
 		
 		/// <summary>
 		/// Returns a <see cref="System.String"/> that represents the current <see cref="Artefacts.Artefact"/>.
@@ -351,7 +379,6 @@ namespace Artefacts
 			}
 			return document;
 		}
-		#endregion
 
 		#region DynamicObject overrides
 		/// <summary>

@@ -15,31 +15,37 @@ namespace Artefacts.Service
 
 	public class ClientQueryVisitor<TArtefact> : ExpressionVisitor where TArtefact : Artefact
 	{
-		public ClientQueryVisitor()
-		{
-		}
+		const BindingFlags bf =
+			BindingFlags.GetField | BindingFlags.GetProperty |
+			BindingFlags.Instance | BindingFlags.Static |
+			BindingFlags.Public | BindingFlags.NonPublic;
 
-		protected override Expression VisitConstant(ConstantExpression c)
-		{
-			return base.VisitConstant(c);
-			
-		}
 		protected override Expression VisitMemberAccess(MemberExpression m)
 		{
 			Expression mExpression = Visit(m.Expression);
 			if (mExpression != null)
 			{
+				// If is a member of a constant whose type is autoclass, invoke the member and return as a cosntant
+				// (I *think* this replaces local variables references)
 				if (mExpression.Type.IsAutoClass || (mExpression.NodeType == ExpressionType.Constant && ((ConstantExpression)mExpression).Value != null))
 				{
-					const BindingFlags bf = BindingFlags.GetField | BindingFlags.GetProperty
-						| BindingFlags.Instance | BindingFlags.Static
-						| BindingFlags.Public | BindingFlags.NonPublic;
 					return Expression.Constant(
 						m.Member.DeclaringType.InvokeMember(
 						m.Member.Name, bf, null,
 						(mExpression as ConstantExpression).Value,
 						new object[] { }), m.Type);
 				}
+				
+				// If is a member of Artefact which doesn't actually exist in type, it must be a dynamic property. Convert
+				// the member expression to a indexer expression to return the dynamic property (ie artefact[m.Member.Name])
+				else if (mExpression.Type == typeof(Artefact) && !typeof(Artefact).GetMembers(bf).Select(mi => mi.Name).Contains(m.Member.Name))
+				{
+					return Expression.MakeIndex(
+						mExpression,
+						typeof(Artefact).GetProperty("Item", typeof(object), new Type[] { typeof(string) }),
+						new Expression[] { Expression.Constant(m.Member.Name) });
+				}
+				
 				// Gets unknown parameter exception - must have to change the local var definition in the lambda as well I guess (too hard? other/better ways?)
 //				else if (mExpression.NodeType == ExpressionType.Parameter)
 //				{
@@ -48,6 +54,8 @@ namespace Artefacts.Service
 //						Expression.Parameter(typeof(Artefact)), m.Member.Name);
 //				}
 			}
+			
+			// default
 			return base.VisitMemberAccess(m);
 		}
 
@@ -70,10 +78,13 @@ namespace Artefacts.Service
 			MethodInfo mi = m.Method;
 			ParameterInfo[] pi = mi.GetParameters();
 			
+			// If method call is on a constant instance and all arguments are constants too,
+			// invoke method and replace with constant expression of method's return value
 			if (mObject != null && mObject.NodeType == ExpressionType.Constant
 			 && mArguments.All<Expression>((arg) => arg.NodeType == ExpressionType.Constant))
 				return Expression.Constant(m.Method.Invoke((mObject as ConstantExpression).Value,
 					mArguments.Cast<ConstantExpression>().Select<ConstantExpression, object>((ce) => ce.Value).ToArray()));
+
 //			else if (pi.Length > 0 && (typeof(IEnumerable).IsAssignableFrom(pi[0].GetType()) || typeof(IQueryable).IsAssignableFrom(pi[0].GetType()))
 //				&& mi.ReturnType.GetElementType() == null)
 //			{
@@ -92,11 +103,14 @@ namespace Artefacts.Service
 //						(Artefact)Activator.CreateInstance(m.Arguments[0].Type.GetElementType());
 //				return Expression.Constant(artefact);
 //			}
+			
+			// default
 			return base.VisitMethodCall(m);
 		}
 		
 		protected override Expression VisitNewArray(NewArrayExpression na)
 		{
+			// If array creation contains only constant elements, create the array instance, return a constant expression
 			ReadOnlyCollection<Expression> naExpressions = VisitExpressionList(na.Expressions);
 			if (naExpressions.All<Expression>((arg) => arg.NodeType == ExpressionType.Constant))
 			{
@@ -105,6 +119,8 @@ namespace Artefacts.Service
 					elements.SetValue(((ConstantExpression)naExpressions[i]).Value, i);
 				return Expression.Constant(elements, na.Type);
 			}
+			
+			// default
 			return base.VisitNewArray(na);
 		}
 	}

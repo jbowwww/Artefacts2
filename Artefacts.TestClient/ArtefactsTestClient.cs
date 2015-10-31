@@ -15,15 +15,18 @@ namespace Artefacts.TestClient
 	[TestFixture]
 	public class ArtefactsTestClient
 	{
+		#region Private fields
 		private TextBufferWriter _bufferWriter;
 
 		private string _serviceBaseUrl;
 
 		private IServiceClient _client;
+		private ArtefactsClient _artefactsClient;
 
 		private dynamic _artefact;
-
-		//		[TestFixtureSetUp]
+		#endregion
+		
+		//[TestFixtureSetUp]
 		public ArtefactsTestClient(string serviceBaseUrl, TextBufferWriter bufferWriter)
 		{
 			//			_client = client;
@@ -37,10 +40,11 @@ namespace Artefacts.TestClient
 				              request.UserAgent, request.MediaType, request.RequestUri,
 				              request.ProtocolVersion, request.Expect, request.Accept)),
 				ResponseFilter = (HttpWebResponse response) => bufferWriter.Write(
-					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}: {6}\n",
+					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}\n",
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
-				              response.ContentEncoding, response.ContentType, response.ContentLength,
-				              response.ReadToEnd())) };
+				              response.ContentEncoding, response.ContentType, response.ContentLength))
+//				              response.ReadToEnd()))
+			};
 			bufferWriter.WriteLine(_client.ToString());
 			bufferWriter.WriteLine("Creating test Artefact ... ");
 			_artefact = new Artefact(new {
@@ -52,8 +56,42 @@ namespace Artefacts.TestClient
 			bufferWriter.WriteLine("\tJSON: " + ServiceStack.StringExtensions.ToJson(_artefact));
 			bufferWriter.WriteLine("\tBSON: " + _artefact.ToBsonDocument());
 			bufferWriter.WriteLine();
+			
+			_artefactsClient = new ArtefactsClient(_serviceBaseUrl, _bufferWriter);
+			_bufferWriter.WriteLine("_artefactsClient: {0}", _artefactsClient);
 		}
 
+		[Test]
+		public void GetDisk()
+		{
+			QueryResults testResult = _client.Get<QueryResults>(QueryRequest.Make<Disk>(d => (d.Name == "sda")));
+			_bufferWriter.WriteLine("testResult = " + testResult.FormatString());
+		}
+
+		[Test]
+		public void GetOrCreateDisk()
+		{
+			Disk testDisk = _artefactsClient.GetOrCreate<Disk>(d => (d.Name == "sda"), () => Disk.Disks.Single(d => d.Name == "sda"));
+			_bufferWriter.WriteLine("testResult = " + testDisk.FormatString());
+		}
+
+		/// <summary>
+		/// "Save" Disk.disks instances - i.e. if they already exist, update them, otherwise, create
+		/// </summary>
+		[Test]
+		public void SaveDisk()
+		{
+			foreach (Disk disk in Disk.Disks)
+			{
+				bool isNewDisk = _artefactsClient.Save<Disk>(d => (d.Name == disk.Name), disk);
+				_bufferWriter.WriteLine("isNewDisk = " + isNewDisk.FormatString());
+			}
+		}
+
+		#region Helper functions
+		/// <summary>
+		/// 
+		/// </summary>		
 		private void DoClientPut(object argument, string name = "[Unknown]")
 		{
 			try
@@ -92,21 +130,22 @@ namespace Artefacts.TestClient
 				_bufferWriter.Write("\n");
 			}
 		}
-
-		#region Old inactive tests
-//		[Test]
+		#endregion
+		
+		#region Old inactive and/or failed/abandoned tests
+		//		[Test]
 		public void PutArtefact()
 		{
 			DoClientPut(_artefact, "_artefact");
 		}
 
-//		[Test]
+		//		[Test]
 		public void PutArtefactData()
 		{
 			DoClientPut(_artefact.Data, "_artefact.Data");
 		}
-		
-//		[Test]
+
+		//		[Test]
 		public void PutArtefactAlternativeSerializations()
 		{
 			byte[] artefactData = MongoDB.Bson.BsonExtensionMethods.ToBson(_artefact);
@@ -140,39 +179,26 @@ namespace Artefacts.TestClient
 			foreach (object[] subject in subjects)
 				DoClientPut(subject[0], (string)subject[1]);
 		}
-		#endregion
 
-		/// <summary>
-		/// TODO: Next step needed is expression visitor to remove local variable
-		/// </summary>
-		[Test]
-		public void PutArtefact_Disk_New()
-		{
-			ArtefactsClient client = new ArtefactsClient(_serviceBaseUrl, _bufferWriter);
-			foreach (Disk disk in Disk.Disks)
-			{
-				//TODO: SOme way of using simple standard syntax such as new DIsk() or above .Disks static property
-				// where this new instance can be passed to a client proxy that translates it as necessary
-				// (e.g. Artefact[Data][Operation], posts to server, which via response indicates whether it created
-				// this new artefact, it already found one (how to specify a unique arbitrary key for any artefact type??)
-				// and updated it (return some/all differing values??) or it exists but was identical (all properties??)
-				
-				// One possible way
-//				Artefact newDisk = client.Sync<Artefact>(d => (d.Name == disk.Name), () => new Artefact(disk));
-				Disk newDisk = client.Sync<Disk>(d => (d.Name == disk.Name), () => disk);
-				
-				_bufferWriter.WriteLine("newDisk = " + newDisk.FormatString());	//.ToJsv());
-					//newDisk.SerializeAndFormat());
-				
-				object testResult = _client.Get<QueryResults>(QueryRequest.Make<Disk>(d => (d.Name == "sda")));
-				;
-//				Artefact oldDisk = client.Sync
-				// Another possible way If Disk implements IEquatable<T>
-//				client.Sync<Disk>(disk);
-				
-				// SImilar to above but without generic parameter
-//				client.Sync(disk);
-			}
-		}
+		//		[Test]
+		//		public void SyncDiskAsArtefact()
+		//		{
+		//			foreach (Disk disk in Disk.Disks)
+		//			{
+		//				// One possible way
+		//				//				Artefact newDisk = client.Sync<Artefact>(d => (d.Name == disk.Name), () => new Artefact(disk));
+		//				Artefact newDisk = _artefactsClient.Sync<Artefact>((dynamic a) => (a.Name == disk.Name), () => new Artefact(disk));
+		//				_bufferWriter.WriteLine("newDisk = " + newDisk.FormatString());
+		//			}
+		//		}
+
+		//		[Test]
+		//		public void GetDiskAsArtefact()
+		//		{
+		//			QueryResults testResult = _client.Get<QueryResults>(QueryRequest.Make(a => (a.Name == "sda")));
+		//			_bufferWriter.WriteLine("testResult = " + testResult.FormatString());	//.ToJsv());
+		//
+		//		}		
+		#endregion
 	}
 }

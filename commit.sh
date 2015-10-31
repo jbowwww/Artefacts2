@@ -17,7 +17,7 @@ git add -Av .
 git commit -m "`cat .commit_message_current.txt`"
 
 #push all files (verbosely)
-git push -v --all
+git push -v --all origin
 
 #Create tar backup
 DATE=`date +%y%m%d-%H%M`;	#Get date string formatted for use in a backup filename

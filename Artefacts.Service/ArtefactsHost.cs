@@ -21,55 +21,59 @@ namespace Artefacts.Service
 	/// <summary>
 	/// Artefacts host.
 	/// </summary>
-	public class ArtefactsHost : AppHostHttpListenerBase
+	public class ArtefactsHost : AppHostHttpListenerBase, IDisposable
 	{
 		#region Static members
-		private static bool _appHostThreadExit = false;
-
-		protected static ArtefactsHost AppHost = null;
-
-		public static void StartHost(string serviceBaseUrl, TextWriter output)
+		public static readonly ILogFactory LogFactory;
+		public static readonly ILog Log;
+		
+		/// <summary>
+		/// Initializes the <see cref="Artefacts.Service.ArtefactsHost"/> class.
+		/// </summary>
+		static ArtefactsHost()
 		{
-//			StringBuilder sb = new StringBuilder(4096);
-			new Thread(() =>  {
-				AppHost = new ArtefactsHost(output); /*new StringWriter(sb)*/ 
-				output.Write(string.Format("Starting application host at {0} ... ", serviceBaseUrl));
-				AppHost.Init().Start(serviceBaseUrl);
-				output.WriteLine("OK");
-				while (!System.Threading.Volatile.Read(ref _appHostThreadExit))	// || sb.Length > 0)
-				{
-//					string s = sb.ToString();
-//					sb.Clear();
-//					tvHost.Buffer.InsertAtCursor(s);
-					Thread.Sleep(248);
-				}
-				output.Write("Application host exit flag set, exiting ... ");
-				AppHost.Stop();
-				output.WriteLine("OK");
-			}) {
-				Priority = ThreadPriority.BelowNormal
-			}.Start();
+			LogFactory = new StringBuilderLogFactory();
+			Log = ArtefactsHost.LogFactory.GetLogger(typeof(ArtefactsHost));
 		}
 		
-		public static void StopHost()
-		{
-			System.Threading.Volatile.Write(ref _appHostThreadExit, true);
+		/// <summary>
+		/// Gets the singleton.
+		/// </summary>
+		/// <value>The singleton.</value>
+		public static ArtefactsHost Singleton {
+			get;
+			private set;
 		}
 		#endregion // Static members
 		
-		private TextWriter _output = null;
+		#region Private fields
+		/// <summary>
+		/// The thread sleep time, in milliseconds
+		/// </summary>
+		private const int ThreadSleepTime = 360;
+		
+		private TextWriter _output;
+		
+		private bool _appHostThreadExit;
+		
+		private Thread _appHostThread;
+		#endregion
+		
+		/// <summary>
+		/// Gets a value indicating whether this instance is running.
+		/// </summary>
+		public bool IsRunning {
+			get { return !_appHostThreadExit; }
+		}
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Host.ArtefactsHost"/> class.
 		/// </summary>
-		public ArtefactsHost(TextWriter output)
+		public ArtefactsHost(string serviceBaseUrl, TextWriter output)
 			: base("Artefacts",
-			       typeof(ArtefactsService).Assembly,
-//			       typeof(Artefact).Assembly,
+			       //typeof(ArtefactsService).Assembly,
+			       typeof(Artefact).Assembly,
 			       typeof(Func<>).Assembly,
-//			       typeof(Dictionary<string,object>).Assembly,
-//			typeof(BsonDocument).Assembly,
-//			       typeof(DynamicObject).Assembly,
 			typeof(ExpressionNode).Assembly,
 			       typeof(IMongoQuery).Assembly,
 			       typeof(BsonDocument).Assembly,
@@ -77,11 +81,48 @@ namespace Artefacts.Service
 			       typeof(Artefacts.Host).Assembly,
 			typeof(Artefacts.FileSystem.Disk).Assembly)
 		{
+			Log.DebugFormat("new ArtefactsHost(\"{0}\", {1})", serviceBaseUrl, output.ToString());
 			_output = output;
-//			JsConfig.ConvertObjectTypesIntoStringDictionary = true;
-//			JsConfig.Dump();
+			Log.InfoFormat("Starting application host at \"{0}\"", serviceBaseUrl);
+			output.Write(string.Format("Starting application host at {0} ... ", serviceBaseUrl));
+			if (Singleton != null)
+				throw new InvalidOperationException("Singleton instance already exists");
+			Singleton = this;
+			Log.Debug("ArtefactsHost.Init()");
+			base.Init();
+			Log.DebugFormat("ArtefactsHost.Start(\"{0}\")", serviceBaseUrl);
+			base.Start(serviceBaseUrl);
+			output.WriteLine("OK");
+			_appHostThread = new Thread(() => { Run(); }) { Priority = ThreadPriority.BelowNormal };
+			Log.DebugFormat("new Thread(() => ArtefactsHost.Run()) {{ Priority = {0} }}.Start()", _appHostThread.Priority);
+			_appHostThread.Start();
 		}
 
+		/// <summary>
+		/// Dispose the specified disposing.
+		/// </summary>
+		/// <param name="disposing">If set to <c>true</c> disposing.</param>
+		protected override void Dispose(bool disposing)
+		{
+			Log.DebugFormat("Dispose({0})", disposing);
+			if (IsRunning)
+				Stop();
+			base.Dispose(disposing);
+		}
+		
+		/// <summary>
+		/// Releases all resource used by the <see cref="Artefacts.Service.ArtefactsHost"/> object.
+		/// </summary>
+		/// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Artefacts.Service.ArtefactsHost"/>. The
+		/// <see cref="Dispose"/> method leaves the <see cref="Artefacts.Service.ArtefactsHost"/> in an unusable state. After
+		/// calling <see cref="Dispose"/>, you must release all references to the
+		/// <see cref="Artefacts.Service.ArtefactsHost"/> so the garbage collector can reclaim the memory that the
+		/// <see cref="Artefacts.Service.ArtefactsHost"/> was occupying.</remarks>
+		void Dispose()
+		{
+			Dispose(true);
+		}
+		
 		/// <summary>
 		/// Configure the specified container.
 		/// </summary>
@@ -139,6 +180,31 @@ namespace Artefacts.Service
 			//					.Add<Artefact>("/artefact/{Id}")
 			//					.Add<>();
 			//			this.AppSettings.GetListc
+		}
+		
+		/// <summary>
+		/// Run this instance.
+		/// </summary>
+		private void Run()
+		{
+			Log.Info("ArtefactsHost.Run(): Start");
+			while (!Volatile.Read(ref _appHostThreadExit))
+			{
+				Thread.Sleep(ThreadSleepTime);
+			}
+			Log.Info("ArtefactsHost.Run(): Return");
+		}
+		
+		/// <summary>
+		/// Stop this instance.
+		/// </summary>
+		private void Stop()
+		{
+			Log.Debug("ArtefactsHost.Stop()");
+			if (Volatile.Read(ref _appHostThreadExit))
+				throw new InvalidOperationException("Stop() has already been called");
+			base.Stop();
+			Volatile.Write(ref _appHostThreadExit, true);
 		}
 	}
 }

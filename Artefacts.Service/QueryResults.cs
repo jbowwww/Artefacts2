@@ -25,7 +25,7 @@ namespace Artefacts.Service
 	[DataContract]
 	public class QueryResults
 	{
-		[DataMember]
+		[DataMember(Order=1)]
 		public IEnumerable<Artefact> Artefacts {
 			get;
 			set;
