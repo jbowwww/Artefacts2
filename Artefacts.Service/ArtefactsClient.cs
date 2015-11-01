@@ -71,8 +71,8 @@ namespace Artefacts.Service
 //			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJson();//.SerializeToString();	//a.ToBsonDocument();
 //			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };
 			
-			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a.Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
-			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { PersistedData = a.FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
+			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJson<DataDictionary>(a.Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { /*Persisted*/Data = a.FromJson<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
 //			JsConfig<QueryDocument>.SerializeFn = q => StringExtensions.ToJsv<QueryDocument>(q);//q.ToJson(); //((BsonDocument)q).AsByteArray;
 //			JsConfig<QueryDocument>.DeSerializeFn = q => q.FromJsv<QueryDocument>();
 //			JsConfig<IMongoQuery>.SerializeFn = q => StringExtensions.ToJsv<IMongoQuery>(q);//q.ToJson(); //((BsonDocument)q).AsByteArray;
@@ -155,14 +155,23 @@ namespace Artefacts.Service
 				throw new ArgumentNullException("create");
 			if (match == null)
 				throw new ArgumentNullException("match");
-				MatchArtefactRequest query = new MatchArtefactRequest(match);
-			Artefact artefact = _serviceClient.Get<Artefact>(query);
-			if (artefact == null)
+				QueryRequest query = QueryRequest.Make<T>(match);
+			Artefact artefact;
+//			= _serviceClient.Get<Artefact>(query);
+			QueryResults result = _serviceClient.Get<QueryResults>(query);
+			_bufferWriter.WriteLine("result = " + result.ToString());
+			if (result == null || result.Artefacts.Count() == 0)
+			{
 				artefact = new Artefact(create != null ? create() : default(T), this) {
 					Collection = typeof(T).Name		// TODO: <-- ? Manually use T.name in URL which becomes the collection name on server side
 				};
-			if (artefact.State == ArtefactState.Created)
+				//if (artefact.State == ArtefactState.Created)
 				_serviceClient.Post(artefact);
+			}
+			else
+			{
+				artefact = result.Artefacts.ElementAt(0);
+			}
 			T instance = artefact.As<T>();
 			_artefacts[instance] = artefact;
 			return instance;

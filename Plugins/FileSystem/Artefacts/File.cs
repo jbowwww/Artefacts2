@@ -75,7 +75,7 @@ namespace Artefacts.FileSystem
 		/// Initializes a new instance of the <see cref="Artefacts.FileSystem.File"/> class.
 		/// </summary>
 		/// <param name="fileInfo">File info.</param>
-		protected File (FileInfo fileInfo)
+		public File (FileInfo fileInfo)
 		{
 			FileInfo = fileInfo;
 		}

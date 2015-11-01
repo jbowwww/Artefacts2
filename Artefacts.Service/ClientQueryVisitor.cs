@@ -38,13 +38,13 @@ namespace Artefacts.Service
 				
 				// If is a member of Artefact which doesn't actually exist in type, it must be a dynamic property. Convert
 				// the member expression to a indexer expression to return the dynamic property (ie artefact[m.Member.Name])
-				else if (mExpression.Type == typeof(Artefact) && !typeof(Artefact).GetMembers(bf).Select(mi => mi.Name).Contains(m.Member.Name))
-				{
-					return Expression.MakeIndex(
-						mExpression,
-						typeof(Artefact).GetProperty("Item", typeof(object), new Type[] { typeof(string) }),
-						new Expression[] { Expression.Constant(m.Member.Name) });
-				}
+//				else if (mExpression.Type == typeof(Artefact) && !typeof(Artefact).GetMembers(bf).Select(mi => mi.Name).Contains(m.Member.Name))
+//				{
+//					return Expression.MakeIndex(
+//						mExpression,
+//						typeof(Artefact).GetProperty("Item", typeof(object), new Type[] { typeof(string) }),
+//						new Expression[] { Expression.Constant(m.Member.Name) });
+//				}
 				
 				// Gets unknown parameter exception - must have to change the local var definition in the lambda as well I guess (too hard? other/better ways?)
 //				else if (mExpression.NodeType == ExpressionType.Parameter)

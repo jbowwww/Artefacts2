@@ -71,23 +71,56 @@ namespace Artefacts.TestClient
 		[Test]
 		public void GetOrCreateDisk()
 		{
-			Disk testDisk = _artefactsClient.GetOrCreate<Disk>(d => (d.Name == "sda"), () => Disk.Disks.Single(d => d.Name == "sda"));
-			_bufferWriter.WriteLine("testResult = " + testDisk.FormatString());
-		}
-
-		/// <summary>
-		/// "Save" Disk.disks instances - i.e. if they already exist, update them, otherwise, create
-		/// </summary>
-		[Test]
-		public void SaveDisk()
-		{
 			foreach (Disk disk in Disk.Disks)
 			{
-				bool isNewDisk = _artefactsClient.Save<Disk>(d => (d.Name == disk.Name), disk);
-				_bufferWriter.WriteLine("isNewDisk = " + isNewDisk.FormatString());
+				Disk testDisk = _artefactsClient.GetOrCreate<Disk>(d => (d.Name == disk.Name), () => disk);
+				_bufferWriter.WriteLine("testResult = " + testDisk.FormatString());
 			}
 		}
 
+		
+		[Test]
+		public void GetDrive()
+		{
+			QueryResults testResult = _client.Get<QueryResults>(QueryRequest.Make<Drive>(d => (d.Name == "sda")));
+			_bufferWriter.WriteLine("testResult = " + testResult.FormatString());
+		}
+
+		[Test]
+		public void GetOrCreateDrive()
+		{
+			foreach (Drive disk in Drive.All)
+			{
+				Drive testDrive = _artefactsClient.GetOrCreate<Drive>(d => (d.Name == disk.Name), () => disk);
+				_bufferWriter.WriteLine("testResult = " + testDrive.FormatString());
+			}
+		}
+		
+		[Test]
+		public void RecurseDirectory()
+		{
+			RecurseDirectory(new Directory("/home/jk/Documents"));
+		}
+		
+		public void RecurseDirectory(Directory dir, int nest = 0)
+		{
+			if (nest < 1)
+			{
+				_artefactsClient.GetOrCreate(d => d.Path != null && dir.Path != null && d.Path == dir.Path, () => dir);
+			
+				foreach (Directory sd in dir.Directories)
+				{
+					RecurseDirectory(sd, nest + 1);
+				}
+			
+				foreach (File file in dir.Files)
+				{
+					_artefactsClient.GetOrCreate<File>(f => f.Path != null && file.Path != null && f.Path == file.Path, () => file);
+				}
+			}
+		}
+		
+		
 		#region Helper functions
 		/// <summary>
 		/// 
@@ -198,7 +231,20 @@ namespace Artefacts.TestClient
 		//			QueryResults testResult = _client.Get<QueryResults>(QueryRequest.Make(a => (a.Name == "sda")));
 		//			_bufferWriter.WriteLine("testResult = " + testResult.FormatString());	//.ToJsv());
 		//
-		//		}		
+		//		}	
+
+		/// <summary>
+		/// "Save" Disk.disks instances - i.e. if they already exist, update them, otherwise, create
+		/// </summary>
+		//		[Test]
+		public void SaveDisk()
+		{
+			foreach (Disk disk in Disk.Disks)
+			{
+				bool isNewDisk = _artefactsClient.Save<Disk>(d => (d.Name == disk.Name), disk);
+				_bufferWriter.WriteLine("isNewDisk = " + isNewDisk.FormatString());
+			}
+		}	
 		#endregion
 	}
 }

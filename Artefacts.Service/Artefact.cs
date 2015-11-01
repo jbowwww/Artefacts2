@@ -313,13 +313,13 @@ namespace Artefacts
 		/// Raises the serialized event.
 		/// </summary>
 		/// <remarks>Used (only) by SS, not MOngo?? </remarks>
-		[OnSerialized]
-		private void OnSerialized()
-		{
-			PersistedData.AddValues(Data);
-			Data.Clear();
-			State = ArtefactState.Current;
-		}
+//		[OnSerialized]
+//		private void OnSerialized()
+//		{
+//			PersistedData.AddValues(Data);
+//			Data.Clear();
+//			State = ArtefactState.Current;
+//		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
@@ -369,10 +369,12 @@ namespace Artefacts
 				object value = data.Value;
 				Type valueType = value != null ? value.GetType() : typeof(object);
 				BsonValue bsonValue;
-				if (valueType == typeof(long))
+				if (valueType == typeof(long) || valueType.IsEnum)
 					bsonValue = BsonInt64.Create(value);
 				else if (valueType == typeof(int))
 					bsonValue = BsonInt32.Create(value);
+//				else if (valueType.IsEnum)
+//					bsonValue = BsonInt64
 				else
 					bsonValue = BsonValue.Create(value);
 				document.Add(data.Key, bsonValue);

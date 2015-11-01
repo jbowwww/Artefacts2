@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Artefacts.FileSystem
 {
@@ -29,6 +30,18 @@ namespace Artefacts.FileSystem
 			set
 			{
 				base.SetInfo(value);
+			}
+		}
+
+		public virtual IEnumerable<File> Files {
+			get {
+				return DirectoryInfo.EnumerateFiles().Select((System.IO.FileInfo fi) => new File(fi));
+			}
+		}
+
+		public virtual IEnumerable<Directory> Directories {
+			get {
+				return DirectoryInfo.EnumerateDirectories().Select((System.IO.DirectoryInfo fi) => new Directory(fi));
 			}
 		}
 		#endregion

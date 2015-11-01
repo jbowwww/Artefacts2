@@ -140,7 +140,8 @@ namespace Artefacts.FileSystem
 		/// <summary>
 		/// Gets or sets the type.
 		/// </summary>
-		public DriveType Type;	// { get; set; }
+//		public DriveType Type;	// { get; set; }
+		public string Type;
 
 		/// <summary>
 		/// Gets or sets the size.
@@ -160,24 +161,24 @@ namespace Artefacts.FileSystem
 		/// <summary>
 		/// Gets or sets the drive info.
 		/// </summary>
-		public DriveInfo DriveInfo {
-			get { return _driveInfo; }
-			set
-			{
-				_driveInfo = value;
-				Name = _driveInfo.Name;
-				Label = _driveInfo.VolumeLabel;
-				Format = _driveInfo.DriveFormat;
-				Type = _driveInfo.DriveType;
-				Size = _driveInfo.TotalSize;
-				FreeSpace = _driveInfo.TotalFreeSpace;
-				AvailableFreeSpace = _driveInfo.AvailableFreeSpace;
-//				if (Drive.PartitionMountPaths != null)
-//					Partition = PartitionMountPaths.ContainsKey(Label) ? PartitionMountPaths[Label] : string.Empty;
-//				Disk = Disk.Disks.FirstOrDefault((disk) => Name.ToLower().StartsWith(disk.DeviceName.ToLower()));
-			}
-   		}
-		private DriveInfo _driveInfo;
+//		protected DriveInfo DriveInfo {
+//			get { return _driveInfo; }
+//			set
+//			{
+//				_driveInfo = value;
+//				Name = _driveInfo.Name;
+//				Label = _driveInfo.VolumeLabel;
+//				Format = _driveInfo.DriveFormat;
+//				Type = _driveInfo.DriveType;
+//				Size = _driveInfo.TotalSize;
+//				FreeSpace = _driveInfo.TotalFreeSpace;
+//				AvailableFreeSpace = _driveInfo.AvailableFreeSpace;
+////				if (Drive.PartitionMountPaths != null)
+////					Partition = PartitionMountPaths.ContainsKey(Label) ? PartitionMountPaths[Label] : string.Empty;
+////				Disk = Disk.Disks.FirstOrDefault((disk) => Name.ToLower().StartsWith(disk.DeviceName.ToLower()));
+//			}
+//   		}
+//		private DriveInfo _driveInfo;
 		#endregion
 
 		#region Methods
@@ -196,7 +197,14 @@ namespace Artefacts.FileSystem
 		/// <param name="driveName">Drive name.</param>
 		public Drive(string driveName)
 		{
-			DriveInfo = new DriveInfo(driveName);
+			DriveInfo driveInfo = new DriveInfo(driveName);
+			Name = driveInfo.Name;
+			Label = driveInfo.VolumeLabel;
+			Format = driveInfo.DriveFormat;
+			Type = driveInfo.DriveType.ToString();
+			Size = driveInfo.TotalSize;
+			FreeSpace = driveInfo.TotalFreeSpace;
+			AvailableFreeSpace = driveInfo.AvailableFreeSpace;
 		}
 
 		/// <summary>
@@ -205,7 +213,15 @@ namespace Artefacts.FileSystem
 		/// <param name="driveInfo">Drive info.</param>
 		protected Drive(DriveInfo driveInfo)
 		{
-			DriveInfo = driveInfo;
+//			DriveInfo = driveInfo;
+			Name = driveInfo.Name;
+			Label = driveInfo.VolumeLabel;
+			Format = driveInfo.DriveFormat;
+			Type = driveInfo.DriveType.ToString();
+//				Enum.Parse(typeof(DriveType), 
+			Size = driveInfo.TotalSize;
+			FreeSpace = driveInfo.TotalFreeSpace;
+			AvailableFreeSpace = driveInfo.AvailableFreeSpace;
 		}
 		#endregion
 

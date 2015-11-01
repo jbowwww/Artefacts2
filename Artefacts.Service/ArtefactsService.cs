@@ -64,7 +64,7 @@ namespace Artefacts.Service
 			// ServiceStack setup
 			
 //			JsConfig<Expression>.DeSerializeFn = s => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).DeserializeText(s);
-			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a.PersistedData);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
+			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a./*Persisted*/Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
 			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
 //			JsConfig<QueryDocument>.SerializeFn = q => q.ToJsv(); //((BsonDocument)q).AsByteArray;
 //			JsConfig<QueryDocument>.DeSerializeFn = q => q.FromJsv<QueryDocument>();
@@ -89,7 +89,7 @@ namespace Artefacts.Service
 		/// <remarks>
 		/// TODO: Look at inserting into Mongo using JSON received as service?
 		/// </remarks>
-		public object Put(Artefact artefact)
+		public object Post(Artefact artefact)
 		{
 			try
 			{
