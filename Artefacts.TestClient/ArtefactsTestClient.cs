@@ -12,8 +12,14 @@ using ServiceStack.Text;
 
 namespace Artefacts.TestClient
 {
+	/// <summary>
+	/// Artefacts test client.
+	/// </summary>
+	/// <remarks>
+	/// TODO: Move generic functionality to <see cref="TestClientBase"/> 
+	/// </remarks>
 	[TestFixture]
-	public class ArtefactsTestClient
+	public class ArtefactsTestClient : TestClientBase
 	{
 		#region Private fields
 		private TextBufferWriter _bufferWriter;
@@ -27,20 +33,20 @@ namespace Artefacts.TestClient
 		#endregion
 		
 		//[TestFixtureSetUp]
-		public ArtefactsTestClient(string serviceBaseUrl, TextBufferWriter bufferWriter)
+		public ArtefactsTestClient(string serviceBaseUrl, TextBufferWriter bufferWriter) : base(bufferWriter)
 		{
 			//			_client = client;
 			_bufferWriter = bufferWriter;
 			_serviceBaseUrl = serviceBaseUrl;
-			_bufferWriter.Write(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
+			_bufferWriter.WriteLine(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_client = new ServiceStack.JsonServiceClient(_serviceBaseUrl) {
-				RequestFilter = (HttpWebRequest request) => bufferWriter.Write(
-					string.Format("\nClient.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}\n",
+				RequestFilter = (HttpWebRequest request) => bufferWriter.WriteLine(
+					string.Format("Client.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}",
 				              request.Method, request.ContentType,  request.ContentLength,
 				              request.UserAgent, request.MediaType, request.RequestUri,
 				              request.ProtocolVersion, request.Expect, request.Accept)),
-				ResponseFilter = (HttpWebResponse response) => bufferWriter.Write(
-					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}\n",
+				ResponseFilter = (HttpWebResponse response) => bufferWriter.WriteLine(
+					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}",
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 				              response.ContentEncoding, response.ContentType, response.ContentLength))
 //				              response.ReadToEnd()))
@@ -106,7 +112,8 @@ namespace Artefacts.TestClient
 		{
 			if (nest < 1)
 			{
-				_artefactsClient.GetOrCreate(d => d.Path != null && dir.Path != null && d.Path == dir.Path, () => dir);
+//				_artefactsClient.GetOrCreate(d => d.Path != null && dir.Path != null && d.Path == dir.Path, () => dir);
+				_artefactsClient.Save<Directory>(d => d.Path != null && d.Path == dir.Path, dir);	// () => dir);
 			
 				foreach (Directory sd in dir.Directories)
 				{
@@ -115,7 +122,8 @@ namespace Artefacts.TestClient
 			
 				foreach (File file in dir.Files)
 				{
-					_artefactsClient.GetOrCreate<File>(f => f.Path != null && file.Path != null && f.Path == file.Path, () => file);
+//					_artefactsClient.GetOrCreate<File>(f => f.Path != null && file.Path != null && f.Path == file.Path, () => file);
+					_artefactsClient.Save<File>(f => f.Path != null && f.Path == file.Path, file);	//() => file);
 				}
 			}
 		}

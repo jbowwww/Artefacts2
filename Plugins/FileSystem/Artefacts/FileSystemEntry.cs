@@ -20,7 +20,7 @@ namespace Artefacts.FileSystem
 		/// <summary>
 		/// The <see cref="System.IO.FileSystemInfo"> for this <see cref="FileSystemEntry"></param>
 		/// </summary>
-		public System.IO.FileSystemInfo Info {
+		protected System.IO.FileSystemInfo Info {
 			get
 			{
 				if (_fileSystemInfo == null)
@@ -60,10 +60,10 @@ namespace Artefacts.FileSystem
 		/// Gets or sets the directory identifier.
 		/// </summary>
 		/// <value>The directory identifier.</value>
-		public string DirectoryPath {
-			get { return Directory == null ? string.Empty : Directory.Path; }
-			set { Directory = new Directory(value); }
-		}
+		public string DirectoryPath { get; set; }
+//			get { return Directory == null ? string.Empty : Directory.Path; }
+//			set { Directory = (Directory)Directory.All.FromPath(value); } //Directory = new Directory(value); }
+//		}
 
 		/// <summary>
 		/// The attributes.
@@ -166,7 +166,7 @@ namespace Artefacts.FileSystem
 			LastAccessTime = _fileSystemInfo.LastAccessTime;
 			LastWriteTime = _fileSystemInfo.LastWriteTime;
 			Drive = Drive.All.FromPath(Path);
-			Directory = (Directory)Directory.All.FromPath(Path);
+			Directory = null;//(Directory)Directory.All.FromPath(Path);
 		}
 		#endregion
 		#endregion

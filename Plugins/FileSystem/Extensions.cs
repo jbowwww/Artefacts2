@@ -21,7 +21,7 @@ namespace Artefacts.FileSystem
 //				throw new NullReferenceException("drives");
 			return (from fse in fsEntries
 				where
-					fse.Path.Length < rootPath.TrimEnd('/', '\\').Length
+			        fse.Path.TrimEnd('/', '\\').Length < rootPath.TrimEnd('/', '\\').Length
 					&& rootPath.StartsWith(fse.Path)
 				orderby fse.Path.Length descending
 				select fse).FirstOrDefault();

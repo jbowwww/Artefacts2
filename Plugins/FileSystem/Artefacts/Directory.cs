@@ -25,7 +25,7 @@ namespace Artefacts.FileSystem
 		/// Gets or sets the directory info.
 		/// </summary>
 		/// <value>The directory info.</value>
-		public virtual System.IO.DirectoryInfo DirectoryInfo {
+		protected virtual System.IO.DirectoryInfo DirectoryInfo {
 			get { return (System.IO.DirectoryInfo)base.Info; }
 			set
 			{

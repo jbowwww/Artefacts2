@@ -24,31 +24,26 @@ namespace Artefacts.Service
 	[Route("/Query/", "GET")]
 	public class QueryRequest : IReturn<QueryResults>
 	{
-		static private ExpressionVisitor _expressionVisitor = new ClientQueryVisitor();
-
-		public static QueryRequest Make(Expression<Func<dynamic, bool>> where, ExpressionVisitor visitor = null)
+		public static QueryRequest Make(Expression<Func<dynamic, bool>> where)
 		{
-			return new QueryRequest((Expression)where, visitor);
+			return new QueryRequest((Expression)where);
 		}
 		
-		public static QueryRequest Make<T>(Expression<Func<T, bool>> where, ExpressionVisitor visitor = null)
+		public static QueryRequest Make<T>(Expression<Func<T, bool>> where)
 		{
-			return new QueryRequest((Expression)where, visitor);
+			return new QueryRequest((Expression)where);
 		}
-		
-		private ExpressionVisitor _visitor = null;
 
 		[DataMember(Order=1)]
 		public string Data { get; set; }
 
 		public LambdaExpression Where {
 			get { return Data == null ? null : (LambdaExpression)Data.FromJson<ExpressionNode>().ToExpression(); }
-			set { Data = _visitor.Visit(value).ToExpressionNode().ToJson<ExpressionNode>(); }
+			set { Data = value.ToExpressionNode().ToJson<ExpressionNode>(); }
 		}
 
-		public QueryRequest(Expression where, ExpressionVisitor visitor = null)
+		public QueryRequest(Expression where)
 		{
-			this._visitor = visitor ?? _expressionVisitor ?? new ClientQueryVisitor();
 			if (where.NodeType != ExpressionType.Lambda)
 				throw new ArgumentException("Not a LambdaExpression", "where");
 			this.Where = (LambdaExpression)where;

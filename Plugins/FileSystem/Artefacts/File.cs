@@ -12,7 +12,7 @@ namespace Artefacts.FileSystem
 		/// <summary>
 		/// The size.
 		/// </summary>
-		public long Size { get; private set; }
+		public long Size { get; set; }
 
 		/// <summary>
 		/// Gets the name.
@@ -39,7 +39,7 @@ namespace Artefacts.FileSystem
 		/// <summary>
 		/// Gets or sets the file info.
 		/// </summary>
-		public virtual FileInfo FileInfo {
+		protected virtual FileInfo FileInfo {
 			get
 			{
 				return (FileInfo)base.Info;

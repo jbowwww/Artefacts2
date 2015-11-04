@@ -45,9 +45,12 @@ namespace Artefacts
 		// Mongo classmap setup
 			BsonClassMap.RegisterClassMap<Artefact>(
 				classMap => {
-				classMap.MapIdMember<ObjectId>((a) => a.Id);
-				classMap.MapExtraElementsProperty("Data");
-				});
+				classMap.MapIdMember<ObjectId>(a => a.Id);
+				classMap.MapMember<DateTime>(a => a.TimeCreated);
+				classMap.MapMember<DateTime>(a => a.TimeChecked);
+				classMap.MapMember<DateTime>(a => a.TimeModified);
+				classMap.MapExtraElementsMember<DataDictionary>(a => a.Data);
+			});
 //					>((a) => a.Uri);//
 //		// SS classmap setup?
 			JsConfig.TryToParsePrimitiveTypeValues = true;
@@ -270,10 +273,12 @@ namespace Artefacts
 //			SerializationInfo;
 //			if (instance == null)
 //				throw new ArgumentNullException("instance");
-			foreach (MemberInfo member in instance.GetType().GetMembers(_bindingFlags)
-			         .Where((mi) =>
-			       mi.MemberType == MemberTypes.Field ||
-			       mi.MemberType == MemberTypes.Property))
+			Type instanceType = instance.GetType();
+			IEnumerable<MemberInfo> members = instanceType.GetMembers(_bindingFlags)
+				.Where(
+					(mi) => mi.MemberType == MemberTypes.Field ||
+					((mi.MemberType == MemberTypes.Property) && (((PropertyInfo)mi).GetSetMethod() != null)));
+			foreach (MemberInfo member in members)
 			{
 				object value = member.GetPropertyOrField(instance);
 				Type valueType = value != null ? value.GetType() : typeof(object);
@@ -300,10 +305,19 @@ namespace Artefacts
 			{
 				if (!data.Key.StartsWith("_"))
 				{
-					MemberInfo[] mi = typeof(T).GetMember(data.Key);
-					if (mi == null || mi.Length == 0)
+					MemberInfo member = typeof(T).GetMember(data.Key)
+						.FirstOrDefault(mi => mi.MemberType == MemberTypes.Field ||
+							(mi.MemberType == MemberTypes.Property && (((PropertyInfo)mi).GetSetMethod() != null)));
+					if (member == null)
 						throw new MissingMemberException(typeof(T).FullName, data.Key);
-					mi[0].SetValue(instance, data.Value);
+					object value = data.Value;
+					Type valueType = value == null ? typeof(System.Object) : value.GetType();
+					Type memberType = member.GetMemberReturnType();
+					if (memberType.IsEnum)
+						value = Enum.ToObject(memberType, value);
+					if (!memberType.IsAssignableFrom(valueType))
+						value = Convert.ChangeType(value, memberType);
+					member.SetValue(instance, value);
 				}
 			}
 			return instance;
@@ -369,12 +383,13 @@ namespace Artefacts
 				object value = data.Value;
 				Type valueType = value != null ? value.GetType() : typeof(object);
 				BsonValue bsonValue;
-				if (valueType == typeof(long) || valueType.IsEnum)
+				if (valueType == typeof(long)) 
 					bsonValue = BsonInt64.Create(value);
 				else if (valueType == typeof(int))
 					bsonValue = BsonInt32.Create(value);
-//				else if (valueType.IsEnum)
-//					bsonValue = BsonInt64
+				else if (valueType.IsEnum)
+//					bsonValue = value.ToString(
+					bsonValue = BsonInt32.Create((int)value);
 				else
 					bsonValue = BsonValue.Create(value);
 				document.Add(data.Key, bsonValue);

@@ -50,7 +50,7 @@ namespace Artefacts.Service
 		/// <summary>
 		/// The thread sleep time, in milliseconds
 		/// </summary>
-		private const int ThreadSleepTime = 360;
+		private const int ThreadSleepTime = 615;
 		
 		private TextWriter _output;
 		

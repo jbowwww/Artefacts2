@@ -16,6 +16,7 @@ using ServiceStack.Text;
 /// </summary>
 public partial class MainWindow: Gtk.Window
 {	
+	
 	#region Fields & Properties
 	public Gtk.TextBuffer HostTextBuffer {
 		get
@@ -30,12 +31,18 @@ public partial class MainWindow: Gtk.Window
 			return tvClient.Buffer;
 		}
 	}
+	
+	public TextBufferWriter ClientWriter { get; private set; }
+	
+	public TextBufferWriter HostWriter { get; private set; }
 	#endregion
 	
 	#region Construction & Disposal
 	public MainWindow() : base (Gtk.WindowType.Toplevel)
 	{
 		Build();
+		ClientWriter = new TextBufferWriter(ClientTextBuffer, this);
+		HostWriter = new TextBufferWriter(HostTextBuffer, this);
 		Maximize();
 	}
 
@@ -49,6 +56,7 @@ public partial class MainWindow: Gtk.Window
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
 	{
 		Application.Quit();
+		
 		a.RetVal = true;
 	}
 	

@@ -32,8 +32,15 @@ namespace Artefacts.Service
 		private string _serviceBaseUrl;
 
 		private IServiceClient _serviceClient;
-		
+
 		private readonly Dictionary<object, Artefact> _artefacts = new Dictionary<object, Artefact>();
+		#endregion
+		
+		#region Properties
+		/// <summary>
+		/// Gets or sets the visitor.
+		/// </summary>
+		public ExpressionVisitor Visitor { get; set; }
 		#endregion
 		
 		/// <summary>
@@ -46,12 +53,13 @@ namespace Artefacts.Service
 			//			_client = client;
 			_bufferWriter = bufferWriter;
 			_serviceBaseUrl = serviceBaseUrl;
+			this.Visitor = new ClientQueryVisitor();
 			_bufferWriter.Write(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_serviceClient = new ServiceStack.JsvServiceClient(_serviceBaseUrl) {
 				RequestFilter = (HttpWebRequest request) => {
 //					Stream bStream = new BufferedStream(request.GetRequestStream());
-					bufferWriter.Write(
-						string.Format("\nClient.{0} HTTP {6} {2} bytes {1} Expect {7} Accept {8} {5}\n",//\n{9}\n",
+					bufferWriter.WriteLine(
+						string.Format("Client.{0} HTTP {6} {2} bytes {1} Expect {7} Accept {8} {5}",//\n{9}\n",
 				              request.Method, request.ContentType,  request.ContentLength,
 				              request.UserAgent, request.MediaType, request.RequestUri,
 				              request.ProtocolVersion, request.Expect, request.Accept,
@@ -61,8 +69,8 @@ namespace Artefacts.Service
 				},
 //				              request.ContentLength != 0 ? string.Empty
 //				              : string.Format("\tBody: {0}", request.GetRequestStream().ReadAsync(.ToString()))),
-				ResponseFilter = (HttpWebResponse response) => bufferWriter.Write(
-					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}\n",
+				ResponseFilter = (HttpWebResponse response) => bufferWriter.WriteLine(
+					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}",
 				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 				              response.ContentEncoding, response.ContentType, response.ContentLength))
 //				              response.ReadToEnd())),	// reading stream makes it unavailable for SS??
@@ -149,17 +157,17 @@ namespace Artefacts.Service
 		/// </remarks>
 		public T GetOrCreate<T>(Expression<Func<T, bool>> match, Func<T> create) where T : new()
 		{
-			_bufferWriter.WriteLine("GetOrCreate<{0}>(match: {1}, create: {2})", typeof(T).FullName, match.ToString(), create.ToString());
-
 			if (create == null)
 				throw new ArgumentNullException("create");
 			if (match == null)
 				throw new ArgumentNullException("match");
-				QueryRequest query = QueryRequest.Make<T>(match);
+			match = (Expression<Func<T, bool>>)Visitor.Visit(match);
+			_bufferWriter.WriteLine("GetOrCreate<{0}>(match: {1}, create: {2})", typeof(T).FullName, match, create);
+			QueryRequest query = QueryRequest.Make<T>(match);
 			Artefact artefact;
 //			= _serviceClient.Get<Artefact>(query);
 			QueryResults result = _serviceClient.Get<QueryResults>(query);
-			_bufferWriter.WriteLine("result = " + result.ToString());
+			_bufferWriter.WriteLine("result = " + result);
 			if (result == null || result.Artefacts.Count() == 0)
 			{
 				artefact = new Artefact(create != null ? create() : default(T), this) {
@@ -186,12 +194,18 @@ namespace Artefacts.Service
 		/// <returns><c>true</c> if the artefact was newly created, otherwise, <c>false</c></returns>
 		public bool Save<T>(Expression<Func<T, bool>> match, T instance) where T : new()
 		{
-			_bufferWriter.WriteLine("Save<{0}>(match: {1}, instance: {2})", typeof(T).FullName, match, instance);
+			// might be avalue type?
+//			if (instance == null)
+//				throw new ArgumentNullException("create");
 			if (match == null)
 				throw new ArgumentNullException("match");
-			MatchArtefactRequest query = new MatchArtefactRequest(match);
-			Artefact artefact = _serviceClient.Get<Artefact>(query);
-			if (artefact == null)
+			match = (Expression<Func<T, bool>>)Visitor.Visit(match);
+			_bufferWriter.WriteLine("Save<{0}>(match: {1}, instance: {2})", typeof(T).FullName, match, instance);
+			QueryRequest query = QueryRequest.Make<T>(match);
+			Artefact artefact;	// = _serviceClient.Get<Artefact>(query);
+			QueryResults result = _serviceClient.Get<QueryResults>(query);
+			_bufferWriter.WriteLine("result = " + result);
+			if (result == null || result.Artefacts.Count() == 0)
 			{
 				artefact = new Artefact(instance, this) {
 					Collection = typeof(T).Name		// TODO: <-- ? Manually use T.name in URL which becomes the collection name on server side
@@ -202,6 +216,7 @@ namespace Artefacts.Service
 			}
 			else
 			{
+				artefact = result.Artefacts.ElementAt(0);
 				artefact.SetInstance(instance);
 				_serviceClient.Put(artefact);
 				return false;

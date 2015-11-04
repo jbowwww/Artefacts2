@@ -20,6 +20,8 @@ namespace Artefacts.TestClient
 		public const string ServiceBaseUrl = "http://localhost:8888/";
 
 		public static ArtefactsHost Host;
+		
+		public static ArtefactsTestClient Client;
 			
 		static MainClass()
 		{
@@ -35,50 +37,34 @@ namespace Artefacts.TestClient
 		/// </remarks>
 		public static void Main(string[] args)
 		{
-			Application.Init();
-			Log.Debug("Application.Init()");
-			MainWindow win = new MainWindow();
-			Log.Debug("win = new MainWindow()");
-			win.Show();
-			Log.Debug("win.Show()");
-			
-			using (Host = new ArtefactsHost(ServiceBaseUrl, new TextBufferWriter(win.HostTextBuffer)))
+			try
 			{
-				Thread.Sleep(1100);
-				TextBufferWriter clientWriter = new TextBufferWriter(win.ClientTextBuffer);
-				ArtefactsTestClient client = new ArtefactsTestClient(ServiceBaseUrl, clientWriter);
-				IEnumerable<MethodInfo> testMethods = typeof(ArtefactsTestClient).GetMethods().Where(mi => mi.GetCustomAttribute<TestAttribute>() != null);
-				foreach (MethodInfo mi in testMethods)
-				{
-					string testName = string.Concat(mi.DeclaringType.FullName, ".", mi.Name);
-					try
+				Log.Debug("Application.Init()");
+				Application.Init();
+				Log.Debug("win = new MainWindow()");
+				MainWindow win = new MainWindow();
+				Log.Debug("win.Show()");
+				win.Show();
+				new Thread(() => {
+					using (Host = new ArtefactsHost(ServiceBaseUrl, win.HostWriter))
+					using (Client = new ArtefactsTestClient(ServiceBaseUrl, win.ClientWriter))
 					{
-						Log.InfoFormat("\n--------\nTest: {0}\n--------", testName);
-						clientWriter.WriteLine("\n--------\nTest: {0}\n--------", testName);
-						mi.Invoke(client, new object[] { });
+						//Thread.Sleep(1100);
+						Client.Run();
 					}
-					//					catch (WebServiceException e) { clientWriter.WriteLine("ERROR: " + ex.Format()); }
-					//					catch (TargetInvocationException e) { clientWriter.WriteLine("ERROR: " + ex.Format()); }
-					catch (Exception ex) {
-						Log.Error("! ERROR: ", ex);
-						clientWriter.WriteLine("! ERROR: " + ex.Format());
-					}
-					finally
-					{
-						Log.InfoFormat("--------\nFinished: {0}\n--------", testName);
-						clientWriter.WriteLine("--------\nFinished: {0}\n--------", testName);
-					}
-				}
+				}).Start();
+				//Thread.Sleep(888);
+				Application.Run();
+				Log.Debug("Application.Run()");
 			}
-			
-			Application.Run();
-			Log.Debug("Application.Run()");
-//			client.PutArtefact();
-//			client.PutArtefactData();
-//			client.PutArtefactAlternativeSerializations();
-//			client.PutArtefact_Disk_New();
-			
-//			ArtefactsHost.StopHost();
+			catch (Exception ex)
+			{
+				Log.Error(ex);
+			}
+			finally
+			{
+				
+			}
 		}
 	}
 }

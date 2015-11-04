@@ -40,6 +40,12 @@ namespace Artefacts.Service
 		}
 		#endregion
 		
+		enum SaveType {
+			Insert,
+			Update,
+			InsertOrUpdate
+		};
+		
 		#region Private fields
 		private TextWriter _output;
 		
@@ -91,55 +97,23 @@ namespace Artefacts.Service
 		/// </remarks>
 		public object Post(Artefact artefact)
 		{
-			try
-			{
-				Log.DebugFormat("Put({0})", artefact);
-				_output.WriteLine("Artefact artefact: " + artefact.ToString());
-				WriteConcernResult result = _mcArtefacts.Insert<BsonDocument>(BsonDocument.Create(artefact.Data));
-				Log.Debug(result);
-				if (result.Ok)
-					artefact.State = ArtefactState.Current;
-				return result.ToString();
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex);
-				_output.WriteLine(ex.ToString());
-				throw;
-				return string.Empty;
-			}
+			Log.DebugFormat("Post({0})", artefact);
+			_output.WriteLine("artefact: " + artefact);
+			WriteConcernResult result = Save(artefact);
+			Log.Debug(result);
+			_output.WriteLine("result: " + result);
+			return default(HttpWebResponse);
 		}
 		
-		/// <summary>
-		/// Get the specified request.
-		/// </summary>
-		/// <param name="request">Request.</param>
-		public Artefact Get(MatchArtefactRequest request)
+		
+		public object Put(Artefact artefact)
 		{
-			try {
-				
-				//base.Request.InputStream;
-				Log.DebugFormat("Get({0})", request);
-				_output.WriteLine("{0}: {1}", request.Match.GetType(), ExpressionPrettyPrinter.PrettyPrint(request.Match));
-				
-				object result = _mcArtefacts.FindAs<Artefact>(Query<Disk>.Where((Expression<Func<Disk, bool>>)request.Match));
-				Log.Debug(result);
-				List<object> results = new List<object>();
-				foreach (object r in (IEnumerable)result)
-				{
-					results.Add(r);
-					Log.Debug(r);
-					_output.WriteLine(r.ToString());
-				}
-				return results.Count > 0 ? (Artefact)results[0] : null;
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex);
-				_output.WriteLine(ex.ToString());
-				throw;
-				return null;
-			}
+			Log.DebugFormat("Put({0})", artefact);
+			_output.WriteLine("artefact: " + artefact);
+			WriteConcernResult result = Save(artefact, SaveType.Update);	//InsertOrUpdate(artefact);
+			Log.Debug(result);
+			_output.WriteLine("result: " + result);
+			return default(HttpWebResponse);// artefact;
 		}
 		
 		/// <summary>
@@ -193,6 +167,32 @@ namespace Artefacts.Service
 			}
 			return null;
 		}
+		
+		#region Helper functions
+		private WriteConcernResult Save(Artefact artefact, SaveType saveType = SaveType.InsertOrUpdate)
+		{
+			try
+			{
+				BsonDocument artefactData = BsonDocument.Create(artefact.Data);
+				WriteConcernResult result =
+					saveType == SaveType.Insert ? _mcArtefacts.Insert<BsonDocument>(artefactData)
+				:	saveType == SaveType.Update ? _mcArtefacts.Update(
+						Query<Artefact>.EQ<ObjectId>(a => a.Id, artefact.Id),
+						Update<BsonDocument>.Replace(artefactData))
+				:	saveType == SaveType.InsertOrUpdate ? _mcArtefacts.Save<BsonDocument>(artefactData)
+				: default(WriteConcernResult);
+				if (result.Ok)
+					artefact.State = ArtefactState.Current;
+				return result;
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex);
+				_output.WriteLine(ex.ToString());
+				throw;
+			}
+		}
+		#endregion
 	}
 }
 
