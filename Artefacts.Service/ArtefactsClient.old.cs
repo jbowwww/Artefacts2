@@ -26,8 +26,11 @@ namespace Artefacts.Service
 		
 		#region Private fields
 		private TextWriter _bufferWriter;
+
 		private string _serviceBaseUrl;
+
 		private IServiceClient _serviceClient;
+
 		private readonly Dictionary<object, Artefact> _artefacts = new Dictionary<object, Artefact>();
 		#endregion
 		
@@ -61,8 +64,8 @@ namespace Artefacts.Service
 						response.StatusCode, response.StatusDescription, response.CharacterSet,
 						response.ContentEncoding, response.ContentType, response.ContentLength))
 			};
-//			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJson();//.SerializeToString();	//a.ToBsonDocument();
-//			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJson<DataDictionary>() };		
+			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJson();//.SerializeToString();	//a.ToBsonDocument();
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJson<DataDictionary>() };		
 //			JsConfig<Artefact>.SerializeFn = a => new DynamicJson(a.Data); StringExtensions.ToJson<DataDictionary>(a.Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
 //			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { /*Persisted*/Data = a.FromJson<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
 //			JsConfig<Expression>.SerializeFn = e => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).SerializeText(e);
@@ -133,7 +136,7 @@ namespace Artefacts.Service
 		{
 			predicate = (Expression<Func<T, bool>>)Visitor.Visit(predicate);
 			_bufferWriter.WriteLine("Get<{0}>(match: {1})", typeof(T).FullName, predicate);
-			QueryResults results = _serviceClient.Get<QueryResults>(QueryRequest.Make<T>(predicate));
+			QueryResults results = _serviceClient.Get<QueryResults>(QueryRequest<T>.Make(predicate));
 			_bufferWriter.WriteLine("result = " + results);
 			return results;
 		}
@@ -162,7 +165,7 @@ namespace Artefacts.Service
 			predicate = (Expression<Func<T, bool>>)Visitor.Visit(predicate);
 			_bufferWriter.WriteLine("GetOrCreate<{0}>(match: {1}, create: {2})", typeof(T).FullName, predicate, create);
 			Artefact artefact;
-			QueryRequest query = QueryRequest.Make<T>(predicate);
+			QueryRequest<T> query = QueryRequest<T>.Make(predicate);
 			QueryResults result = _serviceClient.Get<QueryResults>(query);
 			_bufferWriter.WriteLine("result = " + result);
 			if (result == null || result.Artefacts.Count() == 0)
@@ -177,7 +180,7 @@ namespace Artefacts.Service
 			T instance = artefact.As<T>();
 			_artefacts[instance] = artefact;
 			return instance;
-		}
+		}		
 		
 		/// <summary>
 		/// Updates or creates an artefact
@@ -187,10 +190,9 @@ namespace Artefacts.Service
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
 		/// <returns><c>true</c> if the artefact was newly created, otherwise, <c>false</c></returns>
 		public bool Save<T>(Expression<Func<T, bool>> match, T instance)
-		{
 			// might be avalue type?
-			//			if (instance == null)
-			//				throw new ArgumentNullException("create");
+//			if (instance == null)
+//				throw new ArgumentNullException("create");
 			if (match == null)
 				throw new ArgumentNullException("match");
 			match = (Expression<Func<T, bool>>)Visitor.Visit(match);

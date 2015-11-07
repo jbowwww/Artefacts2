@@ -24,8 +24,8 @@ namespace Artefacts
 				sb.AppendFormat(
 					"{0}Status: {1}: {2}\n{0}Error: {3}: {4}\n{0}Source: {5}\n{0}TargetSite: {9}\n{0}Data: {10}\n" +
 					"{0}{12}\n{0}InnerException: {11}\n{0}Total Errors: {6}",	//\n{0}Response Body: {7}",
-					indentString.Repeat(indentLevel), we.StatusCode, we.StatusDescription, we.ErrorCode, we.ErrorMessage,
-					we.Source, we.ResponseStatus.Errors == null ? 0 : we.ResponseStatus.Errors.Count, we.ResponseBody,
+					indentString.Repeat(indentLevel), we.StatusCode, we.StatusDescription, we.ErrorCode, we.ErrorMessage ?? string.Empty,
+					we.Source, we.ResponseStatus == null || we.ResponseStatus.Errors == null ? 0 : we.ResponseStatus.Errors.Count, we.ResponseBody,
 					we.StackTrace.Trim().Replace("\n", string.Concat("\n", indentString.Repeat(indentLevel + 1))),
 					we.TargetSite.ReflectedType.Name + ": " + we.TargetSite.Name, ex.Data.Count,
 					we.InnerException == null ? "(null)" : we.InnerException.Format(indentString, indentLevel + 1),
@@ -37,7 +37,7 @@ namespace Artefacts
 							we.StackTrace != null ?
 								string.Concat("StackTrace: \n", indentString.Repeat(indentLevel + 1),
 								ex.StackTrace.Trim().Replace("\n", string.Concat("\n", indentString.Repeat(indentLevel)))) : ""));
-				if (we.ResponseStatus.Errors != null && we.ResponseStatus.Errors.Count > 0)
+				if (we.ResponseStatus != null && we.ResponseStatus.Errors != null && we.ResponseStatus.Errors.Count > 0)
 				{
 					foreach (ResponseError error in we.ResponseStatus.Errors)
 						sb.Append("Error[]: " + error.FieldName + ": " + error.Message);

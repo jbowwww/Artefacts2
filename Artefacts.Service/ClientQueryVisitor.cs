@@ -9,12 +9,26 @@ using MongoDB.Bson;
 
 namespace Artefacts.Service
 {
-	public class ClientQueryVisitor : ClientQueryVisitor<Artefact>
+//	public class ClientQueryVisitor : ClientQueryVisitor<Artefact>
+//	{
+//	}
+//
+//	public class ClientQueryVisitor<TArtefact> : ExpressionVisitor where TArtefact : Artefact
+	
+	public class ClientQueryVisitor : ExpressionVisitor
 	{
-	}
-
-	public class ClientQueryVisitor<TArtefact> : ExpressionVisitor where TArtefact : Artefact
-	{
+		public static ClientQueryVisitor Singleton {
+			get;
+			private set;
+		}
+		
+		static ClientQueryVisitor()
+		{
+			if (Singleton != null)
+				throw new InvalidProgramException("ClientQueryVisitor.Singleton is not null in static constructor");
+			Singleton = new ClientQueryVisitor();
+		}
+		
 		const BindingFlags bf =
 			BindingFlags.GetField | BindingFlags.GetProperty |
 			BindingFlags.Instance | BindingFlags.Static |

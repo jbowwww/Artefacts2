@@ -8,46 +8,45 @@ using ServiceStack.Messaging;
 
 namespace Artefacts.Service
 {
-//	public class QueryRequest<T> : QueryRequest
-//	{
-//		public QueryRequest(Expression<Func<T, bool>> where, ExpressionVisitor visitor = null)
-//		: base((Expression)where, visitor)
-//		{
-//		}
-//	}
-	
-	/// <summary>
-	/// <see cref="MatchArtefactRequest"/> may become obsolete by replacig with this
-	/// 	- Although this could have wider uses
-	/// </summary>
-	[DataContract]
-	[Route("/Query/", "GET")]
+	[DataContract, Route("/Query/{Data}", "GET")]
 	public class QueryRequest : IReturn<QueryResults>
 	{
-		public static QueryRequest Make(Expression<Func<dynamic, bool>> where)
+		public static QueryRequest Make<T>(Expression<Func<T, bool>> predicate)
 		{
-			return new QueryRequest((Expression)where);
+			return new QueryRequest((LambdaExpression)predicate);
 		}
 		
-		public static QueryRequest Make<T>(Expression<Func<T, bool>> where)
-		{
-			return new QueryRequest((Expression)where);
-		}
-
 		[DataMember(Order=1)]
 		public string Data { get; set; }
 
-		public LambdaExpression Where {
-			get { return Data == null ? null : (LambdaExpression)Data.FromJson<ExpressionNode>().ToExpression(); }
-			set { Data = value.ToExpressionNode().ToJson<ExpressionNode>(); }
+		public LambdaExpression Predicate {
+			get { return Data == null ? null : (LambdaExpression)Data.FromJsv<ExpressionNode>().ToExpression(); }
+			set { Data = value.ToExpressionNode().ToJsv<ExpressionNode>(); }
 		}
-
-		public QueryRequest(Expression where)
+		
+		public QueryRequest(LambdaExpression predicate)
 		{
-			if (where.NodeType != ExpressionType.Lambda)
-				throw new ArgumentException("Not a LambdaExpression", "where");
-			this.Where = (LambdaExpression)where;
+			this.Predicate = predicate;
 		}
 	}
+	
+//	[Route("/Query/{Data}")]
+//	public class QueryRequest<T> : QueryRequest
+//	{
+//		public static QueryRequest<T> Make(Expression<Func<T, bool>> predicate)
+//		{
+//			return new QueryRequest<T>(predicate);
+//		}
+//
+//		public QueryRequest(Expression<Func<T, bool>> predicate)
+//		{
+//			this.Predicate = predicate;
+//		}
+//
+//		public Expression<Func<T, bool>> Predicate {
+//			get { return (Expression<Func<T, bool>>)base.Predicate; }
+//			set { base.Predicate = value; }
+//		}
+//	}
 }
 

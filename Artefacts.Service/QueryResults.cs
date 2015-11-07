@@ -31,6 +31,9 @@ namespace Artefacts.Service
 			set;
 		}
 		
+		[DataMember(Order = 2)]
+		public ResponseStatus ResponseStatus { get; set; }
+		
 		public QueryResults(IEnumerable<Artefact> artefacts) { Artefacts = new List<Artefact>(artefacts); }
 		
 		public IEnumerable<T> Get<T>() where T : new()

@@ -112,9 +112,12 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Extensions\" />
+    <Folder Include="DTO\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="QueryBuilderVisitor.cs" />
+    <None Include="SaveArtefactRequest.cs" />
+    <None Include="QueryFactory.cs" />
+    <None Include="DTO\Artefact.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Plugins\FileSystem\ArtefactFileSystem.csproj">

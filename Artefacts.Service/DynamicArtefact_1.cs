@@ -31,7 +31,7 @@ namespace Artefacts
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
-	[Route("/artefacts/{Collection}/{Id}/", "POST,PUT")]
+	[Route("/artefacts/", "POST,PUT")]
 	public class Artefact// : DynamicObject	//, IConvertibleToBsonDocument	//, IDictionary<string, object>
 	{
 		#region Private fields
@@ -46,7 +46,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the artefact's identifier.
 		/// </summary>
-		[BsonId, DataMember]
+		[BsonId]
 		public string Id {
 			get;// { return Data.ContainsKey("_id") ? ObjectId.Parse((string)Data["_id"]) : ObjectId.Parse((string)PersistedData["_id"]); }
 			set;// { Data["_id"] = value.ToString(); }
@@ -55,7 +55,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the artefact's URI
 		/// </summary>
-		[BsonIgnore, DataMember]
+		[BsonIgnore]
 		public string Uri {
 			get { return _uri ?? (_uri = PathUtils.CombinePaths("/", Collection, Id)); }
 		}
@@ -63,7 +63,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the server-side collection name
 		/// </summary>
-		[BsonIgnore, DataMember]
+		[BsonIgnore]
 		public string Collection {
 			get;// { return (string)this["_collection"]; }
 			set;// { this["_collection"] = value; }
@@ -72,7 +72,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets the <see cref="ArtefactState"/> of this artefact
 		/// </summary>
-		[BsonIgnore, DataMember]
+		[BsonIgnore]
 		public ArtefactState State {
 			get;
 			set;
@@ -81,7 +81,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time created.
 		/// </summary>
-		[BsonRequired, DataMember]
+		[BsonRequired]
 		public DateTime TimeCreated {
 			get;// { return (DateTime)this["_timeCreated"]; }
 			set;// { this["_timeCreated"] = value; }
@@ -90,7 +90,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time checked.
 		/// </summary>
-		[BsonRequired, DataMember]
+		[BsonRequired]
 		public DateTime TimeChecked {
 			get;// { return (DateTime)this["_timeChecked"]; }
 			set;// { this["_timeChecked"] = value; }
@@ -99,7 +99,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time modified.
 		/// </summary>
-		[BsonRequired, DataMember]
+		[BsonRequired]
 		public DateTime TimeModified {
 			get;// { return (DateTime)this["_timeModified"]; }
 			set;// { this["_timeModified"] = value; }
@@ -108,7 +108,7 @@ namespace Artefacts
 		/// <summary>
 		/// Timestamp when last this <see cref="Artefact"/> was saved/sent to server
 		/// </summary>
-		[BsonRequired, DataMember]
+		[BsonRequired]
 		public DateTime TimeSaved {
 			get;// { return (DateTime)this["_timeSaved"]; }
 			set;// { this["_timeSaved"] = value; }
@@ -117,7 +117,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the artefact data.
 		/// </summary>
-		[BsonExtraElements, DataMember]
+		[BsonExtraElements]
 		[DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
 		public DataDictionary Data {
 			get { return _artefactData ?? (_artefactData = new DataDictionary()); }

@@ -9,6 +9,7 @@ using Artefacts;
 using Artefacts.FileSystem;
 using Artefacts.Service;
 using ServiceStack.Text;
+using MongoDB.Bson;
 
 namespace Artefacts.TestClient
 {
@@ -23,12 +24,9 @@ namespace Artefacts.TestClient
 	{
 		#region Private fields
 		private TextBufferWriter _bufferWriter;
-
 		private string _serviceBaseUrl;
-
 		private IServiceClient _client;
 		private ArtefactsClient _artefactsClient;
-
 		private dynamic _artefact;
 		#endregion
 		
@@ -60,7 +58,7 @@ namespace Artefacts.TestClient
 				testBool = false
 			});//, testObjArray = new object[] { false, 2, "three", null } });
 			bufferWriter.WriteLine("\tJSON: " + ServiceStack.StringExtensions.ToJson(_artefact));
-			bufferWriter.WriteLine("\tBSON: " + _artefact.ToBsonDocument());
+//			bufferWriter.WriteLine("\tBSON: " + BsonDocument.Create(_artefact));
 			bufferWriter.WriteLine();
 			
 			_artefactsClient = new ArtefactsClient(_serviceBaseUrl, _bufferWriter);
@@ -70,7 +68,7 @@ namespace Artefacts.TestClient
 		[Test]
 		public void GetDisk()
 		{
-			QueryResults testResult = _client.Get<QueryResults>(QueryRequest.Make<Disk>(d => (d.Name == "sda")));
+			QueryResults testResult = _client.Get<QueryResults>((QueryRequest)QueryRequest.Make<Disk>(d => (d.Name == "sda")));
 			_bufferWriter.WriteLine("testResult = " + testResult.FormatString());
 		}
 
@@ -84,7 +82,6 @@ namespace Artefacts.TestClient
 			}
 		}
 
-		
 		[Test]
 		public void GetDrive()
 		{
@@ -102,22 +99,22 @@ namespace Artefacts.TestClient
 			}
 		}
 		
-		[Test]
+//		[Test]
 		public void RecurseDirectory()
 		{
-			RecurseDirectory(new Directory("/home/jk/Documents"));
+			RecurseDirectory(new Directory("/mnt/Trapdoor/mystuff/Moozik/"));
 		}
 		
-		public void RecurseDirectory(Directory dir, int nest = 0)
+		public void RecurseDirectory(Directory dir, int maxDepth = 2, int currentLevel = 0)
 		{
-			if (nest < 1)
+			if (currentLevel < maxDepth)
 			{
 //				_artefactsClient.GetOrCreate(d => d.Path != null && dir.Path != null && d.Path == dir.Path, () => dir);
 				_artefactsClient.Save<Directory>(d => d.Path != null && d.Path == dir.Path, dir);	// () => dir);
 			
 				foreach (Directory sd in dir.Directories)
 				{
-					RecurseDirectory(sd, nest + 1);
+					RecurseDirectory(sd, currentLevel + 1);
 				}
 			
 				foreach (File file in dir.Files)
@@ -128,6 +125,24 @@ namespace Artefacts.TestClient
 			}
 		}
 		
+		[Test]
+		public void GetFiles()
+		{
+			QueryResults testResult = _client.Get<QueryResults>(QueryRequest.Make<File>(f => f.Path != null));
+			_bufferWriter.WriteLine("testResult = " + testResult.FormatString());
+//			foreach (Artefact artefact in testResult.Artefacts)
+//				_bufferWriter.WriteLine("testResult.Artefacts[] = " + artefact.ToString());
+		}
+		
+
+		[Test]
+		public void GetLargeFiles()
+		{
+			QueryResults testResult = _artefactsClient.Get<File>(f => f.Size > (Int64) (100 * 1024 * 1024));
+			_bufferWriter.WriteLine("testResult = " + testResult.FormatString());
+			//			foreach (Artefact artefact in testResult.Artefacts)
+			//				_bufferWriter.WriteLine("testResult.Artefacts[] = " + artefact.ToString());
+		}
 		
 		#region Helper functions
 		/// <summary>

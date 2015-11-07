@@ -11,6 +11,7 @@ namespace Artefacts
 //	[Serializable]
 	[DebuggerDisplay("DataDictionary(Count={Count})")]
 	[DebuggerTypeProxy(typeof(DataDictionaryDebugView))]
+	[CollectionDataContract]
 	public class DataDictionary : Dictionary<string, object>
 	{
 		/// <summary>
@@ -107,7 +108,7 @@ namespace Artefacts
 			}
 			
 			[DebuggerBrowsable(DebuggerBrowsableState.RootHidden)]
-			DataDictionaryDebugView.KVP[] KeyValuePairs {
+			public DataDictionaryDebugView.KVP[] KeyValuePairs {
 				get;
 				 set;
 //				{
