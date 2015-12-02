@@ -12,6 +12,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Design", "Design", "{27664FDD-8C12-4A82-B1CF-C31179FDE3F5}"
 	ProjectSection(SolutionItems) = preProject
 		Documentation\Design\QualifiedTypeNames.txt = Documentation\Design\QualifiedTypeNames.txt
+		Documentation\Design\TODO.txt = Documentation\Design\TODO.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Artefacts", "Artefacts\Artefacts.csproj", "{55514DDE-1ED4-4C4F-B99B-9AB9EF2D2E56}"

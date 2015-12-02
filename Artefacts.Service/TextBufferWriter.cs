@@ -41,6 +41,7 @@ namespace Artefacts
 //				InsertTextArgs e = new InsertTextArgs();
 				Gtk.Application.Invoke(delegate {
 					_textBuffer.InsertAtCursor(value.ToString());
+					
 				});
 			}
 //				_textBuffer.InsertText(_sender, e);

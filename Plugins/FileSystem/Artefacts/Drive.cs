@@ -260,10 +260,10 @@ namespace Artefacts.FileSystem
 		/// Returns a <see cref="System.String"/> that represents the current <see cref="Artefacts.FileSystem.Disk"/>.
 		/// </summary>
 		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Artefacts.FileSystem.Disk"/>.</returns>
-		public override string ToString()
-		{
-			return this.ToString();
-		}
+//		public override string ToString()
+//		{
+//			return this.ToString();
+//		}
 		#endregion
 		#endregion
 	}

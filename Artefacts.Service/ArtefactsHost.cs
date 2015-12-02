@@ -1,9 +1,8 @@
-using ServiceStack;
-using ServiceStack.Logging;
 using System;
 using System.IO;
 using System.Threading;
-using Serialize.Linq.Nodes;
+using ServiceStack;
+using ServiceStack.Logging;
 
 namespace Artefacts.Service
 {
@@ -38,7 +37,7 @@ namespace Artefacts.Service
 		#region Private fields
 		private const int ThreadSleepTime = 615;
 		private TextWriter _output;
-		private bool _appHostThreadExit;
+		private byte _appHostThreadExit;
 		private Thread _appHostThread;
 		#endregion
 		
@@ -46,7 +45,7 @@ namespace Artefacts.Service
 		/// Gets a value indicating whether this instance is running.
 		/// </summary>
 		public bool IsRunning {
-			get { return _appHostThread != null && _appHostThread.IsAlive && !_appHostThreadExit; }
+			get { return _appHostThread != null && _appHostThread.IsAlive && (Thread.VolatileRead(ref _appHostThreadExit)==0); }
 		}
 		
 		/// <summary>
@@ -62,14 +61,9 @@ namespace Artefacts.Service
 		/// Initializes a new instance of the <see cref="Artefacts.Host.ArtefactsHost"/> class.
 		/// </summary>
 		public ArtefactsHost(string serviceBaseUrl, TextWriter output)
-			: base("Artefacts",
-				typeof(Artefact).Assembly,
-				typeof(Artefacts.FileSystem.Disk).Assembly,
-				typeof(ExpressionNode).Assembly)
-//				typeof(Func<>).Assembly,
-//				typeof(Expression).Assembly,
-//				typeof(IMongoQuery).Assembly,
-//				typeof(BsonDocument).Assembly,
+			: base("Artefacts", typeof(Artefact).Assembly,
+				typeof(Artefacts.Service.ArtefactsService).Assembly,
+				typeof(Artefacts.FileSystem.Disk).Assembly)
 		{
 			if (Singleton != null)
 				throw new InvalidOperationException("Singleton instance already exists");
@@ -140,7 +134,7 @@ namespace Artefacts.Service
 		private void Run()
 		{
 			Log.Info("ArtefactsHost.Run(): Start");
-			while (!Volatile.Read(ref _appHostThreadExit))
+			while (Thread.VolatileRead(ref _appHostThreadExit) == 0)
 			{
 //				Semaphore.WaitAny();
 				Thread.Sleep(ThreadSleepTime);
@@ -154,10 +148,10 @@ namespace Artefacts.Service
 		private new void Stop()
 		{
 			Log.Debug("ArtefactsHost.Stop()");
-			if (Volatile.Read(ref _appHostThreadExit))
+			if (Thread.VolatileRead(ref _appHostThreadExit) == 1)
 				throw new InvalidOperationException("Stop() has already been called");
 			base.Stop();
-			Volatile.Write(ref _appHostThreadExit, true);
+			Thread.VolatileWrite(ref _appHostThreadExit, 1);
 		}
 	}
 }

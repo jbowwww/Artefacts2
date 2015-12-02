@@ -1,24 +1,14 @@
 using System;
-using Artefacts;
-using MongoDB;
-using MongoDB.Bson;
 using System.IO;
-using System.Web;
 using System.Net;
-using ServiceStack;
-using System.Runtime.CompilerServices;
-using ServiceStack.Text;
-using System.Linq.Expressions;
-using Serialize.Linq.Nodes;
-using Serialize.Linq.Serializers;
-using MongoDB.Driver;
-using MongoDB.Driver.Builders;
-using MongoDB.Driver.Linq;
 using System.Linq;
 using System.Collections.Generic;
-using Artefacts.FileSystem;
-using System.Collections;
-using System.Reflection;
+using Artefacts;
+using ServiceStack.Text;
+using MongoDB.Bson;
+using MongoDB.Driver;
+using MongoDB.Driver.Builders;
+using ServiceStack;
 using ServiceStack.Logging;
 
 namespace Artefacts.Service
@@ -45,14 +35,31 @@ namespace Artefacts.Service
 		/// </summary>
 		private static void ConfigureServiceStack()
 		{
+			JsConfig.TryToParsePrimitiveTypeValues = true;
+			JsConfig.TreatEnumAsInteger = true;
+
 			// ServiceStack setup
 			//			JsConfig<Expression>.DeSerializeFn = s => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).DeserializeText(s);
-			//			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a./*Persisted*/Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
-			//			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
-			//			JsConfig<QueryDocument>.SerializeFn = q => q.ToJsv(); //((BsonDocument)q).AsByteArray;
+			JsConfig<Artefact>.SerializeFn = a => ServiceStack.StringExtensions.ToJsv<DataDictionary>(a./*Persisted*/Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = ServiceStack.StringExtensions.FromJsv<DataDictionary>(a) }; // FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
+			JsConfig<BsonDocument>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson(b);
+			JsConfig<BsonDocument>.DeSerializeFn = b => BsonDocument.Parse(b);
+//			JsConfig<QueryRequest>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson<QueryRequest>(b);// b.ToJson();
+//			JsConfig<QueryRequest>.DeSerializeFn = b => (QueryRequest)BsonDocument.Parse(b);
+//			JsConfig<QueryDocument>.SerializeFn = q => q.ToJsv(); //((BsonDocument)q).AsByteArray;
 			//			JsConfig<QueryDocument>.DeSerializeFn = q => q.FromJsv<QueryDocument>();
 			//			JsConfig<IMongoQuery>.SerializeFn = q => q.ToJsv(); //((BsonDocument)q).AsByteArray;
 			//			JsConfig<IMongoQuery>.DeSerializeFn = q => q.FromJsv<QueryDocument>();
+		}
+		
+		/// <summary>
+		/// Makes the name of the safe collection.
+		/// </summary>
+		/// <returns>The safe collection name.</returns>
+		/// <param name="collectionName">Collection name.</param>
+		public static string MakeSafeCollectionName(string collectionName)
+		{
+			return collectionName.Replace(".", "").Replace("`", "-").Replace('[', '-').Replace(']', '-');
 		}
 		#endregion
 		
@@ -67,7 +74,14 @@ namespace Artefacts.Service
 		private MongoClient _mClient;		// TODO: Refactor out to a new storage class , keep it generic enough for possible storage provider changes?
 		private MongoClientSettings _mClientSettings;
 		private MongoDatabase _mDb;
-		private MongoCollection/*<Artefact>*/ _mcArtefacts;
+//		private MongoCollection/*<Artefact>*/ _mcArtefacts;
+		#endregion
+		
+		#region Properties
+		public ExpressionVisitor Visitor {
+			get { return _visitor ?? (_visitor = new ServerQueryVisitor()); }
+		}
+		private ExpressionVisitor _visitor = null;
 		#endregion
 		
 		/// <summary>
@@ -79,7 +93,7 @@ namespace Artefacts.Service
 			_output = output;
 			Log.DebugFormat("ArtefactsService({0})", output);
 			Log.Info("Starting service");
-
+//			ExpressionFormatter;
 			// Storage (Mongo) setup
 			_mClientSettings = new MongoClientSettings() { };		// TODO: Settings
 			_mClient = new MongoClient("server=localhost");
@@ -87,8 +101,9 @@ namespace Artefacts.Service
 			_output.WriteLine("mClient: " + _mClient);
 			_mDb = new MongoDatabase(_mClient.GetServer(), "Artefacts", new MongoDatabaseSettings());
 			Log.Debug(_mDb);
-			_mcArtefacts = _mDb.GetCollection/*<Artefact>*/("Artefacts");
-			Log.Debug(_mcArtefacts);
+			
+//			_mcArtefacts = _mDb.GetCollection/*<Artefact>*/("Artefacts");
+//			Log.Debug(_mcArtefacts);
 		}
 
 		/// <summary>
@@ -130,16 +145,19 @@ namespace Artefacts.Service
 		{
 			try {
 				Log.DebugFormat("Get({0})", query);
-				_output.WriteLine("{0}: {1}", query.Predicate.GetType(), ExpressionPrettyPrinter.PrettyPrint(query.Predicate));
-				Type elementType = query.Predicate.Parameters[0].Type;
-//				Type filterFunc = typeof(Func<>).MakeGenericType(elementType);
-				Type queryType = typeof(Query<>).MakeGenericType(elementType);
-				MethodInfo whereMethod = queryType.GetMethod("Where");
-				IMongoQuery mongoQuery = (IMongoQuery)whereMethod.Invoke(null, new object[] { query.Predicate });
-				_mcArtefacts = _mDb.GetCollection(elementType.Name);
-				object result = _mcArtefacts.FindAs<Artefact>(mongoQuery);
+				_output.WriteLine("Get({0})", query);
+//				_output.WriteLine("{0}: {1}", query.Predicate.GetType(), ExpressionPrettyPrinter.PrettyPrint(query.Predicate));
+//				Type elementType = query.Predicate.Parameters[0].Type;
+//				Type queryType = typeof(Query<>).MakeGenericType(elementType);
+//				MethodInfo whereMethod = queryType.GetMethod("Where");
+//				LambdaExpression predicate = (LambdaExpression)Visitor.Visit(query.Predicate);
+//				IMongoQuery mongoQuery = (IMongoQuery)whereMethod.Invoke(null, new object[] { predicate });
+				MongoCollection<Artefact> _mcArtefacts = _mDb.GetCollection<Artefact>(query.CollectionName);	// elementType.Name);
+				object result = _mcArtefacts.FindAs<Artefact>(query.Query);
 				Log.Debug(result);
-				List<Artefact> results = ((IEnumerable<Artefact>)result).ToList();
+				List<Artefact> results = result != null ?
+					((IEnumerable<Artefact>)result).ToList() :
+					new List<Artefact>();
 				QueryResults r = new QueryResults(results);
 				Log.Debug(r);
 				return r;
@@ -174,19 +192,23 @@ namespace Artefacts.Service
 			return null;
 		}
 		
-		#region Helper functions
+		/// <summary>
+		/// Save the specified artefact and saveType.
+		/// </summary>
+		/// <param name="artefact">Artefact.</param>
+		/// <param name="saveType">Save type.</param>
 		private WriteConcernResult Save(Artefact artefact, SaveType saveType = SaveType.InsertOrUpdate)
 		{
 			try
 			{
-				_mcArtefacts = _mDb.GetCollection(artefact.Collection);
+				MongoCollection<Artefact> _mcArtefacts = _mDb.GetCollection<Artefact>(artefact.Collection);
 				BsonDocument artefactData = BsonDocument.Create(artefact.Data);
 				WriteConcernResult result =
-					saveType == SaveType.Insert ? _mcArtefacts.Insert<Artefact>(artefact)// _mcArtefacts.Insert<BsonDocument>(artefactData)
+					saveType == SaveType.Insert ? _mcArtefacts.Insert(artefact)// _mcArtefacts.Insert<BsonDocument>(artefactData)
 				:	saveType == SaveType.Update ? _mcArtefacts.Update(
 						Query<Artefact>.EQ<string>(a => a.Id, artefact.Id),
 						Update<Artefact>.Replace(artefact))//Update<BsonDocument>.Replace(artefactData))
-				:	saveType == SaveType.InsertOrUpdate ? _mcArtefacts.Save<Artefact>(artefact)// _mcArtefacts.Save<BsonDocument>(artefactData)
+				:	saveType == SaveType.InsertOrUpdate ? _mcArtefacts.Save(artefact)// _mcArtefacts.Save<BsonDocument>(artefactData)
 				: default(WriteConcernResult);
 				if (result.Ok)
 					artefact.State = ArtefactState.Current;
@@ -199,7 +221,6 @@ namespace Artefacts.Service
 				throw;
 			}
 		}
-		#endregion
 	}
 }
 

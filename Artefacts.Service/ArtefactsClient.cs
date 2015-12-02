@@ -16,6 +16,7 @@ namespace Artefacts.Service
 		#region Static members
 		public static readonly ILogFactory LogFactory;
 		public static readonly ILog Log;
+		public static TextWriter LogWriter { get; private set; }
 		
 		static ArtefactsClient()
 		{
@@ -45,7 +46,7 @@ namespace Artefacts.Service
 		/// <param name="bufferWriter">Buffer writer.</param>
 		public ArtefactsClient(string serviceBaseUrl, TextWriter bufferWriter)
 		{
-			_bufferWriter = bufferWriter;
+			_bufferWriter = LogWriter = bufferWriter;
 			_serviceBaseUrl = serviceBaseUrl;
 			this.Visitor = new ClientQueryVisitor();
 			_bufferWriter.Write(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
@@ -201,9 +202,10 @@ namespace Artefacts.Service
 			_bufferWriter.WriteLine("result = " + result);
 			if (result == null || result.Artefacts.Count() == 0)
 			{
-				artefact = new Artefact(instance, this) {
-					Collection = typeof(T).Name		// TODO: <-- ? Manually use T.name in URL which becomes the collection name on server side
-				};
+				artefact = new Artefact(instance, this);
+//				{
+//					Collection = typeof(T).Name		// TODO: <-- ? Manually use T.name in URL which becomes the collection name on server side
+//				};
 				_serviceClient.Post(artefact);
 				_artefacts[instance] = artefact;
 				return true;

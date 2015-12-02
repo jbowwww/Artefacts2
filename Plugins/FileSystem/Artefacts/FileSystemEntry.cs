@@ -41,7 +41,7 @@ namespace Artefacts.FileSystem
 		/// <summary>
 		/// The drive.
 		/// </summary>
-		public Drive Drive { get; set; }
+		public Drive Drive { get; private set; }
 
 		/// <summary>
 		/// Gets or sets the drive parition.

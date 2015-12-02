@@ -33,7 +33,27 @@ namespace Artefacts.Service
 			BindingFlags.GetField | BindingFlags.GetProperty |
 			BindingFlags.Instance | BindingFlags.Static |
 			BindingFlags.Public | BindingFlags.NonPublic;
+		
+//		protected override Expression VisitConstant(ConstantExpression c)
+//		{
+//			if (c.Type.IsLargeInteger())
+//				return Expression.Convert(Expression.Constant(c.Value, c.Type), c.Type);
+//			return base.VisitConstant(c);
+//		}
 
+//		protected override Expression VisitBinary(BinaryExpression b)
+//		{
+////			return b;
+//			return base.VisitBinary(b);
+//		}
+		
+//		protected override Expression VisitConstant(ConstantExpression c)
+//		{
+////			return c;
+////			return Expression.Convert(c, c.Type);
+//			return Expression.Constant(c.Value, c.Value == null ? typeof(object) : c.Value.GetType());// base.VisitConstant(c);
+//		}
+		
 		protected override Expression VisitMemberAccess(MemberExpression m)
 		{
 			Expression mExpression = Visit(m.Expression);
@@ -63,9 +83,21 @@ namespace Artefacts.Service
 				// Gets unknown parameter exception - must have to change the local var definition in the lambda as well I guess (too hard? other/better ways?)
 //				else if (mExpression.NodeType == ExpressionType.Parameter)
 //				{
-//					return Expression.Property(
-////						.MakeMemberAccess(
-//						Expression.Parameter(typeof(Artefact)), m.Member.Name);
+////					return Expression.Property(
+//////						.MakeMemberAccess(
+////						Expression.Parameter(typeof(Artefact)), m.Member.Name);
+////					return Expression.MakeIndex(
+////						mExpression,
+////						typeof(Artefact).GetProperty("Item", typeof(object), new Type[] { typeof(string) }),
+//					//						new Expression[] { Expression.Constant(m.Member.Name) });
+//					return Expression.Convert(
+//						Expression.Call(
+//						Expression.Parameter(
+//							typeof(Artefact),
+//							((ParameterExpression)mExpression).Name),
+//							typeof(Artefact).GetMethod("GetMember"),
+//							new Expression[] { Expression.Constant(m.Member.Name) 
+//					}), m.Member.GetMemberReturnType());
 //				}
 			}
 			

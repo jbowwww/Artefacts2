@@ -114,12 +114,12 @@ namespace Artefacts
 		/// </summary>
 		/// <param name="expression">Expression.</param>
 		/// <returns>The string.</returns>
-		public static string ToString(this Expression expression)
-		{
-			return expression.ToString();
-			// ExpressionNode.ToString() converts back to a System.Linq.Expression
-			//return Serialize.Linq.Extensions.ExpressionExtensions.ToExpressionNode().ToString();
-		}
+//		public static string ToString(this Expression expression)
+//		{
+//			return expression.ToString();
+//			// ExpressionNode.ToString() converts back to a System.Linq.Expression
+//			//return Serialize.Linq.Extensions.ExpressionExtensions.ToExpressionNode().ToString();
+//		}
 	}
 }
 

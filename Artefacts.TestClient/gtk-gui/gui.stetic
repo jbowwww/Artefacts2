@@ -17,6 +17,8 @@
     <signal name="DeleteEvent" handler="OnDeleteEvent" />
     <signal name="ConfigureEvent" handler="OnConfigureEvent" />
     <signal name="ResizeChecked" handler="OnResizeChecked" />
+    <signal name="Mapped" handler="OnMapped" />
+    <signal name="Shown" handler="OnShown" />
     <child>
       <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
         <property name="MemberName" />

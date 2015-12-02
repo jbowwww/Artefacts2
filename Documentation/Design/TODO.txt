@@ -1,0 +1,9 @@
+151113-2148
+Most things work but queries involving comparison of long integer types cannot seem to get them working.
+Says something like "greater than not defined fr types int64 and string"
+I think it is Serialize.Linq that is unable to properly handle long integer types
+Based on that, and that I do not like the way the serialized queries look as part of the GET URI,
+replace Serialize.Linq with another drop in library or code something adequate.
+	151114-1156
+	- May/may not prove useful to recall that Expression.ToString() was almost sufficient
+	  It only failed to support generic types

@@ -79,6 +79,26 @@ namespace Artefacts
 			else
 				throw new MemberAccessException(string.Format("Wrong member type ({0}) for member \"{1}\"", member.MemberType, member.Name));
 		}
+		
+		public static bool IsPublic(this MemberInfo member)
+		{
+			if (member == null)
+				throw new ArgumentNullException("member");
+			Type memberType = member.GetType();
+			if (typeof(FieldInfo).IsAssignableFrom(memberType))
+				return ((FieldInfo)member).IsPublic;
+			if (typeof(PropertyInfo).IsAssignableFrom(memberType))
+			{
+				MethodInfo getMethod = ((PropertyInfo)member).GetGetMethod();
+				MethodInfo setMethod = ((PropertyInfo)member).GetSetMethod();
+				return
+					getMethod != null && getMethod.IsPublic &&
+					setMethod != null && setMethod.IsPublic;
+			}
+			if (typeof(MethodInfo).IsAssignableFrom(memberType))
+				return ((MethodInfo)member).IsPublic;
+			throw new ArgumentOutOfRangeException("member", member, "Not a supported member type (type is \"" + memberType.FullName + "\")");
+		}
 	}
 }
 

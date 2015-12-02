@@ -8,6 +8,24 @@ namespace Artefacts.FileSystem
 	/// </summary>
 	public class File : FileSystemEntry
 	{
+		/// <summary>
+		/// Returns a formatted string representing a file size
+		/// </summary>
+		/// <returns>The formatted size string</returns>
+		/// <param name="Size">File size</param>
+		public static string FormatSize(long Size)
+		{
+			string[] units = { "B", "KB", "MB", "GB", "TB" };
+			double s = (double)Size;
+			int unitIndex = 0;
+			while (s > 1024 && unitIndex < units.Length)
+			{
+				unitIndex++;
+				s /= 1024;
+			}
+			return string.Concat(s.ToString("N2"), units[unitIndex]);
+		}
+
 		#region Public fields & properties
 		/// <summary>
 		/// The size.

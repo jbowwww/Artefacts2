@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using ServiceStack.Logging;
 using System.Linq;
-using NUnit.Framework;
 using System.IO;
+using ServiceStack.Logging;
+using NUnit.Framework;
 
 namespace Artefacts.Service
 {
@@ -16,7 +16,7 @@ namespace Artefacts.Service
 		
 		static TestClientBase()
 		{
-			Log = ArtefactsClient.LogFactory.GetLogger(typeof(TestClientBase));
+			Log = Artefact.LogFactory.GetLogger(typeof(TestClientBase));
 		}
 		
 		public TestClientBase(TextWriter writer = null)
@@ -35,7 +35,7 @@ namespace Artefacts.Service
 		/// calling <see cref="Dispose"/>, you must release all references to the <see cref="Artefacts.Service.TestClientBase"/>
 		/// so the garbage collector can reclaim the memory that the <see cref="Artefacts.Service.TestClientBase"/> was occupying.
 		/// </remarks>
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			
 		}
@@ -54,8 +54,8 @@ namespace Artefacts.Service
 					_writer.WriteLine("\n--------\nTest: {0}\n--------", testName);
 					mi.Invoke(this, new object[] { });
 				}
-				//					catch (WebServiceException e) { clientWriter.WriteLine("ERROR: " + ex.Format()); }
-				//					catch (TargetInvocationException e) { clientWriter.WriteLine("ERROR: " + ex.Format()); }
+//									catch (WebServiceException e) { clientWriter.WriteLine("ERROR: " + ex.Format()); }
+//									catch (TargetInvocationException e) { clientWriter.WriteLine("ERROR: " + ex.Format()); }
 				catch (Exception ex) {
 					Log.Error("! ERROR: ", ex);
 					_writer.WriteLine("! ERROR: " + ex.Format());

@@ -7,9 +7,9 @@ using System.IO;
 using System.Text;
 using System.Linq;
 using System.Collections.Generic;
-using ServiceStack;
+//using ServiceStack;
 using System.Net;
-using ServiceStack.Text;
+//using ServiceStack.Text;
 
 /// <summary>
 /// Main window.
@@ -31,18 +31,20 @@ public partial class MainWindow: Gtk.Window
 			return tvClient.Buffer;
 		}
 	}
-	
-	public TextBufferWriter ClientWriter { get; private set; }
-	
-	public TextBufferWriter HostWriter { get; private set; }
 	#endregion
 	
 	#region Construction & Disposal
 	public MainWindow() : base (Gtk.WindowType.Toplevel)
 	{
 		Build();
-		ClientWriter = new TextBufferWriter(ClientTextBuffer, this);
-		HostWriter = new TextBufferWriter(HostTextBuffer, this);
+		tvHost.InsertAtCursor += (object o, InsertAtCursorArgs args) =>
+		{
+			tvHost.ScrollToIter(tvHost.Buffer.EndIter, 0, false, 0, 0);
+		};
+		tvClient.InsertAtCursor += (object o, InsertAtCursorArgs args) => 
+		{
+			tvClient.ScrollToIter(tvClient.Buffer.EndIter, 0, false, 0, 0);
+		};
 		Maximize();
 	}
 

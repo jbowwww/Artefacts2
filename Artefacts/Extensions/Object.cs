@@ -1,12 +1,11 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Reflection;
 using System.Text;
-using System.Dynamic;
 using System.Linq.Expressions;
+using System.Reflection;
+using System.Runtime.Serialization;
+using System.Dynamic;
 
 namespace Artefacts
 {
@@ -16,10 +15,10 @@ namespace Artefacts
 	public static class Object_Ext
 	{
 		
-		public static Type GetType(this object o)
-		{
-			return o != null ? o.GetType() : typeof(object);
-		}
+//		public static Type GetType(this object o)
+//		{
+//			return o != null ? o.GetType() : typeof(object);
+//		}
 		
 		
 		///
@@ -38,10 +37,11 @@ namespace Artefacts
 			public BindingFlags GetMembersBindingFlags = BindingFlags.Instance | BindingFlags.DeclaredOnly |
 				BindingFlags.Public /*| BindingFlags.NonPublic*/ | BindingFlags.GetField | BindingFlags.GetProperty;
 			public Func<MemberInfo, bool> GetMembersWhereClause = (mi) =>
-					((	mi.MemberType == MemberTypes.Field
-					 && !((FieldInfo)mi).Name.EndsWith(">k__BackingField"))
+				(mi.GetCustomAttribute<NonSerializedAttribute>() == null
+				 &&	
+				 ((mi.MemberType == MemberTypes.Field && !((FieldInfo)mi).Name.EndsWith(">k__BackingField"))
 				 || (mi.MemberType == MemberTypes.Property
-				 && mi.Name.CompareIgnoreCase("item") != 0));
+				 && mi.Name.CompareIgnoreCase("item") != 0)));
 
 			public FormatStringContext(object obj, StreamingContextStates streamingContextState = StreamingContextStates.Persistence)
 			{
@@ -178,11 +178,19 @@ namespace Artefacts
 			{
 				if (type.Namespace == null || !type.Namespace.StartsWith("System"))
 				{
-					bool hasSerializableAttribute = type.GetCustomAttribute<SerializableAttribute>(false) != null;
-
-					MemberInfo[] mis = hasSerializableAttribute ?
-						FormatterServices.GetSerializableMembers(type, new StreamingContext(StreamingContextStates.Remoting)).ToArray()
-					:	type.GetMembers(context.GetMembersBindingFlags).Where(context.GetMembersWhereClause).ToArray();
+					bool hasSerializableAttribute = type.GetCustomAttribute<SerializableAttribute>() != null;
+					bool hasDataContractAttribute = type.GetCustomAttribute<DataContractAttribute>() != null;
+					MemberInfo[] mis;
+					if (hasSerializableAttribute)
+						mis = FormatterServices.GetSerializableMembers(type, new StreamingContext(StreamingContextStates.Remoting)).ToArray();
+					else if (hasDataContractAttribute)
+					{
+						mis = type.GetMembers(context.GetMembersBindingFlags).Where(mi => mi.GetCustomAttribute<DataMemberAttribute>() != null).ToArray();
+						if (mis.Length == 0)
+							mis = type.GetMembers(context.GetMembersBindingFlags).Where(mi => !(mi.GetCustomAttribute<IgnoreDataMemberAttribute>() != null)).ToArray();
+					}
+					else
+						mis = type.GetMembers(context.GetMembersBindingFlags).Where(context.GetMembersWhereClause).ToArray();
 					sb.Append(string.Concat(mis.Length > 0 ? string.Concat("\n", context.Indent, "[")
 						: "[", type.FullName, "]", hasSerializableAttribute ? " marked with [Serializable]" : ""));
 					if (mis.Length > 0)

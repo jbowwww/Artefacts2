@@ -15,13 +15,13 @@ namespace Artefacts
 		/// <param name="count">Count.</param>
 		public static string Repeat(this string text, int count)
 		{
-			if (text == null)
-				throw new ArgumentNullException("text");
-			else if (text == string.Empty)
-				return string.Empty;
-			if (count < 0)
-				throw new ArgumentOutOfRangeException("count", count, "Less than zero");
-			StringBuilder sb = new StringBuilder(text.Length * count);
+//			if (text == null)
+//				throw new ArgumentNullException("text");
+//			else if (text == string.Empty)
+//				return string.Empty;
+//			if (count < 0)
+//				throw new ArgumentOutOfRangeException("count", count, "Less than zero");
+			StringBuilder sb = new StringBuilder();//text.Length * (count+1));
 			for (int i = count; i > 0; i--)
 				sb.Append(text);
 			return sb.ToString();

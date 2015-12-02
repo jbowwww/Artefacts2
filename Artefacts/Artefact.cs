@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Reflection;
-using System.Linq;
-using System.Runtime.Serialization;
-using MongoDB.Bson;
-using MongoDB.Bson.Serialization.Attributes;
-using ServiceStack;
-using ServiceStack.Text;
 using System.Text;
-using Artefacts.Service;
 using System.Diagnostics;
-using MongoDB.Bson.Serialization;
+using System.IO;
+using System.Runtime.Serialization;
+using System.Dynamic;
+using ServiceStack.Logging;
+using ServiceStack;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Bson;
+using System.Linq;
 
 namespace Artefacts
 {
@@ -31,15 +30,61 @@ namespace Artefacts
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
-	[Route("/artefacts/{Collection}/{Id}/", "POST,PUT")]
-	public class Artefact// : DynamicObject	//, IConvertibleToBsonDocument	//, IDictionary<string, object>
+	[Route("/Artefacts/{Collection}/{Id}/", "POST,PUT")]
+	[DataContract]
+	public class Artefact : DynamicObject	//, IConvertibleToBsonDocument	//, IDictionary<string, object>
 	{
+		#region Static members
+		public static readonly ILogFactory LogFactory;
+		public static readonly ILog Log;
+		public static TextWriter LogWriter { get; private set; }
+
+		static Artefact()
+		{
+			LogFactory = new StringBuilderLogFactory();
+			Log = Artefact.LogFactory.GetLogger(typeof(Artefact));
+		}
+		
+		/// <summary>
+		/// Makes the name of the safe collection.
+		/// </summary>
+		/// <returns>The safe collection name.</returns>
+		/// <param name="collectionName">Collection name.</param>
+		public static string MakeSafeCollectionName(string collectionName)
+		{
+			return collectionName.Replace(".", "_").Replace("`", "-").Replace('[', '-').Replace(']', '-');
+		}
+		
+		public static bool IncludeMember(MemberInfo member)
+		{
+			return
+				(member.MemberType == MemberTypes.Field ||
+				 member.MemberType == MemberTypes.Property)
+			 && member.IsPublic();
+		}
+		
+		public delegate bool IncludeMemberDelegate(MemberInfo member);
+		public static IncludeMemberDelegate DefaultMemberFilter = IncludeMember;
+		
+		private static BindingFlags _bindingFlags = BindingFlags.Instance |
+			BindingFlags.Public | BindingFlags.NonPublic | 
+			BindingFlags.GetField | BindingFlags.GetProperty;
+		
+		public static IEnumerable<MemberInfo> GetDataMembers(Type instanceType, IncludeMemberDelegate memberFilter = null)
+		{
+			if (instanceType == null)
+				throw new ArgumentNullException("instanceType");
+			if (memberFilter == null)
+				memberFilter = DefaultMemberFilter;
+			return instanceType.GetMembers(_bindingFlags).Where(mi => memberFilter(mi));
+		}
+		#endregion
+		
 		#region Private fields
-		private BindingFlags _bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.GetField | BindingFlags.GetProperty;
 		private DataDictionary _artefactData;
-		private DataDictionary _persistedData;
+//		private DataDictionary _persistedData;
 		private string _uri = null;
-		private ArtefactsClient _client = null;
+//		private ArtefactsClient _client = null;
 		#endregion
 		
 		#region Fields & Properties
@@ -55,10 +100,10 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the artefact's URI
 		/// </summary>
-		[BsonIgnore, DataMember]
-		public string Uri {
-			get { return _uri ?? (_uri = PathUtils.CombinePaths("/", Collection, Id)); }
-		}
+//		[BsonIgnore, DataMember]
+//		public string Uri {
+//			get { return _uri ?? (_uri = PathUtils.CombinePaths("/", Collection, Id)); }
+//		}
 		
 		/// <summary>
 		/// Gets or sets the server-side collection name
@@ -147,7 +192,7 @@ namespace Artefacts
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
-		internal Artefact()
+		public Artefact()
 		{
 			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
 			TimeSaved = DateTime.MinValue;
@@ -159,10 +204,10 @@ namespace Artefacts
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
 		/// <param name="instance">Instance.</param>
-		public Artefact(object instance, ArtefactsClient client = null) : this()
+		public Artefact(object instance/*, ArtefactsClient client = null*/) : this()
 		{
 			State = ArtefactState.Created;
-			_client = client;
+//			_client = client;
 			if (instance == null)
 				throw new ArgumentNullException("value");
 			if (!instance.GetType().IsClass)
@@ -173,6 +218,7 @@ namespace Artefacts
 		#endregion
 
 		#region Data handling
+		
 		/// <summary>
 		/// Sets the instance.
 		/// </summary>
@@ -188,12 +234,8 @@ namespace Artefacts
 			if (instance == null)
 				throw new ArgumentNullException("instance");
 			Type instanceType = instance.GetType();
-			Collection = instanceType.Name;
-			IEnumerable<MemberInfo> members = instanceType.GetMembers(_bindingFlags)
-				.Where(mi => 
-					mi.MemberType == MemberTypes.Field ||
-						((mi.MemberType == MemberTypes.Property) &&
-				 		(((PropertyInfo)mi).GetSetMethod() != null)));
+			Collection = MakeSafeCollectionName(instanceType.FullName);
+			IEnumerable<MemberInfo> members = GetDataMembers(instanceType);
 			foreach (MemberInfo member in members)
 			{
 				object value = member.GetPropertyOrField(instance);
@@ -216,25 +258,28 @@ namespace Artefacts
 		public T As<T>() //where T : new()
 		{
 			T instance = Activator.CreateInstance<T>(); //	new T();
+			IEnumerable<MemberInfo> typeMembers = GetDataMembers(typeof(T));
 			IEnumerable<KeyValuePair<string, object>> combinedData = Data;
 			foreach (KeyValuePair<string, object> data in combinedData)
 			{
 				if (!data.Key.StartsWith("_"))	// TODO: Store const/static list of members of type Artefact, to exclude here
 				{
-					MemberInfo member = typeof(T).GetMember(data.Key)
-						.FirstOrDefault(mi => mi.MemberType == MemberTypes.Field ||
-							(mi.MemberType == MemberTypes.Property && (((PropertyInfo)mi).GetSetMethod() != null)));
+					MemberInfo member = typeMembers.FirstOrDefault(mi => mi.Name == data.Key);
 					if (member == null)
-						throw new MissingMemberException(typeof(T).FullName, data.Key);
-					object value = data.Value;
-					Type valueType = value == null ? typeof(System.Object) : value.GetType();
-					Type memberType = member.GetMemberReturnType();
-					if (memberType.IsEnum)
-						value = Enum.ToObject(memberType, value);
-					// Needs to be else if?
-					if (!memberType.IsAssignableFrom(valueType))
-						value = Convert.ChangeType(value, memberType);
-					member.SetValue(instance, value);
+						Log.DebugFormat("Member '{0}' not found in type '{1}', skipping", data.Key, typeof(T).FullName);
+						//throw new MissingMemberException("", /*typeof(T).FullName,*/ data.Key);
+					else
+					{
+						object value = data.Value;
+						Type valueType = value == null ? typeof(System.Object) : value.GetType();
+						Type memberType = member.GetMemberReturnType();
+						if (memberType.IsEnum)
+							value = Enum.ToObject(memberType, value);
+						// Needs to be else if?
+						if (!memberType.IsAssignableFrom(valueType))
+							value = Convert.ChangeType(value, memberType);
+						member.SetValue(instance, value);
+					}
 				}
 			}
 			return instance;
@@ -254,8 +299,7 @@ namespace Artefacts
 			return sb.Append("]").ToString();
 		}
 		#endregion
-	}
-}
+		
 		/// <summary>
 		/// Converts this object to a BsonDocument.
 		/// </summary>
@@ -284,81 +328,88 @@ namespace Artefacts
 //			return document;
 //		}
 
-//		#region DynamicObject overrides
-//		/// <summary>
-//		/// Gets the dynamic member names.
-//		/// </summary>=
-//		/// <returns>The dynamic member names.</returns>
-//		public override IEnumerable<string> GetDynamicMemberNames()
-//		{
-//			List<string> names = new List<string>(Data.Keys);
+		public object GetMember(string name)
+		{
+			return Data[name];
+		}
+		
+		#region DynamicObject overrides
+		/// <summary>
+		/// Gets the dynamic member names.
+		/// </summary>=
+		/// <returns>The dynamic member names.</returns>
+		public override IEnumerable<string> GetDynamicMemberNames()
+		{
+			List<string> names = new List<string>(Data.Keys);
 //			names.AddRange(PersistedData.Keys);
-//			return names;
-//		}
-//
-//		/// <summary>
-//		/// Tries the get member.
-//		/// </summary>
-//		/// <param name="binder">Binder.</param>
-//		/// <param name="result">Result.</param>
-//		/// <returns><c>true</c>, if get member was tryed, <c>false</c> otherwise.</returns>
-//		public override bool TryGetMember(GetMemberBinder binder, out object result)
-//		{
-//			return Data.TryGetValue(binder.Name, out result) || PersistedData.TryGetValue(binder.Name, out result);
-//		}
-//
-//		/// <summary>
-//		/// Tries the set member.
-//		/// </summary>
-//		/// <returns><c>true</c>, if set member was tryed, <c>false</c> otherwise.</returns>
-//		/// <param name="binder">Binder.</param>
-//		/// <param name="value">Value.</param>
-//		/// <remarks>
-//		/// Would this be the right spot to track/create (am i creating?) an object graph
-//		/// ie you would (if value is a non-primitive class type) create a new Artefact
-//		/// in this method 
-//		/// </remarks>
-//		public override bool TrySetMember(SetMemberBinder binder, object value)
-//		{
-//			try {	// not sure if I really need this, just randomly thought i'd try it out?
-//				if (Data.ContainsKey(binder.Name) && Data[binder.Name] != value)
-//					State = ArtefactState.Modified;
-//				Data[binder.Name] = value;
-//			}
-//			catch (Exception ex)
-//			{
-//				return false;
-//			}
-//			return true;
-//		}
-//
-//		/// <summary>
-//		/// Tries the create instance.
-//		/// </summary>
-//		/// <returns><c>true</c>, if create instance was tryed, <c>false</c> otherwise.</returns>
-//		/// <param name="binder">Binder.</param>
-//		/// <param name="args">Arguments.</param>
-//		/// <param name="result">Result.</param>
-//		/// <remarks>
-//		/// Is this where I could put a call to storage->add(object) instead of storage->update/save()
-//		/// because this method called when a new Artefact is created?
-//		/// 		ie a = new Artefact(typed value client side)
-//		/// </remarks>
-//		public override bool TryCreateInstance(CreateInstanceBinder binder, object[] args, out object result)
-//		{
-//			result = args.Length == 1 ? new Artefact(args[0]) : new Artefact();
-//			return true;
-//		}
-//
-//		/// <summary>
-//		/// Tries the convert.
-//		/// </summary>
-//		/// <returns><c>true</c>, if convert was tryed, <c>false</c> otherwise.</returns>
-//		/// <param name="binder">Binder.</param>
-//		/// <param name="result">Result.</param>
-//		public override bool TryConvert(ConvertBinder binder, out object result)
-//		{
-//			return base.TryConvert(binder, out result);
-//		}
-//		#endregion
+			return names;
+		}
+
+		/// <summary>
+		/// Tries the get member.
+		/// </summary>
+		/// <param name="binder">Binder.</param>
+		/// <param name="result">Result.</param>
+		/// <returns><c>true</c>, if get member was tryed, <c>false</c> otherwise.</returns>
+		public override bool TryGetMember(GetMemberBinder binder, out object result)
+		{
+			return Data.TryGetValue(binder.Name, out result);// || PersistedData.TryGetValue(binder.Name, out result);
+		}
+
+		/// <summary>
+		/// Tries the set member.
+		/// </summary>
+		/// <returns><c>true</c>, if set member was tryed, <c>false</c> otherwise.</returns>
+		/// <param name="binder">Binder.</param>
+		/// <param name="value">Value.</param>
+		/// <remarks>
+		/// Would this be the right spot to track/create (am i creating?) an object graph
+		/// ie you would (if value is a non-primitive class type) create a new Artefact
+		/// in this method 
+		/// </remarks>
+		public override bool TrySetMember(SetMemberBinder binder, object value)
+		{
+			try {	// not sure if I really need this, just randomly thought i'd try it out?
+				if (Data.ContainsKey(binder.Name) && Data[binder.Name] != value)
+					State = ArtefactState.Modified;
+				Data[binder.Name] = value;
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+			return true;
+		}
+
+		/// <summary>
+		/// Tries the create instance.
+		/// </summary>
+		/// <returns><c>true</c>, if create instance was tryed, <c>false</c> otherwise.</returns>
+		/// <param name="binder">Binder.</param>
+		/// <param name="args">Arguments.</param>
+		/// <param name="result">Result.</param>
+		/// <remarks>
+		/// Is this where I could put a call to storage->add(object) instead of storage->update/save()
+		/// because this method called when a new Artefact is created?
+		/// 		ie a = new Artefact(typed value client side)
+		/// </remarks>
+		public override bool TryCreateInstance(CreateInstanceBinder binder, object[] args, out object result)
+		{
+			result = args.Length == 1 ? new Artefact(args[0]) : new Artefact();
+			return true;
+		}
+
+		/// <summary>
+		/// Tries the convert.
+		/// </summary>
+		/// <returns><c>true</c>, if convert was tryed, <c>false</c> otherwise.</returns>
+		/// <param name="binder">Binder.</param>
+		/// <param name="result">Result.</param>
+		public override bool TryConvert(ConvertBinder binder, out object result)
+		{
+			return base.TryConvert(binder, out result);
+		}
+		#endregion
+	}
+}
 		

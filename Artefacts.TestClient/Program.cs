@@ -1,15 +1,9 @@
 using System;
-using System.Linq;
 using Gtk;
 using Artefacts;
 using Artefacts.Service;
-using System.Reflection;
-using NUnit.Framework;
-using NUnit;
-using ServiceStack;
-using ServiceStack.Logging;
-using System.Collections.Generic;
 using System.Threading;
+using ServiceStack.Logging;
 
 namespace Artefacts.TestClient
 {
@@ -17,15 +11,15 @@ namespace Artefacts.TestClient
 	{
 		public static readonly ILog Log;
 		
-		public const string ServiceBaseUrl = "http://localhost:8888/";
-
-		public static ArtefactsHost Host;
+		public static string serviceBaseUrl = "http://localhost:8888/Artefacts/";
 		
-		public static ArtefactsTestClient Client;
-			
+		public static TextBufferWriter ClientWriter { get; private set; }
+
+		public static TextBufferWriter HostWriter { get; private set; }
+		
 		static MainClass()
 		{
-			Log = ArtefactsClient.LogFactory.GetLogger(typeof(MainClass));
+			Log = new DebugLogger(typeof(MainClass));// Artefact.LogFactory.GetLogger(typeof(MainClass));
 		}
 		
 		/// <summary>
@@ -43,19 +37,31 @@ namespace Artefacts.TestClient
 				Application.Init();
 				Log.Debug("win = new MainWindow()");
 				MainWindow win = new MainWindow();
+				
+				HostWriter = new TextBufferWriter(win.HostTextBuffer, win);
+				ClientWriter = new TextBufferWriter(win.ClientTextBuffer, win);
+
 				Log.Debug("win.Show()");
 				win.Show();
+				
 				new Thread(() => {
-					using (Host = new ArtefactsHost(ServiceBaseUrl, win.HostWriter))
-					using (Client = new ArtefactsTestClient(ServiceBaseUrl, win.ClientWriter))
+					using (ArtefactsHost Host = new ArtefactsHost(serviceBaseUrl, HostWriter))
 					{
-						//Thread.Sleep(1100);
-						Client.Run();
+						Thread.Sleep(1111);
+	//					Host.Start(serviceBaseUrl);
+	//					Thread.Sleep(888);
+						
+						using (ArtefactsTestClient Client = new ArtefactsTestClient(serviceBaseUrl, ClientWriter, win))
+						{
+							Thread.Sleep(481);
+							Client.Run();
+						}
 					}
 				}).Start();
-				//Thread.Sleep(888);
-				Application.Run();
+				
+				Thread.Sleep(888);
 				Log.Debug("Application.Run()");
+				Application.Run();
 			}
 			catch (Exception ex)
 			{
