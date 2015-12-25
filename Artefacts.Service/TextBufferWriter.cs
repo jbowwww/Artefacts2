@@ -18,7 +18,7 @@ namespace Artefacts
 		
 		public TextBufferWriter(TextBuffer textBuffer, object sender)
 		{
-			_sync = this;
+			_sync = textBuffer;
 			_textBuffer = textBuffer;
 			_sender = sender;
 //			base.Write(
@@ -35,15 +35,16 @@ namespace Artefacts
 		
 		public override void Write(char value)
 		{
-			lock (_sync)
-			{
-				//				Thread.BeginCriticalRegion();
+			//				Thread.BeginCriticalRegion();
 //				InsertTextArgs e = new InsertTextArgs();
-				Gtk.Application.Invoke(delegate {
-					_textBuffer.InsertAtCursor(value.ToString());
+			Gtk.Application.Invoke(delegate {
+				lock (_sync)
+				{
+					TextIter iter = _textBuffer.EndIter;
+					_textBuffer.Insert(ref iter, value.ToString());
 					
+				}
 				});
-			}
 //				_textBuffer.InsertText(_sender, e);
 //					(_sender, (System.EventArgs)(new InsertTextArgs() {
 //
@@ -58,44 +59,49 @@ namespace Artefacts
 		
 		public override void Write(char[] buffer, int index, int count)
 		{
-			lock (_sync)
-			{
+			
 //			Thread.BeginCriticalRegion();
 //			_textBuffer.BeginUserAction();
 			Gtk.Application.Invoke(delegate {
-				_textBuffer.InsertAtCursor(buffer.ToString().Substring(index, count));
+				lock (_sync)
+				{
+					TextIter iter = _textBuffer.EndIter;
+					_textBuffer.Insert(ref iter, buffer.ToString().Substring(index, count));
+				}
 			});
 //			_textBuffer.EndUserAction();
 //				Thread.EndCriticalRegion();
-			}
 		}
 		
 		public override void Write(string value)
 		{
-			lock (_sync)
-			{
-//			Thread.BeginCriticalRegion();
+			//			Thread.BeginCriticalRegion();
 //			_textBuffer.BeginUserAction();
 				Gtk.Application.Invoke(delegate {
-					_textBuffer.InsertAtCursor(value);
+				lock (_sync)
+				{
+					TextIter iter = _textBuffer.EndIter;
+					_textBuffer.Insert(ref iter, value);
+				}
 				});
 //			_textBuffer.EndUserAction();
 //				Thread.EndCriticalRegion();
-			}
 		}
 		
 		public override void WriteLine()
 		{
-			lock (_sync)
-			{
+			
 //			Thread.BeginCriticalRegion();
 //			_textBuffer.BeginUserAction();
 				Gtk.Application.Invoke(delegate {
-					_textBuffer.InsertAtCursor("\n");
+				lock (_sync)
+				{
+					TextIter iter = _textBuffer.EndIter;
+				_textBuffer.Insert(ref iter, "\n");
+				}
 				});
 //			_textBuffer.EndUserAction();
 //				Thread.EndCriticalRegion();
-			}
 		}
 	}
 }

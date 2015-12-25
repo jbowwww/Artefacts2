@@ -47,23 +47,28 @@ namespace Artefacts.Service
 				.Where(mi => mi.GetCustomAttribute<TestAttribute>() != null && EnableTest(mi));
 			foreach (MethodInfo mi in testMethods)
 			{
+				DateTime T1 = DateTime.Now;
 				string testName = string.Concat(mi.DeclaringType.FullName, ".", mi.Name);
 				try
 				{
-					Log.InfoFormat("\n--------\nTest: {0}\n--------", testName);
-					_writer.WriteLine("\n--------\nTest: {0}\n--------", testName);
+					
+					Log.InfoFormat("\n--------Test: {0}-------- {1}", testName, T1);
+					_writer.WriteLine("\n--------Test: {0}-------- {1}", testName, T1);
 					mi.Invoke(this, new object[] { });
 				}
 //									catch (WebServiceException e) { clientWriter.WriteLine("ERROR: " + ex.Format()); }
 //									catch (TargetInvocationException e) { clientWriter.WriteLine("ERROR: " + ex.Format()); }
 				catch (Exception ex) {
-					Log.Error("! ERROR: ", ex);
-					_writer.WriteLine("! ERROR: " + ex.Format());
+					DateTime Te = DateTime.Now;
+					Log.ErrorFormat("\n--!-- !- ERROR: {0}    {1}\n{2}", ex.ToString(), Te, ex.Format());
+					_writer.WriteLine(string.Format("\n--!-- !- ERROR: {0}    {1}\n{2}", ex.ToString(), Te, ex.Format()));
 				}
 				finally
 				{
-					Log.InfoFormat("--------\nFinished: {0}\n--------", testName);
-					_writer.WriteLine("--------\nFinished: {0}\n--------", testName);
+					DateTime T2 = DateTime.Now;
+					TimeSpan Td = T2 - T1;
+					Log.InfoFormat("\\n--------Finished: {0}-------- {1} Td={2}", testName, T2, Td);
+					_writer.WriteLine("\n--------Finished: {0}-------- {1} Td={2}", testName, T1, Td);
 				}
 			}
 		}

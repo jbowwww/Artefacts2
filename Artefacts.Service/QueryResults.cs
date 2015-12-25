@@ -9,20 +9,27 @@ using ServiceStack;
 namespace Artefacts.Service
 {
 //	[Route("/{CollectionName}/Query/", "GET")]
-	[DataContract]
+//	[DataContract]
 	public class QueryResults : ICollection<Artefact>
 	{
-		[DataMember(Order=1)]
+//		[DataMember(Order=1)]
 		public /*IList<Artefact>*/ Artefact[] Artefacts {
 			get;
 			set;
 		}
 		
-		[DataMember(Order = 2)]
-		public ResponseStatus ResponseStatus { get; set; }
+//		[DataMember(Order = 2)]
+//		public ResponseStatus ResponseStatus { get; set; }
 		
-		public QueryResults() { Artefacts = new Artefact[0]; }
-		public QueryResults(IEnumerable<Artefact> artefacts) { Artefacts = new List<Artefact>(artefacts).ToArray(); }
+		public QueryResults()
+		{
+			Artefacts = new Artefact[0];
+		}
+		
+		public QueryResults(IEnumerable<Artefact> artefacts)
+		{
+			Artefacts = new List<Artefact>(artefacts).ToArray();
+		}
 		
 		public IEnumerable<T> Get<T>() where T : new()
 		{
@@ -33,12 +40,15 @@ namespace Artefacts.Service
 
 		public void Add(Artefact item)
 		{
-			throw new NotImplementedException();//.Add(item);
+			Artefact[] artefacts = Artefacts;
+			Artefacts = new Artefact[artefacts.Length + 1];
+			artefacts.CopyTo(Artefacts, 0);
+			Artefacts[Artefacts.Length - 1] = item;
 		}
 
 		public void Clear()
 		{
-			throw new NotImplementedException();//Artefacts.Clear();
+			Artefacts = new Artefact[] { };
 		}
 
 		public bool Contains(Artefact item)
@@ -84,10 +94,10 @@ namespace Artefacts.Service
 		
 		public override string ToString()
 		{
-			return string.Format("[QueryResults: Artefacts.Count={0}, Artefacts={1}, ResponseStatus={2}]",
+			return string.Format("[QueryResults: Artefacts.Count={0}]",	//, Artefacts={1}]",	//, ResponseStatus={2}]",
 				Artefacts == null ? "[null]" : Artefacts.Count().ToString(),
-				Artefacts == null ? "[null]" : Artefacts.ToString(),
-				ResponseStatus == null ? "[null]" : ResponseStatus.ToString());
+				Artefacts == null ? "[null]" : Artefacts.ToString());
+			//ResponseStatus == null ? "[null]" : ResponseStatus.ToString());
 		}
 	}
 }

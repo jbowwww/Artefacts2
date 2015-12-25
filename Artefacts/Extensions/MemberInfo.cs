@@ -72,10 +72,14 @@ namespace Artefacts
 		
 		public static void SetValue(this MemberInfo member, object instance, object value)
 		{
+			Type memberType = member.GetMemberReturnType();
+			Type valueType = value == null ? typeof(object) : value.GetType();
 			if (member.MemberType == MemberTypes.Property)
-				((PropertyInfo)member).SetValue(instance, Convert.ChangeType(value, ((PropertyInfo)member).PropertyType));
+				((PropertyInfo)member).SetValue(instance, memberType.IsAssignableFrom(valueType) ? value :
+					Convert.ChangeType(value, ((PropertyInfo)member).PropertyType));
 			else if (member.MemberType == MemberTypes.Field)
-				((FieldInfo)member).SetValue(instance, Convert.ChangeType(value, ((FieldInfo)member).FieldType));
+				((FieldInfo)member).SetValue(instance, memberType.IsAssignableFrom(valueType) ? value :
+					Convert.ChangeType(value, ((PropertyInfo)member).PropertyType));
 			else
 				throw new MemberAccessException(string.Format("Wrong member type ({0}) for member \"{1}\"", member.MemberType, member.Name));
 		}

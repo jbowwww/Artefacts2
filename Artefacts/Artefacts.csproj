@@ -38,6 +38,9 @@
     <Compile Include="Extensions\MemberInfo.cs" />
     <Compile Include="Extensions\Object.cs" />
     <Compile Include="DataDictionary.cs" />
+    <Compile Include="IDebugTimerTarget.cs" />
+    <Compile Include="Extensions\Thread.cs" />
+    <Compile Include="Extensions\int.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Extensions\Expression.cs" />

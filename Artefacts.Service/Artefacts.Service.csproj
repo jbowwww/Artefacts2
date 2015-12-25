@@ -88,10 +88,12 @@
     <Compile Include="QueryRequest.cs" />
     <Compile Include="TestClientBase.cs" />
     <Compile Include="ServerQueryVisitor.cs" />
+    <Compile Include="Extensions\IServiceClient.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="DTO\" />
+    <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="SaveArtefactRequest.cs" />

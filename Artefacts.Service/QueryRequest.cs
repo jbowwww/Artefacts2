@@ -10,105 +10,81 @@ using MongoDB.Bson;
 namespace Artefacts.Service
 {
 	[DataContract]
-	[Route("/Artefacts/{CollectionName}/{QueryData}/", "GET")]
-	public class QueryRequest : /* ExpressionContext, */ IReturn<QueryResults>
+	[Route("/{CollectionName}/Query/{QueryData}/", "GET")]
+	public class QueryRequest : IReturn<QueryResults>
 	{
+		#region Static members
 		/// <summary>
 		/// Gets or sets the visitor.
 		/// </summary>
 		public static ExpressionVisitor Visitor { get; set; }
-		
-//		public static QueryRequest Parse(string json)
-//		{
-//			
-//		}
 		
 		static QueryRequest()
 		{
 			Visitor = new ClientQueryVisitor();
 		}
 
-//		public static QueryRequest Make<T>(Expression<Func<T, bool>> predicate)
-//		{
-//			return new QueryRequest((LambdaExpression)predicate, Artefact.MakeSafeCollectionName(typeof(T).FullName));
-		
 		public static QueryRequest Make<T>(Expression<Func<T, bool>> predicate)
 		{
-			return new QueryRequest(Query<T>.Where(predicate), Artefact.MakeSafeCollectionName(typeof(T).FullName));
+			return new QueryRequest(
+				Artefact.MakeSafeCollectionName(typeof(T).FullName),
+				Query<T>.Where((Expression<Func<T, bool>>)Visitor.Visit(predicate)));
 		}
 
-//		public static QueryRequest Make<T>(string collectionName, Expression<Func<T, bool>> predicate)
-//		{
-//			return new QueryRequest((LambdaExpression)predicate, Artefact.MakeSafeCollectionName(collectionName));
-//		}
-//		
-//		[DataMember(Order = 1)]
-//		public string Data { get; set; }
+		public static QueryRequest Make<T>(string collectionName, Expression<Func<T, bool>> predicate)
+		{
+			return new QueryRequest(
+				Artefact.MakeSafeCollectionName(collectionName),
+				Query<T>.Where((Expression<Func<T, bool>>)Visitor.Visit(predicate)));
+		}
+		#endregion
 
+		#region Properties
 		[DataMember(Order = 1)]
 		public string CollectionName {
-			get;
-//			{
-//				return base.GetElement("_collectionName").Value.AsString;
-//			}
-			set;
-//			{
-//				base.Set("_collectionName", new BsonString(value));
-//			}
-		}
-		
-		public QueryDocument Query {
 			get;
 			set;
 		}
 		
 		[DataMember(Order = 2)]
 		public string QueryData {
-			get { return Query == null ? string.Empty : Query.ToString().UrlEncode(); }
-			set { Query = new QueryDocument(BsonDocument.Parse(value.UrlDecode())); }
+			get;	// { return Query == null ? string.Empty : Query.ToString().UrlEncode(); }
+			set;	// { Query = new QueryDocument(BsonDocument.Parse(value.UrlDecode())); }
 		}
 		
-//		public LambdaExpression Predicate {
-//			get { return Data == null ? null : (LambdaExpression)Data.FromJsv<ExpressionNode>().ToExpression(); }
-//			set { Data = Visitor.Visit(value).ToExpressionNode().ToJsv<ExpressionNode>(); }
-//		}
-//		
-//		public LambdaExpression Predicate {
-//			get
-//			{
-//				return Data == null ? null : (LambdaExpression)Data.FromJsv<ExpressionNode>().ToExpression();
-//			}
-//			set
-//			{
-//				IMongoQuery query;
-//				Query< q;
-//			}
-//		}
-//
-//		public QueryRequest(LambdaExpression predicate, string collectionName)
-//		{
-//			this.Predicate = predicate;
-//			this.CollectionName = collectionName;
-//			ArtefactsClient.Log.Debug(this);
-//			ArtefactsClient.LogWriter.WriteLine(this.FormatString());
-//		}
-		
-		public QueryRequest()
-		{
-			;	
+		public QueryDocument Query {
+			get
+			{
+				return _query ??
+					(_query = new QueryDocument(
+						BsonDocument.Parse(
+							QueryData.UrlDecode())
+					));
+			}
+			set
+			{
+				QueryData = (_query = value) == null ? 
+					string.Empty
+				:	_query.ToString().UrlEncode();
+			}
 		}
-		
-		public QueryRequest(IMongoQuery query, string collectionName)
-//			: base((QueryDocument)query)
+		private QueryDocument _query;
+		#endregion
+
+		public QueryRequest(string collectionName, IMongoQuery query)
 		{
+			if (string.IsNullOrEmpty(collectionName))
+				throw new ArgumentNullException("collectionName");
+			if (query == null)
+				throw new ArgumentNullException("query");
 			CollectionName = collectionName;
 			Query = (QueryDocument)query;
 		}
 		
-//		public override string ToString()
-//		{
-//			return string.Format("[QueryRequest: CollectionName={0}, Predicate={1}, Data={2}]", CollectionName, null/*Predicate*/, Data);
-//		}
+		public override string ToString()
+		{
+			return string.Format("[QueryRequest: CollectionName={0}, Query={1}]", CollectionName, Query);
+		}
 	}
 	
 //	[Route("/Query/{Data}")]

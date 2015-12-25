@@ -16,7 +16,7 @@ namespace Artefacts.Service
 	/// <summary>
 	/// Artefacts service.
 	/// </summary>
-	public class ArtefactsService : ServiceStack.Service
+	public class ArtefactsService : ServiceStack.Service		//, IDebugTimerTarget
 	{
 		#region Static members
 		static readonly ILog Log;
@@ -35,9 +35,11 @@ namespace Artefacts.Service
 		/// </summary>
 		private static void ConfigureServiceStack()
 		{
-			JsConfig.TryToParsePrimitiveTypeValues = true;
+//			JsConfig.TryToParsePrimitiveTypeValues = true;
 			JsConfig.TreatEnumAsInteger = true;
-
+			JsConfig<Artefact>.IncludeTypeInfo = true;
+			JsConfig.TryToParseNumericType = false;
+	
 			// ServiceStack setup
 			//			JsConfig<Expression>.DeSerializeFn = s => new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer()).DeserializeText(s);
 			JsConfig<Artefact>.SerializeFn = a => ServiceStack.StringExtensions.ToJsv<DataDictionary>(a./*Persisted*/Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
@@ -70,18 +72,70 @@ namespace Artefacts.Service
 		};
 		
 		#region Private fields
+//		DateTime IDebugTimerTarget.TimeCreated { get; set; }
+//		DateTime IDebugTimerTarget.TimeDestroyed { get; set; }
+//		TimeSpan IDebugTimerTarget.TotalTime { get; set; }
+//		TimeSpan IDebugTimerTarget.TotalTimeUsed { get; set; }
+//		TimeSpan TotalTimePost { get; set; }
+//		TimeSpan TotalTimeGet { get; set; }
+//		
+//		private class DebugTimer : IDisposable
+//		{
+//			DateTime T1, T2;
+//			TimeSpan Td;
+//			IDebugTimerTarget _target;
+//			List<TimeSpan> _totalTimes;
+//			
+//			static internal void Created(IDebugTimerTarget target)
+//			{
+//				target.TimeCreated = DateTime.Now;
+//			}
+//			
+//			static internal void Disposed(IDebugTimerTarget target)
+//			{
+//				target.TimeDestroyed = DateTime.Now;
+//				target.TotalTime = target.TimeDestroyed - target.TimeCreated;
+//			}
+//			
+//			internal DebugTimer(IDebugTimerTarget target, params TimeSpan*[] totalTimes)
+//			{
+//				T1 = DateTime.Now;
+//				_target = target;
+//				_totalTimes = new List<TimeSpan*>(totalTimes);
+//		//					(TimeSpan*[])Array.CreateInstance(typeof(TimeSpan*), totalTimes.Length);
+//		//				totalTimes.CopyTo(_totalTimes, 0);
+//			}
+//			
+//			void IDisposable.Dispose()
+//			{
+//				T2 = DateTime.Now;
+//				Td = T2 - T1;
+//				foreach (TimeSpan* tsPtr in _totalTimes)
+//					*tsPtr += Td;
+//				_target.TotalTimeUsed += Td;
+//			}
+//		}
+			
 		private TextWriter _output;
 		private MongoClient _mClient;		// TODO: Refactor out to a new storage class , keep it generic enough for possible storage provider changes?
 		private MongoClientSettings _mClientSettings;
 		private MongoDatabase _mDb;
-//		private MongoCollection/*<Artefact>*/ _mcArtefacts;
+		private MongoCollection<Artefact> _mcArtefacts;
+		private ExpressionVisitor _visitor;
+		public Dictionary<string, Artefact> _artefactCache;
 		#endregion
 		
 		#region Properties
 		public ExpressionVisitor Visitor {
 			get { return _visitor ?? (_visitor = new ServerQueryVisitor()); }
 		}
-		private ExpressionVisitor _visitor = null;
+		
+		/// <summary>
+		/// Gets the artefact cache.
+		/// </summary>
+		public Dictionary<string, Artefact> ArtefactCache {
+			get { return _artefactCache ?? (_artefactCache = new Dictionary<string, Artefact>()); }
+		}
 		#endregion
 		
 		/// <summary>
@@ -90,10 +144,10 @@ namespace Artefacts.Service
 		/// <param name="output">Output.</param>
 		public ArtefactsService(TextWriter output)
 		{
+//			DebugTimer.Created(this);
 			_output = output;
 			Log.DebugFormat("ArtefactsService({0})", output);
 			Log.Info("Starting service");
-//			ExpressionFormatter;
 			// Storage (Mongo) setup
 			_mClientSettings = new MongoClientSettings() { };		// TODO: Settings
 			_mClient = new MongoClient("server=localhost");
@@ -101,10 +155,19 @@ namespace Artefacts.Service
 			_output.WriteLine("mClient: " + _mClient);
 			_mDb = new MongoDatabase(_mClient.GetServer(), "Artefacts", new MongoDatabaseSettings());
 			Log.Debug(_mDb);
-			
-//			_mcArtefacts = _mDb.GetCollection/*<Artefact>*/("Artefacts");
-//			Log.Debug(_mcArtefacts);
+			_mcArtefacts = _mDb.GetCollection<Artefact>("Artefacts");
+			Log.Debug(_mcArtefacts);
 		}
+		
+//		public override void Dispose()
+//		{
+//			DebugTimer.Disposed(this);
+//		IDebugTimerTarget target = this;
+//			string s = string.Format("TimeCreated = {0}\nTimeDisposed = {1}\nTotalTime = {2}\nTotalTimeUsed = {3}\nTotalTimePost = {4}\nTotalTimeGet = {5}\n",
+//			                         target.TimeCreated, target.TimeDestroyed, target.TotalTime, target.TotalTimeUsed, TotalTimePost, TotalTimeGet);
+//			_output.Write(s);
+//			Log.Debug(s);
+//		}
 
 		/// <summary>
 		/// Put the specified artefact.
@@ -115,12 +178,16 @@ namespace Artefacts.Service
 		/// </remarks>
 		public object Post(Artefact artefact)
 		{
-			Log.DebugFormat("Post({0})", artefact);
-			_output.WriteLine("artefact: " + artefact);
-			WriteConcernResult result = Save(artefact);
-			Log.Debug(result);
-			_output.WriteLine("result: " + result);
-			return default(HttpWebResponse);
+//			using (new DebugTimer(this, &TotalTimePost))
+//			{
+				Log.Debug("HTTP POST: " + artefact);
+				_output.WriteLine("HTTP POST: " + artefact);
+				ArtefactCache[artefact.Id] = artefact;
+				WriteConcernResult result = Save(artefact);
+				Log.Debug("Save(artefact,SaveType.InsertOrUpdate): " + result);
+				_output.WriteLine("Save(artefact,SaveType.InsertOrUpdate): " + result);
+				return default(HttpWebResponse);
+//			}
 		}
 		
 		/// <summary>
@@ -129,12 +196,25 @@ namespace Artefacts.Service
 		/// <param name="artefact">Artefact.</param>
 		public object Put(Artefact artefact)
 		{
-			Log.DebugFormat("Put({0})", artefact);
-			_output.WriteLine("artefact: " + artefact);
-			WriteConcernResult result = Save(artefact, SaveType.Update);	//InsertOrUpdate(artefact);
-			Log.Debug(result);
-			_output.WriteLine("result: " + result);
-			return default(HttpWebResponse);// artefact;
+//			using (new DebugTimer(this, &TotalTimePost))
+//			{
+//			try {
+				Log.DebugFormat("HTTP PUT: ", artefact);
+				_output.WriteLine("HTTP PUT: " + artefact);
+				ArtefactCache[artefact.Id] = artefact;
+				WriteConcernResult result = Save(artefact, SaveType.Update);	//InsertOrUpdate(artefact);
+				Log.Debug("Save(artefact,SaveType.Update): " + result);
+				_output.WriteLine("Save(artefact,SaveType.Update): " + result);
+				return default(HttpWebResponse);// artefact;
+//			}
+//			catch (Exception ex)
+//			{
+//				Log.Error(ex);
+//				_output.WriteLine(ex.ToString());
+//				throw;
+//			}
+//			
+//			}
 		}
 		
 		/// <summary>
@@ -143,31 +223,40 @@ namespace Artefacts.Service
 		/// <param name="query">Query.</param>
 		public QueryResults Get(QueryRequest query)
 		{
-			try {
-				Log.DebugFormat("Get({0})", query);
-				_output.WriteLine("Get({0})", query);
-//				_output.WriteLine("{0}: {1}", query.Predicate.GetType(), ExpressionPrettyPrinter.PrettyPrint(query.Predicate));
-//				Type elementType = query.Predicate.Parameters[0].Type;
-//				Type queryType = typeof(Query<>).MakeGenericType(elementType);
-//				MethodInfo whereMethod = queryType.GetMethod("Where");
-//				LambdaExpression predicate = (LambdaExpression)Visitor.Visit(query.Predicate);
-//				IMongoQuery mongoQuery = (IMongoQuery)whereMethod.Invoke(null, new object[] { predicate });
-				MongoCollection<Artefact> _mcArtefacts = _mDb.GetCollection<Artefact>(query.CollectionName);	// elementType.Name);
-				object result = _mcArtefacts.FindAs<Artefact>(query.Query);
-				Log.Debug(result);
-				List<Artefact> results = result != null ?
-					((IEnumerable<Artefact>)result).ToList() :
-					new List<Artefact>();
-				QueryResults r = new QueryResults(results);
-				Log.Debug(r);
-				return r;
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex);
-				_output.WriteLine(ex.ToString());
-				throw;
-			}
+//			try {
+//				using (new DebugTimer(this, &TotalTimeGet))
+//				{
+					Log.Debug("HTTP GET: " + query);
+					_output.WriteLine("HTTP GET: " + query);
+	//				_output.WriteLine("{0}: {1}", query.Predicate.GetType(), ExpressionPrettyPrinter.PrettyPrint(query.Predicate));
+	//				Type elementType = query.Predicate.Parameters[0].Type;
+	//				Type queryType = typeof(Query<>).MakeGenericType(elementType);
+	//				MethodInfo whereMethod = queryType.GetMethod("Where");
+	//				LambdaExpression predicate = (LambdaExpression)Visitor.Visit(query.Predicate);
+	//				IMongoQuery mongoQuery = (IMongoQuery)whereMethod.Invoke(null, new object[] { predicate });
+					MongoCollection<Artefact> _mcQueryCollection = _mDb.GetCollection<Artefact>(query.CollectionName);	// elementType.Name);
+					MongoCursor<Artefact> mongoQueryResult = _mcQueryCollection.FindAs<Artefact>(query.Query);
+					Log.Debug("_mcArtefacts.FindAs<Artefact>(query): " + mongoQueryResult);
+					_output.WriteLine("_mcArtefacts.FindAs<Artefact>(query): " + mongoQueryResult);
+//					List<Artefact> results = mongoQueryResult.ToList();
+//				result != null ? result.ToList() : new List<Artefact>();
+//						((IEnumerable<Artefact>)result).ToList() :
+//						new List<Artefact>();
+//					QueryResults r = new QueryResults(results);
+					foreach (Artefact artefact in mongoQueryResult)
+						ArtefactCache[artefact.Id] = artefact;
+					QueryResults queryResult = new QueryResults(mongoQueryResult);
+					Log.Debug("new QueryResults(): " + queryResult);
+					_output.WriteLine("new QueryResults(): " + queryResult);
+					return queryResult;
+//				}
+//			}
+//			catch (Exception ex)
+//			{
+//				Log.Error(ex);
+//				_output.WriteLine(ex.ToString());
+//				throw;
+//			}
 		}
 		
 		/// <summary>
@@ -187,7 +276,6 @@ namespace Artefacts.Service
 				Log.Error(ex);
 				_output.WriteLine(ex.ToString());
 				throw;
-				return null;
 			}
 			return null;
 		}
@@ -199,10 +287,10 @@ namespace Artefacts.Service
 		/// <param name="saveType">Save type.</param>
 		private WriteConcernResult Save(Artefact artefact, SaveType saveType = SaveType.InsertOrUpdate)
 		{
-			try
-			{
+//			try
+//			{
 				MongoCollection<Artefact> _mcArtefacts = _mDb.GetCollection<Artefact>(artefact.Collection);
-				BsonDocument artefactData = BsonDocument.Create(artefact.Data);
+//				BsonDocument artefactData = BsonDocument.Create(artefact.Data);
 				WriteConcernResult result =
 					saveType == SaveType.Insert ? _mcArtefacts.Insert(artefact)// _mcArtefacts.Insert<BsonDocument>(artefactData)
 				:	saveType == SaveType.Update ? _mcArtefacts.Update(
@@ -213,13 +301,13 @@ namespace Artefacts.Service
 				if (result.Ok)
 					artefact.State = ArtefactState.Current;
 				return result;
-			}
-			catch (Exception ex)
-			{
-				Log.Error(ex);
-				_output.WriteLine(ex.ToString());
-				throw;
-			}
+//			}
+//			catch (Exception ex)
+//			{
+//				Log.Error(ex);
+//				_output.WriteLine(ex.ToString());
+//				throw;
+//			}
 		}
 	}
 }

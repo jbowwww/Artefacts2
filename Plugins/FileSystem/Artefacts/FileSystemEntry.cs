@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace Artefacts.FileSystem
 {
@@ -54,6 +55,7 @@ namespace Artefacts.FileSystem
 		/// <summary>
 		/// Gets or sets the directory.
 		/// </summary>
+		[IgnoreDataMember]
 		public Directory Directory { get; set; }
 
 		/// <summary>

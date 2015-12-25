@@ -18,7 +18,11 @@ public partial class MainWindow: Gtk.Window
 {	
 	
 	#region Fields & Properties
-	public Gtk.TextBuffer HostTextBuffer {
+	private bool _autoScrollHost = true;
+	private bool _autoScrollClient = true;
+	private DateTime _autoScrollMarkHost = DateTime.Now;	
+	private DateTime _autoScrollMarkClient = DateTime.Now;	
+public Gtk.TextBuffer HostTextBuffer {
 		get
 		{
 			return tvHost.Buffer;
@@ -37,14 +41,30 @@ public partial class MainWindow: Gtk.Window
 	public MainWindow() : base (Gtk.WindowType.Toplevel)
 	{
 		Build();
-		tvHost.InsertAtCursor += (object o, InsertAtCursorArgs args) =>
+		tvHost.Buffer.InsertText += (object o, InsertTextArgs args) => 
 		{
-			tvHost.ScrollToIter(tvHost.Buffer.EndIter, 0, false, 0, 0);
+			if (_autoScrollHost && (DateTime.Now - _autoScrollMarkHost > TimeSpan.FromSeconds(1)))
+			{
+				_autoScrollMarkHost = DateTime.Now;
+				tvHost.ScrollToIter(args.Pos, 0, false, 0, 0);
+			}
 		};
-		tvClient.InsertAtCursor += (object o, InsertAtCursorArgs args) => 
+		tvClient.Buffer.InsertText += (object o, InsertTextArgs args) => 
 		{
-			tvClient.ScrollToIter(tvClient.Buffer.EndIter, 0, false, 0, 0);
+			if (_autoScrollClient && (DateTime.Now - _autoScrollMarkClient > TimeSpan.FromSeconds(1)))
+			{
+				_autoScrollMarkClient = DateTime.Now;
+				tvClient.ScrollToIter(args.Pos, 0, false, 0, 0);
+			}
 		};
+//		tvHost.InsertAtCursor += (object o, InsertAtCursorArgs args) =>
+//		{
+//			tvHost.ScrollToIter(tvHost.Buffer.EndIter, 0, false, 0, 0);
+//		};
+//		tvClient.InsertAtCursor += (object o, InsertAtCursorArgs args) => 
+//		{
+//			tvClient.ScrollToIter(tvClient.Buffer.EndIter, 0, false, 0, 0);
+//		};
 		Maximize();
 	}
 
@@ -75,6 +95,16 @@ public partial class MainWindow: Gtk.Window
 		
 		
 		
+	}
+
+	protected void OnAutoScrollClient(object sender, EventArgs e)
+	{
+		_autoScrollClient = !_autoScrollClient;
+	}
+
+	protected void OnAutoScrollHost(object sender, EventArgs e)
+	{
+		_autoScrollHost = !_autoScrollHost;
 	}
 	#endregion
 

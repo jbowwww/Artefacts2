@@ -1,17 +1,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Net;
 using Artefacts;
+using Artefacts.Extensions;
 using Artefacts.FileSystem;
 using Artefacts.Service;
+using Artefacts.Service.Extensions;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using ServiceStack;
 using NUnit.Framework;
 using ServiceStack.Text;
 using MongoDB.Bson;
+using System.Dynamic.Utils;
 
 namespace Artefacts.TestClient
 {
@@ -44,18 +49,21 @@ namespace Artefacts.TestClient
 			
 			_bufferWriter.WriteLine(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_client = new JsonServiceClient(_serviceBaseUrl) {
-				RequestFilter = (HttpWebRequest request) => bufferWriter.WriteLine(
-					string.Format("Client.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}",
-				              request.Method, request.ContentType,  request.ContentLength,
-				              request.UserAgent, request.MediaType, request.RequestUri,
-				              request.ProtocolVersion, request.Expect, request.Accept)),
-				ResponseFilter = (HttpWebResponse response) => bufferWriter.WriteLine(
-					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}",
-				              response.StatusCode, response.StatusDescription, response.CharacterSet,
-				              response.ContentEncoding, response.ContentType, response.ContentLength))
+//				RequestFilter = (HttpWebRequest request) => bufferWriter.WriteLine(
+//					string.Format("Client.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}",
+//				              request.Method, request.ContentType,  request.ContentLength,
+//				              request.UserAgent, request.MediaType, request.RequestUri,
+//				              request.ProtocolVersion, request.Expect, request.Accept)),
+//				ResponseFilter = (HttpWebResponse response) => bufferWriter.WriteLine(
+//					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}",
+//				              response.StatusCode, response.StatusDescription, response.CharacterSet,
+//				              response.ContentEncoding, response.ContentType, response.ContentLength))
 			};
 //			JsConfig.TryToParsePrimitiveTypeValues = true;
-//			JsConfig.TreatEnumAsInteger = true;
+			JsConfig.TreatEnumAsInteger = true;
+			JsConfig<Artefact>.IncludeTypeInfo = true;
+			JsConfig.TryToParseNumericType = false;
+			
 			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a./*Persisted*/Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
 			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
 			JsConfig<BsonDocument>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson(b);
@@ -134,45 +142,137 @@ namespace Artefacts.TestClient
 				}
 			}
 		}
-
+		
 //		[Test]
 		public void RecurseDirectory()
 		{
-			Thread[] threads = new Thread[4];
+			int maxDepth = -1;	// max FS file depth
 			int mainCount = 0;
-			TimeSpan totalTime = TimeSpan.Zero;
 			DateTime mainStart = DateTime.Now;
+			TimeSpan totalTime = TimeSpan.Zero;
+			int numThreads = 4;
+			Thread[] threads = new Thread[numThreads];
+			int postThreadSleepTime = 224;
+			int scanThreadSleepTime = 88;
+			int scanThreadActiveCount = 0;
+			int maxPostRetries = 3;
+			ConcurrentQueue<FileSystemEntry> _postQueue = new ConcurrentQueue<FileSystemEntry>();
+			ConcurrentQueue<Directory> _directoryQueue = new ConcurrentQueue<Directory>();
+			
+			Directory topDir = new Directory("/mnt/Trapdoor/mystuff/");
+			_directoryQueue.Enqueue(topDir);
+			
 			_bufferWriter.WriteLine("RecurseDirectory() starting at " + mainStart.ToShortTimeString());
-//			_directoryQueue.Clear();
-			Directory dir = new Directory("/mnt/Trapdoor/mystuff/Moozik/");
-			_bufferWriter.WriteLine("Main thread starting directory " + dir.Path);
-			RecurseDirectory(dir);
-			mainCount++;
+			_bufferWriter.WriteLine("Main thread starting directory " + topDir.Path);
 
-			for (int numThreads = 0; numThreads < 4; numThreads++)
+			Thread _postThread = new Thread(() =>
 			{
-				threads[numThreads] = new Thread((param) => {
+				int count = 0;
+				FileSystemEntry fsEntry;
+				DateTime threadStart = DateTime.Now;
+				_bufferWriter.WriteLine("POST Thread starting at " + threadStart.ToShortTimeString());
+				Thread.Sleep(postThreadSleepTime);
+				while (_postQueue.Count > 0 || Volatile.Read(ref scanThreadActiveCount) > 0)
+				{
+					if (_postQueue.Count == 0)
+						Thread.Sleep(postThreadSleepTime);
+					else
+					{
+						while (_postQueue.TryDequeue(out fsEntry))
+						{
+							for (int i = 0; i < maxPostRetries; i++)
+							{
+								try 
+								{
+									File file = fsEntry as File;
+									Directory dir = fsEntry as Directory;
+									if (file != null)
+									{
+										_bufferWriter.WriteLine("Creating (or updating) File \"{0}\"", file.Path);
+										_client.GetOrCreate<File>((f) => f.Path == file.Path, () => file);
+									}
+									else if (dir != null)
+									{
+										_bufferWriter.WriteLine("Creating (or updating) Directory \"{0}\"", dir.Path);
+										_client.GetOrCreate<Directory>((d) => d.Path == dir.Path, () => dir);
+									}
+									count++;
+									break;
+								}
+								catch (System.Net.WebException ex)
+								{
+									Log.ErrorFormat(" ! ERROR: {0}: Retry attempt #{1} of {2}\n", ex.GetType().FullName, i + 1, maxPostRetries);
+									continue;
+								}
+							}
+						}
+					}
+				}
+				DateTime threadFinish = DateTime.Now;
+				TimeSpan threadDuration = threadFinish - threadStart;
+				_bufferWriter.WriteLine("POST Thread finished at " + threadFinish.ToShortTimeString() + " : Total time " + threadDuration + ", totalled " + count + " files");
+				totalTime += threadDuration;
+			});
+
+			for (int tn = 0; tn < numThreads; tn++)
+			{
+				threads[tn] = new Thread((param) =>
+				{
 					int num = (int)param;
 					int count = 0;
 					DateTime threadStart = DateTime.Now;
-					_bufferWriter.WriteLine("Thread #" + num + " starting at " + threadStart.ToShortTimeString());
-					
-					while (_directoryQueue.Count > 0)
+					_bufferWriter.WriteLine("Thread #" + num + " starting at " + threadStart.ToShortTimeString());	
+					try
 					{
-						try
+						Directory threadDir;
+						while (_directoryQueue.Count > 0 || Volatile.Read(ref scanThreadActiveCount) > 0)
 						{
-							Directory threadDir;
-							if (!_directoryQueue.TryDequeue(out threadDir))
-								throw new InvalidOperationException("Could not dequeue directory");
-							_bufferWriter.WriteLine("Thread #" + num + " running on directory number " + count + " at " + DateTime.Now.ToShortTimeString() + " " + threadDir.Path);
-							RecurseDirectory(threadDir);
-							count++;
+							if (_directoryQueue.Count == 0)
+								Thread.Sleep(scanThreadSleepTime);
+							else
+							{
+								while (_directoryQueue.TryDequeue(out threadDir))
+								{
+									Volatile.Write(ref scanThreadActiveCount, Volatile.Read(ref scanThreadActiveCount) + 1);
+									try
+									{
+										bool isExpired = DateTime.Now - threadDir.LastWriteTime > TimeSpan.FromMinutes(10);
+										_bufferWriter.WriteLine("Thread #" + num + " running on directory number " + count + " at " +
+											DateTime.Now.ToShortTimeString() + " " + threadDir.Path + ": " +
+											(isExpired ? "Expired" : "Current"));
+										if (isExpired)
+										{
+											foreach (Directory sd in threadDir.Directories)
+											{
+												int depth = sd.Path.Count((ch) => ch == '/' || ch == '\\');
+												if (maxDepth < 0 || depth < maxDepth)
+													_directoryQueue.Enqueue(sd);
+												_postQueue.Enqueue(sd);
+											}
+											foreach (File file in threadDir.Files)
+											{
+												file.QueueCalculateCRC();
+												_postQueue.Enqueue(file);
+											}
+										}
+										count++;
+									}
+									catch (Exception ex)
+									{
+										_bufferWriter.WriteLine(ex.Format());
+										continue;
+									}
+									finally
+									{
+										Volatile.Write(ref scanThreadActiveCount, Volatile.Read(ref scanThreadActiveCount) - 1);
+									}
+								}
+							}
 						}
-						catch (Exception ex)
-						{
-							_bufferWriter.WriteLine(ex.Format());
-							continue;
-						}
+					}
+					catch (Exception ex)
+					{
+						_bufferWriter.WriteLine(ex.Format());
 					}
 					DateTime threadFinish = DateTime.Now;
 					TimeSpan threadDuration = threadFinish - threadStart;
@@ -180,88 +280,24 @@ namespace Artefacts.TestClient
 					mainCount += count;
 					totalTime += threadDuration;
 				});
-				threads[numThreads].Start(numThreads);
+				threads[tn].Start(tn);
 			}
+//			int t = 0;
+//			threads.Each(thread => thread.Start(t++));
+			_postThread.Start();
 			
 			DateTime mainFinish = DateTime.Now;
 			TimeSpan mainDuration = mainFinish - mainStart;
 			totalTime += mainDuration;
 			_bufferWriter.WriteLine("Main thread finished at " + mainFinish.ToShortTimeString() + " : Time " + mainDuration);
-			for (int i = 0; i < 4; i++)
-			{
-				
-				while (!threads[0].Join(1000));
-				_win.Title = _winBaseTitle + " " + (DateTime.Now - mainStart);
-			}
+			_postThread.Join();
 			_bufferWriter.WriteLine("All threads finished at " + DateTime.Now + ", total time " + totalTime + ", " + mainCount + " directories traversed");
 		}
-		private ConcurrentQueue<Directory> _directoryQueue = new ConcurrentQueue<Directory>();
 		private ConcurrentBag<FileSystemEntry> _failedEntries = new ConcurrentBag<FileSystemEntry>();
-		
-		public void RecurseDirectory(Directory dir, int maxDepth = 2, int currentLevel = 0)
-		{
-			int retries;
-			if (currentLevel < maxDepth)
-			{
-				for (retries = 0; retries < 3; retries++)
-				{
-					try
-					{
-//				_artefactsClient.GetOrCreate(d => d.Path != null && dir.Path != null && d.Path == dir.Path, () => dir);
-//						_artefactsClient.Save<Directory>(d => d.Path != null && d.Path == dir.Path, dir);	// () => dir);
-						if (_client.Get<QueryResults>(QueryRequest.Make<Directory>(d => d.Path == dir.Path)).Artefacts.Count() == 0)
-							_client.Post(new Artefact(dir));
-						break;
-					}
-					catch (WebException ex)
-					{
-						_bufferWriter.WriteLine(ex.Format());
-						continue;
-					}
-				}
-				if (retries == 3)
-				{	
-					_bufferWriter.WriteLine("! ERROR! failed after 3 retries on directory " + dir.Path);
-					_failedEntries.Add(dir);
-				}
-				
-				foreach (File file in dir.Files)
-				{
-//					_artefactsClient.GetOrCreate<File>(f => f.Path != null && file.Path != null && f.Path == file.Path, () => file);
-					for (retries = 0; retries < 3; retries++)
-					{
-						try
-						{
-//							_artefactsClient.Save<File>(f => f.Path != null && f.Path == file.Path, file);	//() => file);
-							if (_client.Get<QueryResults>(QueryRequest.Make<File>(f => f.Path == file.Path)).Artefacts.Count() == 0)
-								_client.Post(new Artefact(file));
-							break;
-						}
-						catch (WebException ex)
-						{
-							_bufferWriter.WriteLine(ex.Format());
-							continue;
-						};
-					}
-					if (retries == 3)
-					{	
-						_bufferWriter.WriteLine("! ERROR! failed after 3 retries on file " + file.Path);
-						_failedEntries.Add(file);
-					}
-				}
-				
-				foreach (Directory sd in dir.Directories)
-				{
-					_directoryQueue.Enqueue(sd);
-//					RecurseDirectory(sd, currentLevel + 1);
-				}
-			}
-		}
 		
 //		[Test]
 		public void GetFiles()
 		{
-			File testFile;
 			QueryResults results = _client.Get<QueryResults>(QueryRequest.Make<File>(f => f.Path != null));
 			_bufferWriter.WriteLine("results = " + results);
 			foreach (Artefact artefact in results.Artefacts)
@@ -283,7 +319,8 @@ namespace Artefacts.TestClient
 		[Test]
 		public void GetLargeFilesWithDupeSize()
 		{
-			//QueryResults testResult = _artefactsClient.Get<File>(f => f.Size > (Int64) (100 * 1024 * 1024));
+			Dictionary<long, QueryResults> sizeGroups = new Dictionary<long, QueryResults>();	// file size keyed
+			Dictionary<long, QueryResults> dupeGroups = new Dictionary<long, QueryResults>();	// file CRC keyed
 			QueryRequest request = QueryRequest.Make<File>(f => (f.Size  > (16 * 1024 * 1024)));
 			QueryResults results = _client.Get<QueryResults>(request);
 			_bufferWriter.WriteLine(string.Format("{0} file results >= 16MB ", results.Count));
@@ -293,20 +330,60 @@ namespace Artefacts.TestClient
 			{
 				long groupSize = 0;
 				File file = artefact.As<File>();
-				QueryRequest request2 = QueryRequest.Make<File>(f => f.Size == file.Size);
-				QueryResults results2 = _client.Get<QueryResults>(request2);
-				_bufferWriter.WriteLine(string.Format("result #{0}: f.Size = {1} ({2} file results with matching size)",
-					i++, File.FormatSize(file.Size), results2.Count));
-				foreach (Artefact artefact2 in results2.Artefacts)
+				if (!sizeGroups.ContainsKey(file.Size))
 				{
-					File file2 = artefact2.As<File>();
-					_bufferWriter.WriteLine("\t" + file2.Path);
-					groupSize += file2.Size;
+					QueryResults results2 = _client.Get<QueryResults>(QueryRequest.Make<File>(f => (f.Size == file.Size)));
+					sizeGroups.Add(file.Size, results2);
+					if (results2.Count > 1)
+					{
+						_bufferWriter.WriteLine(string.Format(
+							"result #{0}: f.Size = {1} ({2} file results with matching size)",
+							i++, File.FormatSize(file.Size), results2.Count));
+						IEnumerable<File> files = results2.Artefacts.Select(a => a.As<File>());
+						files.Each(f => { f.QueueCalculateCRC(); });
+						foreach (File file2 in files)
+						{
+							file2.CRCWaitHandle.WaitOne();
+							long crc = file2.CRC.Value;
+							if (!dupeGroups.ContainsKey(crc))
+								dupeGroups.Add(crc, new QueryResults(new Artefact[] { Artefact.Cache.GetArtefact(file2) }));	//new Artefact[] { artefact2 }));
+							else
+								dupeGroups[crc].Add(Artefact.Cache.GetArtefact(file2));
+							_client.Put(Artefact.Cache.GetArtefact(file2));
+							_bufferWriter.WriteLine("    " + file2.CRC.Value.ToHex().PadLeft(26) + file2.Path);
+							groupSize += file2.Size;
+						}
+						_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group\n");	// results2.Artefacts.Sum(a => a.As<File>().Size)
+						totalSize += groupSize;
+						_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in all groups\n");
+					}
+					
 				}
-				_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " bytes in group\n");	// results2.Artefacts.Sum(a => a.As<File>().Size)
-				totalSize += groupSize;
 			}
-			_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " bytes in all groups");
+			totalSize = 0;
+			foreach (KeyValuePair<long, QueryResults> qrPair in dupeGroups)
+			{
+				QueryResults qr = qrPair.Value;
+				if (qr.Count > 1)
+				{
+					long groupSize = 0;
+					File file = qr.Artefacts[0].As<File>();
+					_bufferWriter.WriteLine(string.Format(
+						"result #{0}: f.Size = {1} f.CRC = {2} ({3} file results with matching CRC)",
+						i++, File.FormatSize(file.Size), qrPair.Key.ToHex() /*file.CRC*/, qr.Count));
+					foreach (Artefact artefact2 in qr.Artefacts)
+					{
+						file = artefact2.As<File>();
+						_bufferWriter.WriteLine("    " + file.Path);
+						groupSize += file.Size;
+					}
+					_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group");
+					totalSize += groupSize;
+					new DupeProcessWindow(qr.Artefacts.Select<Artefact,File>(a => a.As<File>())).Show();
+				}
+			}
+			int totalUsedGroups = dupeGroups.Count(pair => pair.Value.Count > 1);
+			_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in " + totalUsedGroups + "/" + dupeGroups.Count + " groups");
 		}
 		
 		#region Helper functions

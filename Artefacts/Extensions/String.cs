@@ -28,6 +28,30 @@ namespace Artefacts
 		}
 
 		/// <summary>
+		/// Pad the specified text and length.
+		/// </summary>
+		/// <param name="text">Text.</param>
+		/// <param name="length">Length.</param>
+		public static string PadLeft(this string text, int length, char space = ' ')
+		{
+			if (text.Length < length)
+				return text + new string(space, length - text.Length);
+			return text;
+		}
+
+		/// <summary>
+		/// Pad the specified text and length.
+		/// </summary>
+		/// <param name="text">Text.</param>
+		/// <param name="length">Length.</param>
+		public static string PadRight(this string text, int length, char space = ' ')
+		{
+			if (text.Length < length)
+				return new string(space, length - text.Length) + text;
+			return text;
+		}
+		
+		/// <summary>
 		/// Trims the start.
 		/// </summary>
 		/// <returns>The start.</returns>

@@ -11,6 +11,7 @@ using ServiceStack;
 using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using System.Linq;
+using System.Collections.Concurrent;
 
 namespace Artefacts
 {
@@ -38,7 +39,63 @@ namespace Artefacts
 		public static readonly ILogFactory LogFactory;
 		public static readonly ILog Log;
 		public static TextWriter LogWriter { get; private set; }
+		
+		public class ArtefactTypedInstanceCache : ConcurrentDictionary<Type, object>
+		{
+			public string ArtefactId { get; internal set; }
+			
+			public T GetInstance<T>()
+			{
+				return (T)base.GetOrAdd(typeof(T), (type) => Activator.CreateInstance(type));
+			}
+			
+			internal ArtefactTypedInstanceCache(string artefactId) : base(4, 4)
+			{
+				if (string.IsNullOrWhiteSpace(artefactId))
+					throw new ArgumentOutOfRangeException("artefactId", artefactId, "Cannot be null or whitespace");
+				ArtefactId = artefactId;
+			}
+		}
+		
+		public class ArtefactCache
+		{
+			public ConcurrentDictionary<string, ArtefactTypedInstanceCache> InstancesFromArtefact = new ConcurrentDictionary<string, ArtefactTypedInstanceCache>();
+			public ConcurrentDictionary<object, Artefact> ArtefactFromInstance = new ConcurrentDictionary<object, Artefact>();
+			
+			public Artefact GetArtefact(object instance)
+			{
+				Artefact artefact;
+				if (ArtefactFromInstance.ContainsKey(instance))
+				{
+					artefact = ArtefactFromInstance[instance];
+					artefact.SetInstance(instance);
+				}
+				else
+				{
+					artefact = new Artefact(instance);
+					ArtefactFromInstance[instance] = artefact;
+				}
+				return artefact;
+			}
 
+			public ArtefactTypedInstanceCache GetTypedInstanceCache(string artefactId)
+			{
+				return (ArtefactTypedInstanceCache)InstancesFromArtefact.GetOrAdd(artefactId, (_artefactId) => new ArtefactTypedInstanceCache(_artefactId));
+			}
+			
+			public T GetInstance<T>(Artefact artefact)
+			{
+				T instance;
+				ArtefactTypedInstanceCache cache = GetTypedInstanceCache(artefact.Id);
+				return cache.GetInstance<T>();
+			}
+		}
+		
+		public static readonly ArtefactCache Cache = new ArtefactCache();
+
+		/// <summary>
+		/// Initializes the <see cref="Artefacts.Artefact"/> class.
+		/// </summary>
 		static Artefact()
 		{
 			LogFactory = new StringBuilderLogFactory();
@@ -55,36 +112,46 @@ namespace Artefacts
 			return collectionName.Replace(".", "_").Replace("`", "-").Replace('[', '-').Replace(']', '-');
 		}
 		
-		public static bool IncludeMember(MemberInfo member)
+		/// <summary>
+		/// Defaults member filter.
+		/// </summary>
+		/// <returns><c>true</c>, if member filter was _defaulted, <c>false</c> otherwise.</returns>
+		/// <param name="member">Member.</param>
+		public static bool DefaultMemberFilter(MemberInfo member)
 		{
 			return
 				(member.MemberType == MemberTypes.Field ||
 				 member.MemberType == MemberTypes.Property)
-			 && member.IsPublic();
+			 &&  member.IsPublic()
+			 && (member.GetCustomAttribute<IgnoreDataMemberAttribute>() == null);
 		}
 		
 		public delegate bool IncludeMemberDelegate(MemberInfo member);
-		public static IncludeMemberDelegate DefaultMemberFilter = IncludeMember;
+		public static IncludeMemberDelegate MemberFilter = DefaultMemberFilter;
 		
-		private static BindingFlags _bindingFlags = BindingFlags.Instance |
+		public static BindingFlags DefaultBindingFlags =
+			BindingFlags.Instance |
 			BindingFlags.Public | BindingFlags.NonPublic | 
 			BindingFlags.GetField | BindingFlags.GetProperty;
 		
-		public static IEnumerable<MemberInfo> GetDataMembers(Type instanceType, IncludeMemberDelegate memberFilter = null)
+		public static IEnumerable<MemberInfo> GetDataMembers(Type instanceType, BindingFlags bindingFlags = 0, IncludeMemberDelegate memberFilter = null)
 		{
 			if (instanceType == null)
 				throw new ArgumentNullException("instanceType");
+			if (bindingFlags == 0)
+				bindingFlags = DefaultBindingFlags;
 			if (memberFilter == null)
-				memberFilter = DefaultMemberFilter;
-			return instanceType.GetMembers(_bindingFlags).Where(mi => memberFilter(mi));
+				memberFilter = MemberFilter;
+			return instanceType.GetMembers(bindingFlags).Where(mi => memberFilter(mi));
 		}
 		#endregion
 		
 		#region Private fields
 		private DataDictionary _artefactData;
 //		private DataDictionary _persistedData;
-		private string _uri = null;
+		private string _uri;
 //		private ArtefactsClient _client = null;
+		private ArtefactTypedInstanceCache _instanceCache;
 		#endregion
 		
 		#region Fields & Properties
@@ -93,8 +160,8 @@ namespace Artefacts
 		/// </summary>
 		[BsonId, DataMember]
 		public string Id {
-			get;// { return Data.ContainsKey("_id") ? ObjectId.Parse((string)Data["_id"]) : ObjectId.Parse((string)PersistedData["_id"]); }
-			set;// { Data["_id"] = value.ToString(); }
+			get;// { return (string)Data["_id"]; }
+			set;// { Data["_id"] = value/*.ToString()*/; }
 		}
 
 		/// <summary>
@@ -117,7 +184,8 @@ namespace Artefacts
 		/// <summary>
 		/// Gets the <see cref="ArtefactState"/> of this artefact
 		/// </summary>
-		[BsonIgnore, DataMember]
+		[BsonIgnore]
+		//, DataMember]
 		public ArtefactState State {
 			get;
 			set;
@@ -125,38 +193,42 @@ namespace Artefacts
 		
 		/// <summary>
 		/// Gets or sets the time created.
-		/// </summary>
-		[BsonRequired, DataMember]
+        /// </summary>
+		[BsonIgnore]
+		//BsonElement("_timeCreated"), DataMember]
 		public DateTime TimeCreated {
-			get;// { return (DateTime)this["_timeCreated"]; }
-			set;// { this["_timeCreated"] = value; }
+			get { return (DateTime/*.Parse((string*/)this["_timeCreated"]; }
+			set { this["_timeCreated"] = value/*.ToString()*/; }
 		}
 
 		/// <summary>
 		/// Gets or sets the time checked.
 		/// </summary>
-		[BsonRequired, DataMember]
+		[BsonIgnore]
+		//BsonElement("_timeChecked"), BsonRepresentation(BsonType.String), DataMember]
 		public DateTime TimeChecked {
-			get;// { return (DateTime)this["_timeChecked"]; }
-			set;// { this["_timeChecked"] = value; }
+			get { return (DateTime/*.Parse((string*/)this["_timeChecked"]; }
+			set { this["_timeChecked"] = value/*.ToString()*/; }
 		}
 
 		/// <summary>
 		/// Gets or sets the time modified.
 		/// </summary>
-		[BsonRequired, DataMember]
+		[BsonIgnore]
+		//BsonElement("_timeModified"), BsonRepresentation(BsonType.String), DataMember]
 		public DateTime TimeModified {
-			get;// { return (DateTime)this["_timeModified"]; }
-			set;// { this["_timeModified"] = value; }
+			get { return (DateTime/*.Parse((string*/)this["_timeModified"]; }
+			set { this["_timeModified"] = value/*.ToString()*/; }
 		}
 
 		/// <summary>
 		/// Timestamp when last this <see cref="Artefact"/> was saved/sent to server
 		/// </summary>
-		[BsonRequired, DataMember]
+		[BsonIgnore]
+		//BsonElement("_timeSaved"), BsonRepresentation(BsonType.String), DataMember]
 		public DateTime TimeSaved {
-			get;// { return (DateTime)this["_timeSaved"]; }
-			set;// { this["_timeSaved"] = value; }
+			get { return (DateTime/*.Parse((string*/)this["_timeSaved"]; }
+			set { this["_timeSaved"] = value/*.ToString()*/; }
 		}
 		
 		/// <summary>
@@ -174,17 +246,8 @@ namespace Artefacts
 		/// </summary>
 		/// <param name="name">Name.</param>
 		public object this[string name] {
-			get
-			{
-				object result;
-				if (!(Data.TryGetValue(name, out result)))
-				    throw new ArgumentOutOfRangeException("name", name, "Key not found in Artefact.Data");
-				return result;
-			}
-			set
-			{
-				Data[name] = value;
-			}
+			get { return Data[name]; }
+			set { Data[name] = value; }
 		}
 		#endregion
 
@@ -198,13 +261,14 @@ namespace Artefacts
 			TimeSaved = DateTime.MinValue;
 			Id = ObjectId.GenerateNewId(TimeCreated).ToString();
 			State = ArtefactState.Unknown;
+//			_instanceCache = new ArtefactTypedInstanceCache(Id);
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
 		/// <param name="instance">Instance.</param>
-		public Artefact(object instance/*, ArtefactsClient client = null*/) : this()
+		public Artefact(object instance) : this()
 		{
 			State = ArtefactState.Created;
 //			_client = client;
@@ -218,6 +282,25 @@ namespace Artefacts
 		#endregion
 
 		#region Data handling
+		/// <summary>
+		/// Gets the member.
+		/// </summary>
+		/// <returns>The member.</returns>
+		/// <param name="name">Name.</param>
+		public object GetDataMember(string name)
+		{
+			return Data[name];
+		}	
+
+		/// <summary>
+		/// Sets the data member.
+		/// </summary>
+		/// <returns>The data member.</returns>
+		/// <param name="name">Name.</param>
+		public void SetDataMember(string name, object value)
+		{
+			Data[name] = value;
+		}
 		
 		/// <summary>
 		/// Sets the instance.
@@ -229,7 +312,7 @@ namespace Artefacts
 		/// and it should remain in that state until pushed to repo for first time ??
 		/// ie Artefacts are immutable? answer = NO. Just can't keep setting multiple different instances.
 		/// </remarks>
-		public int SetInstance(object instance)
+		public Artefact SetInstance(object instance)
 		{
 			if (instance == null)
 				throw new ArgumentNullException("instance");
@@ -248,7 +331,10 @@ namespace Artefacts
 				//				else
 				Data[member.Name] = value;
 			}
-			return Data.Count;
+			Artefact.Cache.GetTypedInstanceCache(Id)[instanceType] = instance;
+			Artefact.Cache.ArtefactFromInstance[instance] = this;
+			return this;
+//			return Data.Count;
 		}
 		
 		/// <summary>
@@ -257,13 +343,13 @@ namespace Artefacts
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
 		public T As<T>() //where T : new()
 		{
-			T instance = Activator.CreateInstance<T>(); //	new T();
-			IEnumerable<MemberInfo> typeMembers = GetDataMembers(typeof(T));
+			T instance = Artefact.Cache.GetInstance<T>(this);	//Activator.CreateInstance<T>(); //	new T();
+			MemberInfo[] typeMembers = GetDataMembers(typeof(T)).ToArray();
 			IEnumerable<KeyValuePair<string, object>> combinedData = Data;
 			foreach (KeyValuePair<string, object> data in combinedData)
 			{
 				if (!data.Key.StartsWith("_"))	// TODO: Store const/static list of members of type Artefact, to exclude here
-				{
+				{								// ^ Above lien not currently eneded if yous tay with keeping Time* properties separate from this.Data
 					MemberInfo member = typeMembers.FirstOrDefault(mi => mi.Name == data.Key);
 					if (member == null)
 						Log.DebugFormat("Member '{0}' not found in type '{1}', skipping", data.Key, typeof(T).FullName);
@@ -273,11 +359,22 @@ namespace Artefacts
 						object value = data.Value;
 						Type valueType = value == null ? typeof(System.Object) : value.GetType();
 						Type memberType = member.GetMemberReturnType();
-						if (memberType.IsEnum)
-							value = Enum.ToObject(memberType, value);
-						// Needs to be else if?
 						if (!memberType.IsAssignableFrom(valueType))
-							value = Convert.ChangeType(value, memberType);
+						{
+							if (memberType.IsEnum)
+							{
+								if (valueType == typeof(string))
+									value = Enum.Parse(memberType, (string)value, true);
+								else
+									throw new ArgumentOutOfRangeException("value", valueType,
+										"Could not convert value of type " + valueType.FullName +
+										" to Enum type " + memberType.FullName);
+							}
+							else if (memberType.IsNullableType())	// Not sure this is needed - I think a value type and its Nullable<> equiv are assignable
+								value = Activator.CreateInstance(memberType, new object[] { value });
+							else
+								value = Convert.ChangeType(value, memberType);
+						}
 						member.SetValue(instance, value);
 					}
 				}
@@ -298,40 +395,34 @@ namespace Artefacts
 				sb.AppendFormat(" {0}={1}", field.Key, field.Value);
 			return sb.Append("]").ToString();
 		}
-		#endregion
-		
+
 		/// <summary>
 		/// Converts this object to a BsonDocument.
 		/// </summary>
 		/// <returns>A <see cref="BsonDocument"/></returns>
 		/// <remarks><see cref="IConvertibleToBsonDocument"/> implementation</remarks>
-//		public BsonDocument ToBsonDocument()
-//		{
-//			BsonDocument document = new BsonDocument();
-//			IEnumerable<KeyValuePair<string, object>> combinedData = Data;
-//			foreach (KeyValuePair<string, object> data in combinedData)
-//			{
-//				object value = data.Value;
-//				Type valueType = value != null ? value.GetType() : typeof(object);
-//				BsonValue bsonValue;
-//				if (valueType == typeof(long)) 
-//					bsonValue = BsonInt64.Create(value);
-//				else if (valueType == typeof(int))
-//					bsonValue = BsonInt32.Create(value);
-//				else if (valueType.IsEnum)
-////					bsonValue = value.ToString(
-//					bsonValue = BsonInt32.Create((int)value);
-//				else
-//					bsonValue = BsonValue.Create(value);
-//				document.Add(data.Key, bsonValue);
-//			}
-//			return document;
-//		}
-
-		public object GetMember(string name)
-		{
-			return Data[name];
-		}
+		//	public BsonDocument ToBsonDocument()
+		//	{
+		//		BsonDocument document = new BsonDocument();
+		//		IEnumerable<KeyValuePair<string, object>> combinedData = Data;
+		//		foreach (KeyValuePair<string, object> data in combinedData)
+		//		{
+		//			object value = data.Value;
+		//			Type valueType = value != null ? value.GetType() : typeof(object);
+		//			BsonValue bsonValue;
+		//			if (valueType == typeof(long)) 
+		//				bsonValue = BsonInt64.Create(value);
+		//			else if (valueType == typeof(int))
+		//				bsonValue = BsonInt32.Create(value);
+		//			else if (valueType.IsEnum)
+		//				//bsonValue = value.ToString(
+		//				bsonValue = BsonInt32.Create((int)value);
+		//			else
+		//				bsonValue = BsonValue.Create(value);
+		//			document.Add(data.Key, bsonValue);
+		//		}
+		//		return document;
+		//	}
 		
 		#region DynamicObject overrides
 		/// <summary>
@@ -369,7 +460,8 @@ namespace Artefacts
 		/// </remarks>
 		public override bool TrySetMember(SetMemberBinder binder, object value)
 		{
-			try {	// not sure if I really need this, just randomly thought i'd try it out?
+			try
+			{	// not sure if I really need this, just randomly thought i'd try it out?
 				if (Data.ContainsKey(binder.Name) && Data[binder.Name] != value)
 					State = ArtefactState.Modified;
 				Data[binder.Name] = value;
@@ -409,6 +501,7 @@ namespace Artefacts
 		{
 			return base.TryConvert(binder, out result);
 		}
+		#endregion
 		#endregion
 	}
 }

@@ -35,7 +35,7 @@ namespace Artefacts.Service
 		#endregion
 		
 		#region Private fields
-		private const int ThreadSleepTime = 615;
+		private const int ThreadSleepTime = 777;
 		private TextWriter _output;
 		private byte _appHostThreadExit;
 		private Thread _appHostThread;
@@ -76,7 +76,7 @@ namespace Artefacts.Service
 			Log.DebugFormat("ArtefactsHost.Start(\"{0}\")", serviceBaseUrl);
 			base.Start(serviceBaseUrl);
 			output.WriteLine("OK");
-			_appHostThread = new Thread(() => { Run(); }) { Priority = ThreadPriority.BelowNormal };
+			_appHostThread = new Thread(() => { Run(); }) { Priority = ThreadPriority.Lowest };	//.BelowNormal };
 			Log.DebugFormat("new Thread(() => ArtefactsHost.Run()) {{ Priority = {0} }}.Start()", _appHostThread.Priority);
 			_appHostThread.Start();
 		}
@@ -121,8 +121,9 @@ namespace Artefacts.Service
 			{
 				WriteErrorsToResponse = true,
 				DebugMode = true,
-				ReturnsInnerException = true,
-				AllowPartialResponses = true
+				ReturnsInnerException = true
+//				AllowPartialResponses = true,
+			
 			});
 			Service = new ArtefactsService(_output);
 			container.Register<ArtefactsService>(Service);
