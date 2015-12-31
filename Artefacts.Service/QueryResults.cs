@@ -9,11 +9,11 @@ using ServiceStack;
 namespace Artefacts.Service
 {
 //	[Route("/{CollectionName}/Query/", "GET")]
-//	[DataContract]
+	[CollectionDataContract]
 	public class QueryResults : ICollection<Artefact>
 	{
 //		[DataMember(Order=1)]
-		public /*IList<Artefact>*/ Artefact[] Artefacts {
+		public List<Artefact> /*Artefact[]*/ Artefacts {
 			get;
 			set;
 		}
@@ -23,12 +23,14 @@ namespace Artefacts.Service
 		
 		public QueryResults()
 		{
-			Artefacts = new Artefact[0];
+			//Artefacts = new Artefact[0];
+			Artefacts = new List<Artefact>();
 		}
 		
 		public QueryResults(IEnumerable<Artefact> artefacts)
 		{
-			Artefacts = new List<Artefact>(artefacts).ToArray();
+			//Artefacts = new List<Artefact>(artefacts).ToArray();
+			Artefacts = new List<Artefact>(artefacts);
 		}
 		
 		public IEnumerable<T> Get<T>() where T : new()
@@ -40,15 +42,16 @@ namespace Artefacts.Service
 
 		public void Add(Artefact item)
 		{
-			Artefact[] artefacts = Artefacts;
-			Artefacts = new Artefact[artefacts.Length + 1];
-			artefacts.CopyTo(Artefacts, 0);
-			Artefacts[Artefacts.Length - 1] = item;
+//			Artefact[] artefacts = Artefacts;
+//			Artefacts = new Artefact[artefacts.Length + 1];
+//			artefacts.CopyTo(Artefacts, 0);
+//			Artefacts[Artefacts.Length - 1] = item;
+			Artefacts.Add(item);
 		}
 
 		public void Clear()
 		{
-			Artefacts = new Artefact[] { };
+			Artefacts.Clear();
 		}
 
 		public bool Contains(Artefact item)
@@ -58,12 +61,12 @@ namespace Artefacts.Service
 
 		public void CopyTo(Artefact[] array, int arrayIndex)
 		{
-			Array.Copy(Artefacts.ToArray(), 0, array, arrayIndex, Count);
+			Artefacts.CopyTo(array, arrayIndex);
 		}
 
 		public bool Remove(Artefact item)
 		{
-			throw new NotImplementedException();
+			return Artefacts.Remove(item);
 		}
 
 		public int Count {
@@ -74,7 +77,7 @@ namespace Artefacts.Service
 
 		public bool IsReadOnly {
 			get {
-				return true;
+				return false;
 			}
 		}
 
@@ -83,7 +86,7 @@ namespace Artefacts.Service
 		#region IEnumerable implementation
 		public IEnumerator<Artefact> GetEnumerator()
 		{
-			return Artefacts.AsEnumerable().GetEnumerator();
+			return Artefacts/*.AsEnumerable()*/.GetEnumerator();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator()

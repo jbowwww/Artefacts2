@@ -17,9 +17,21 @@ namespace Artefacts.TestClient
 
 		public static TextBufferWriter HostWriter { get; private set; }
 		
+		private static bool _quit = false;
+		
+		public static void Quit()
+		{
+			Volatile.Write(ref _quit, true);
+		}
+		
+		public static bool HasQuit()
+		{
+			return Volatile.Read(ref _quit);
+		}
+		
 		static MainClass()
 		{
-			Log = new DebugLogger(typeof(MainClass));// Artefact.LogFactory.GetLogger(typeof(MainClass));
+			Log = new ConsoleLogger(typeof(MainClass));	// DebugLogger(typeof(MainClass));// Artefact.LogFactory.GetLogger(typeof(MainClass));
 		}
 		
 		/// <summary>
@@ -44,24 +56,56 @@ namespace Artefacts.TestClient
 				Log.Debug("win.Show()");
 				win.Show();
 				
-				new Thread(() => {
+				Thread clientThread = null;
+				win.DeleteEvent += (o, a2) => {
+					if (clientThread != null && clientThread.IsAlive)
+						clientThread.Abort();
+
+					Artefacts.FileSystem.File.CRCAbortThread(true);
+					ClientWriter.WriteLine("Artefacts.FileSystem.File CRC Thread cancelled!");
+					
+					MainClass.Quit();
+					Thread.Sleep(111);
+					ClientWriter.WriteLine("Client thread might have exited by now ?? :)!");
+					
+					Application.Quit();
+				};
+				
+//				new Thread(() => {
 					using (ArtefactsHost Host = new ArtefactsHost(serviceBaseUrl, HostWriter))
 					{
+//						win.DeleteEvent += (o, a1) => { Host.Release(); };
+
 						Thread.Sleep(1111);
 	//					Host.Start(serviceBaseUrl);
-	//					Thread.Sleep(888);
-						
-						using (ArtefactsTestClient Client = new ArtefactsTestClient(serviceBaseUrl, ClientWriter, win))
-						{
-							Thread.Sleep(481);
-							Client.Run();
-						}
-					}
-				}).Start();
+								clientThread = new Thread(() => {
+									try
+									{
+										using (ArtefactsTestClient Client = new ArtefactsTestClient(serviceBaseUrl, ClientWriter, win))
+										{
+											Client.Run();
+									
+			
+										}
+									}
+									catch (Exception ex)
+									{
+										Log.Error(ex);
+										ClientWriter.WriteLine(ex);
+									}
+									finally
+									{
+										clientThread = null;	
+									}
+								});
+								clientThread.Start();
+					
+					Thread.Sleep(888);
+					Log.Debug("Application.Run()");
+					Application.Run();
+				}
+				//}).Start();
 				
-				Thread.Sleep(888);
-				Log.Debug("Application.Run()");
-				Application.Run();
 			}
 			catch (Exception ex)
 			{
@@ -69,7 +113,7 @@ namespace Artefacts.TestClient
 			}
 			finally
 			{
-				
+				Log.Info("Quitting");
 			}
 		}
 	}

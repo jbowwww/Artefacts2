@@ -59,7 +59,7 @@ namespace Artefacts
 			if (member.MemberType == MemberTypes.Field)
 				return ((FieldInfo)member).GetValue(instance);
 			if (member.MemberType == MemberTypes.Property)
-				return ((PropertyInfo)member).GetValue(instance);
+				return ((PropertyInfo)member).GetValue(instance, new object[] { });
 			throw new ArgumentOutOfRangeException("member", "MemberType == " + member.MemberType.ToString());
 		}
 		

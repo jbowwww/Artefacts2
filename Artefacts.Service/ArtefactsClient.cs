@@ -166,14 +166,14 @@ namespace Artefacts.Service
 			QueryRequest query = QueryRequest.Make<T>(predicate);
 			QueryResults result = _serviceClient.Get<QueryResults>(query);
 			_bufferWriter.WriteLine("result = " + result);
-			if (result == null || result.Artefacts.Count() == 0)
+			if (result == null || result._artefacts.Count() == 0)
 			{
 				artefact = new Artefact(create(), this);
 				_serviceClient.Post(artefact);
 			}
 			else
 			{
-				artefact = result.Artefacts.ElementAt(0);
+				artefact = result._artefacts.ElementAt(0);
 			}
 			T instance = artefact.As<T>();
 			_artefacts[instance] = artefact;
@@ -200,7 +200,7 @@ namespace Artefacts.Service
 			Artefact artefact;	// = _serviceClient.Get<Artefact>(query);
 			QueryResults result = _serviceClient.Get<QueryResults>(query);
 			_bufferWriter.WriteLine("result = " + result);
-			if (result == null || result.Artefacts.Count() == 0)
+			if (result == null || result._artefacts.Count() == 0)
 			{
 				artefact = new Artefact(instance, this);
 //				{
@@ -212,7 +212,7 @@ namespace Artefacts.Service
 			}
 			else
 			{
-				artefact = result.Artefacts.ElementAt(0);
+				artefact = result._artefacts.ElementAt(0);
 				artefact.SetInstance(instance);
 				_serviceClient.Put(artefact);
 				return false;

@@ -17,6 +17,7 @@ using NUnit.Framework;
 using ServiceStack.Text;
 using MongoDB.Bson;
 using System.Dynamic.Utils;
+using MongoDB.Bson.Serialization;
 
 namespace Artefacts.TestClient
 {
@@ -59,17 +60,9 @@ namespace Artefacts.TestClient
 //				              response.StatusCode, response.StatusDescription, response.CharacterSet,
 //				              response.ContentEncoding, response.ContentType, response.ContentLength))
 			};
-//			JsConfig.TryToParsePrimitiveTypeValues = true;
-			JsConfig.TreatEnumAsInteger = true;
-			JsConfig<Artefact>.IncludeTypeInfo = true;
-			JsConfig.TryToParseNumericType = false;
 			
-			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a./*Persisted*/Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
-			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
-			JsConfig<BsonDocument>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson(b);
-			JsConfig<BsonDocument>.DeSerializeFn = b => BsonDocument.Parse(b);
-//			JsConfig<QueryRequest>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson<QueryRequest>(b);// b.ToJson();
-//			JsConfig<QueryRequest>.DeSerializeFn = b => (QueryRequest)BsonDocument.Parse(b);
+			Artefact.ConfigureServiceStack();
+
 			bufferWriter.WriteLine(_client.ToString());
 			bufferWriter.WriteLine("Creating test Artefact ... ");
 			_artefact = new Artefact(new {
@@ -80,70 +73,9 @@ namespace Artefacts.TestClient
 			});
 			bufferWriter.WriteLine("\tJSON: " + _artefact.ToString());//k.StringExtensions.ToJson(_artefact));
 			bufferWriter.WriteLine();
-			
-//			_artefactsClient = new ArtefactsClient(_serviceBaseUrl, _bufferWriter);
-//			_bufferWriter.WriteLine("_artefactsClient: {0}", _artefactsClient);
-		}
-
-//		[Test]
-		public void GetDisk()
-		{
-			QueryResults testResult = _client.Get<QueryResults>((QueryRequest)QueryRequest.Make<Disk>(d => (d.Name == "sda")));
-			_bufferWriter.WriteLine("testResult = " + testResult);
-		}
-
-//		[Test]
-		public void GetOrCreateDisk()
-		{
-			foreach (Disk disk in Disk.Disks)
-			{
-				Disk testDisk;
-				QueryResults results = _client.Get<QueryResults>(QueryRequest.Make<Disk>(d => d.Name == disk.Name)); 	//_artefactsClient.GetOrCreate<Disk>(d => (d.Name == disk.Name), () => disk);
-				_bufferWriter.WriteLine("results = " + results);	//.FormatString());
-				if (results.Artefacts.Count() > 0)
-				{
-					testDisk = results.Artefacts.ElementAt(0).As<Disk>();
-					_bufferWriter.WriteLine("testDisk = " + testDisk);
-				}
-				else
-				{
-					Artefact newArtefact = new Artefact(disk);
-					_bufferWriter.WriteLine("newArtefact = " + newArtefact);	//.FormatString());
-					_client.Post(newArtefact);
-				}
-			}
-		}
-
-//		[Test]
-		public void GetDrive()
-		{
-			QueryResults testResult = _client.Get<QueryResults>(QueryRequest.Make<Drive>(d => (d.Name == "sda")));
-			_bufferWriter.WriteLine("testResult = " + testResult);
-		}
-
-//		[Test]
-		public void GetOrCreateDrive()
-		{
-			foreach (Drive drive in Drive.All)
-			{
-				Drive testDrive;
-				QueryResults results = _client.Get<QueryResults>(QueryRequest.Make<Drive>(d => d.Name == drive.Name)); 	//_artefactsClient.GetOrCreate<Disk>(d => (d.Name == disk.Name), () => disk);
-				_bufferWriter.WriteLine("results = " + results);	//.FormatString());
-				if (results.Artefacts.Count() > 0)
-				{
-					testDrive = results.Artefacts.ElementAt(0).As<Drive>();
-					_bufferWriter.WriteLine("testDisk = " + testDrive);
-				}
-				else
-				{
-					Artefact newArtefact = new Artefact(drive);
-					_bufferWriter.WriteLine("newArtefact = " + newArtefact);	//.FormatString());
-					_client.Post(newArtefact);
-				}
-			}
 		}
 		
-//		[Test]
+		[Test]
 		public void RecurseDirectory()
 		{
 			int maxDepth = -1;	// max FS file depth
@@ -153,13 +85,14 @@ namespace Artefacts.TestClient
 			int numThreads = 4;
 			Thread[] threads = new Thread[numThreads];
 			int postThreadSleepTime = 224;
-			int scanThreadSleepTime = 88;
+			int scanThreadSleepCountLimit = 5;
+			int scanThreadSleepTime = 132;
 			int scanThreadActiveCount = 0;
 			int maxPostRetries = 3;
 			ConcurrentQueue<FileSystemEntry> _postQueue = new ConcurrentQueue<FileSystemEntry>();
 			ConcurrentQueue<Directory> _directoryQueue = new ConcurrentQueue<Directory>();
 			
-			Directory topDir = new Directory("/mnt/Trapdoor/mystuff/");
+			Directory topDir = new Directory("/mnt/Trapdoor/media/");
 			_directoryQueue.Enqueue(topDir);
 			
 			_bufferWriter.WriteLine("RecurseDirectory() starting at " + mainStart.ToShortTimeString());
@@ -180,6 +113,13 @@ namespace Artefacts.TestClient
 					{
 						while (_postQueue.TryDequeue(out fsEntry))
 						{
+							if (MainClass.HasQuit())
+							{
+								_bufferWriter.WriteLine("Application.HasQuit(): Exiting _postThread!!");
+								_client.CancelAsync();
+								_client.Dispose();
+								return;
+							}
 							for (int i = 0; i < maxPostRetries; i++)
 							{
 								try 
@@ -196,6 +136,8 @@ namespace Artefacts.TestClient
 										_bufferWriter.WriteLine("Creating (or updating) Directory \"{0}\"", dir.Path);
 										_client.GetOrCreate<Directory>((d) => d.Path == dir.Path, () => dir);
 									}
+									else
+										throw new ApplicationException("fsEntry is not a File or Directory! Shouldn't happen!");
 									count++;
 									break;
 								}
@@ -218,6 +160,7 @@ namespace Artefacts.TestClient
 			{
 				threads[tn] = new Thread((param) =>
 				{
+					int scanThreadSleepCount = 0;
 					int num = (int)param;
 					int count = 0;
 					DateTime threadStart = DateTime.Now;
@@ -225,18 +168,28 @@ namespace Artefacts.TestClient
 					try
 					{
 						Directory threadDir;
-						while (_directoryQueue.Count > 0 || Volatile.Read(ref scanThreadActiveCount) > 0)
+						while (	scanThreadSleepCount++ < scanThreadSleepCountLimit
+						 ||		_directoryQueue.Count > 0
+						 || 	Volatile.Read(ref scanThreadActiveCount) > 0)
 						{
 							if (_directoryQueue.Count == 0)
 								Thread.Sleep(scanThreadSleepTime);
 							else
 							{
+								scanThreadSleepCount = 0;
 								while (_directoryQueue.TryDequeue(out threadDir))
 								{
+									if (MainClass.HasQuit())
+									{
+										_bufferWriter.WriteLine("Application.HasQuit(): Exiting scan thread #" + num + " !!");
+										_client.CancelAsync();
+										_client.Dispose();
+										return;
+									}
 									Volatile.Write(ref scanThreadActiveCount, Volatile.Read(ref scanThreadActiveCount) + 1);
 									try
 									{
-										bool isExpired = DateTime.Now - threadDir.LastWriteTime > TimeSpan.FromMinutes(10);
+										bool isExpired = (DateTime.Now - threadDir.LastWriteTime) < TimeSpan.FromDays(1);
 										_bufferWriter.WriteLine("Thread #" + num + " running on directory number " + count + " at " +
 											DateTime.Now.ToShortTimeString() + " " + threadDir.Path + ": " +
 											(isExpired ? "Expired" : "Current"));
@@ -260,7 +213,6 @@ namespace Artefacts.TestClient
 									catch (Exception ex)
 									{
 										_bufferWriter.WriteLine(ex.Format());
-										continue;
 									}
 									finally
 									{
@@ -319,6 +271,7 @@ namespace Artefacts.TestClient
 		[Test]
 		public void GetLargeFilesWithDupeSize()
 		{
+			int maxPostRetries = 3;
 			Dictionary<long, QueryResults> sizeGroups = new Dictionary<long, QueryResults>();	// file size keyed
 			Dictionary<long, QueryResults> dupeGroups = new Dictionary<long, QueryResults>();	// file CRC keyed
 			QueryRequest request = QueryRequest.Make<File>(f => (f.Size  > (16 * 1024 * 1024)));
@@ -340,7 +293,8 @@ namespace Artefacts.TestClient
 							"result #{0}: f.Size = {1} ({2} file results with matching size)",
 							i++, File.FormatSize(file.Size), results2.Count));
 						IEnumerable<File> files = results2.Artefacts.Select(a => a.As<File>());
-						files.Each(f => { f.QueueCalculateCRC(); });
+						files.Each(f => {
+							f.QueueCalculateCRC(true); });
 						foreach (File file2 in files)
 						{
 							file2.CRCWaitHandle.WaitOne();
@@ -349,15 +303,35 @@ namespace Artefacts.TestClient
 								dupeGroups.Add(crc, new QueryResults(new Artefact[] { Artefact.Cache.GetArtefact(file2) }));	//new Artefact[] { artefact2 }));
 							else
 								dupeGroups[crc].Add(Artefact.Cache.GetArtefact(file2));
-							_client.Put(Artefact.Cache.GetArtefact(file2));
-							_bufferWriter.WriteLine("    " + file2.CRC.Value.ToHex().PadLeft(26) + file2.Path);
+							int j;
+							for (j = 0; j < maxPostRetries; j++)
+							{
+								try
+								{
+									_client.Put(Artefact.Cache.GetArtefact(file2));
+									break;
+								}
+								catch (System.Net.WebException ex)
+								{
+									Log.ErrorFormat(" ! ERROR: {0}: Retry attempt #{1} of {2}\n", ex.GetType().FullName, j + 1, maxPostRetries);
+									Thread.Sleep(500);
+									continue;
+								}
+							}
+							if (j == maxPostRetries)
+							{
+								_bufferWriter.WriteLine("Failed to PUT 3 times for file \"" + file2.Path + "\" !!");
+							}
+							_bufferWriter.WriteLine("    " + file2.CRC.Value.ToHex().PadLeft(26) + "    " + file2.Path);
 							groupSize += file2.Size;
 						}
 						_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group\n");	// results2.Artefacts.Sum(a => a.As<File>().Size)
 						totalSize += groupSize;
-						_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in all groups\n");
 					}
-					
+
+					else
+						Thread.Sleep(150);
+//					_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in all groups\n");
 				}
 			}
 			totalSize = 0;
@@ -379,7 +353,7 @@ namespace Artefacts.TestClient
 					}
 					_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group");
 					totalSize += groupSize;
-					new DupeProcessWindow(qr.Artefacts.Select<Artefact,File>(a => a.As<File>())).Show();
+//					new DupeProcessWindow(qr.Artefacts.Select<Artefact,File>(a => a.As<File>())).Show();
 				}
 			}
 			int totalUsedGroups = dupeGroups.Count(pair => pair.Value.Count > 1);
@@ -431,6 +405,64 @@ namespace Artefacts.TestClient
 		#endregion
 		
 		#region Old inactive and/or failed/abandoned tests
+
+		//		[Test]
+		public void GetDisk()
+		{
+			QueryResults testResult = _client.Get<QueryResults>((QueryRequest)QueryRequest.Make<Disk>(d => (d.Name == "sda")));
+			_bufferWriter.WriteLine("testResult = " + testResult);
+		}
+
+		//		[Test]
+		public void GetOrCreateDisk()
+		{
+			foreach (Disk disk in Disk.Disks)
+			{
+				Disk testDisk;
+				QueryResults results = _client.Get<QueryResults>(QueryRequest.Make<Disk>(d => d.Name == disk.Name)); 	//_artefactsClient.GetOrCreate<Disk>(d => (d.Name == disk.Name), () => disk);
+				_bufferWriter.WriteLine("results = " + results);	//.FormatString());
+				if (results.Artefacts.Count() > 0)
+				{
+					testDisk = results.Artefacts.ElementAt(0).As<Disk>();
+					_bufferWriter.WriteLine("testDisk = " + testDisk);
+				}
+				else
+				{
+					Artefact newArtefact = new Artefact(disk);
+					_bufferWriter.WriteLine("newArtefact = " + newArtefact);	//.FormatString());
+					_client.Post(newArtefact);
+				}
+			}
+		}
+
+		//		[Test]
+		public void GetDrive()
+		{
+			QueryResults testResult = _client.Get<QueryResults>(QueryRequest.Make<Drive>(d => (d.Name == "sda")));
+			_bufferWriter.WriteLine("testResult = " + testResult);
+		}
+
+		//		[Test]
+		public void GetOrCreateDrive()
+		{
+			foreach (Drive drive in Drive.All)
+			{
+				Drive testDrive;
+				QueryResults results = _client.Get<QueryResults>(QueryRequest.Make<Drive>(d => d.Name == drive.Name)); 	//_artefactsClient.GetOrCreate<Disk>(d => (d.Name == disk.Name), () => disk);
+				_bufferWriter.WriteLine("results = " + results);	//.FormatString());
+				if (results.Artefacts.Count() > 0)
+				{
+					testDrive = results.Artefacts.ElementAt(0).As<Drive>();
+					_bufferWriter.WriteLine("testDisk = " + testDrive);
+				}
+				else
+				{
+					Artefact newArtefact = new Artefact(drive);
+					_bufferWriter.WriteLine("newArtefact = " + newArtefact);	//.FormatString());
+					_client.Post(newArtefact);
+				}
+			}
+		}
 		//		[Test]
 //		public void GetOrCreateDriveOld()
 //		{

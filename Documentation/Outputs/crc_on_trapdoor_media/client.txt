@@ -1,0 +1,1916 @@
+Creating client to access http://localhost:8888/Artefacts/ ... 
+ServiceStack.JsonServiceClient
+Creating test Artefact ... 
+	JSON: [Artefact: _timeCreated=31/12/2015 5:42:02 PM _timeModified=31/12/2015 5:42:02 PM _timeChecked=31/12/2015 5:42:02 PM _timeSaved=1/01/0001 12:00:00 AM _id=5684f86a35b9e562f7d037cd]
+
+
+--------Test: Artefacts.TestClient.ArtefactsTestClient.RecurseDirectory-------- 31/12/2015 5:42:03 PM
+RecurseDirectory() starting at 5:42 PM
+Main thread starting directory /mnt/Trapdoor/media/
+Thread #0 starting at 5:42 PM
+Thread #0 running on directory number 0 at 5:42 PM /mnt/Trapdoor/media/: CurrentThread #2 starting at 5:42 PM
+
+Thread #3 starting at 5:42 PMThread #1 starting at 5:42 PM
+
+Main thread finished at 5:42 PM : Time 00:00:00.0325390
+POST Thread starting at 5:42 PM
+POST Thread finished at 5:42 PM : Total time 00:00:00.2243960, totalled 0 files
+All threads finished at 31/12/2015 5:42:03 PM, total time 00:00:00.2569350, 0 directories traversed
+
+--------Finished: Artefacts.TestClient.ArtefactsTestClient.RecurseDirectory-------- 31/12/2015 5:42:03 PM Td=00:00:00.2632250
+
+--------Test: Artefacts.TestClient.ArtefactsTestClient.GetLargeFilesWithDupeSize-------- 31/12/2015 5:42:03 PM
+Thread #2 finished at 5:42 PM : Total time 00:00:00.6704800, totalled 0 directories
+Thread #0 finished at 5:42 PM : Total time 00:00:00.6734200, totalled 1 directories
+Thread #1 finished at 5:42 PM : Total time 00:00:00.6703800, totalled 0 directoriesThread #3 finished at 5:42 PM : Total time 00:00:00.6706810, totalled 0 directories
+
+2058 file results >= 16MB 
+result #0: f.Size = 64.79MB (2 file results with matching size)
+              bad693f003b2cd54    /mnt/Trapdoor/media/00unsorted/web/AdamF_Kiss_100_25-01-04_-_Pendulum_mix.mp3
+              55133a8b854a87b2    /mnt/Trapdoor/media/new_mp3/DNB Mixes/AdamF_Kiss_100_25-01-04_-_Pendulum_mix.mp3
+Total 129.58MB in group
+
+result #1: f.Size = 702.34MB (2 file results with matching size)
+              ff8f28ddb9cf685a    /mnt/Trapdoor/media/video/Movies/No.Country.For.Old.Men[2007]DvDrip-aXXo.avi
+              8799c0acb4d79c1d    /mnt/Trapdoor/media/video/Movies/No.Country.For.Old.Men[2007]DvDrip-aXXo/No.Country.For.Old.Men[2007]DvDrip-aXXo.avi
+Total 1.37GB in group
+
+result #2: f.Size = 47.36MB (2 file results with matching size)
+              f5ac280dd53a5474    /mnt/Trapdoor/media/new_mp3/DNB Mixes/010405_nob2bra.mp3
+              b4cb8cb447825f49    /mnt/Trapdoor/media/new_mp3/DNB Mixes/Noisia/Noisia b2b Raiden.mp3
+Total 94.72MB in group
+
+result #3: f.Size = 66.58MB (2 file results with matching size)
+              683caeece2d58d90    /mnt/Trapdoor/media/new_mp3/DNB Mixes/Greg Packer-D&B-Perth.mp3
+              b2519158380ae59b    /mnt/Trapdoor/media/mp3/DJ Greg Packer/greg Packer-Perth WA-Dark Drum and Bass  ( Andy C Dj Krust K.mp3
+Total 133.16MB in group
+
+result #4: f.Size = 53.36MB (2 file results with matching size)
+              7fffffffffffffff    /mnt/Trapdoor/media/new_mp3/DNB Mixes/LiveWire Xmas Eve 2004.mp3
+               654c65c27c1fc6b    /mnt/Trapdoor/media/new_mp3/DNB Mixes/Dieselboy/LiveWire Xmas Eve 2004.mp3
+Total 106.73MB in group
+
+result #5: f.Size = 16.57MB (2 file results with matching size)
+              3693615fc040c994    /mnt/Trapdoor/media/new_mp3/Noisia/Bad Company - Meditation.mp3
+              9fe3242b7d458d22    /mnt/Trapdoor/media/new_mp3/Noisia/Noisia & Bad Company/Dubplate/Meditation.mp3
+Total 33.15MB in group
+
+result #6: f.Size = 17.53MB (2 file results with matching size)
+              52be6f070622988c    /mnt/Trapdoor/media/new_mp3/Noisia/Nitekeen - Police Brutality (Remix).mp3
+              ad18d606af019fbe    /mnt/Trapdoor/media/new_mp3/Noisia/Noisia & Nitekeen/Unknown Album/Police Brutality (Remix).mp3
+Total 35.05MB in group
+
+result #7: f.Size = 18.04MB (2 file results with matching size)
+              f37624ad2ea8447d    /mnt/Trapdoor/media/new_mp3/Noisia/Skidmarkz.mp3
+              c8e16df0cf76409f    /mnt/Trapdoor/media/new_mp3/Noisia/Unknown Album/Skidmarkz.mp3
+Total 36.09MB in group
+
+result #8: f.Size = 20.81MB (3 file results with matching size)
+              50bd86acb66ec9e5    /mnt/Trapdoor/media/new_mp3/Roni Size/roni size - jungle drum and bass.mp3
+              50bd86acb66ec9e5    /mnt/Trapdoor/media/mp3/Jungle Bothers/Jungle drum and bass (BEST MIX YOU WILL EVER HEAR) better th.mp3
+               4df75257f0c5163    /mnt/Trapdoor/media/mp3/00lostfiles/Jungle drum and bass (BEST MIX YOU WILL EVER HEAR) better th.mp3
+Total 62.44MB in group
+
+result #9: f.Size = 18.76MB (2 file results with matching size)
+              4ffe5d97ccd1317c    /mnt/Trapdoor/media/mp3/Cosmic Gate/Cosmic Gate vs Mauro Picotto - Fire Wire Komodo.mp3
+              4ffe5d97ccd1317c    /mnt/Trapdoor/media/mp3/00lostfiles/Cosmic Gate vs Mauro Picotto - Fire Wire Komodo.mp3
+Total 37.52MB in group
+
+result #10: f.Size = 52.14MB (2 file results with matching size)
+              7e811172292aa803    /mnt/Trapdoor/media/mp3/00lostfiles/01 Set.mp3
+              ea8a9fbc7c6add94    /mnt/Trapdoor/media/mp3/Daft Punk/Unknown Album/01 Set.mp3
+Total 104.29MB in group
+
+result #11: f.Size = 47.68MB (135 file results with matching size)
+              7640f9c187ff35be    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.r00
+              1bd9f78a0265f49b    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.r01
+              e0c5856f040599e7    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.r02
+              522fb029058fc9a4    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.r03
+              9ee712b21f2f20f4    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.r04
+              a805c748b090ef85    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.r05
+              c949be67d698dc1b    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.r06
+              6b897ab660c1eab1    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.r07
+              3423ce526e6a359f    /mnt/Trapdoor/media/video/DOCUMENTARIES/Secrets.From.The.Sky.S01E02.720p.HDTV.x264-C4TV/secrets.from.the.sky.s01e02.720p.hdtv.x264-c4tv.rar
+              d2baffe321773ed5    /mnt/Trapdoor/media/video/TV/Bobs.Burgers.S05E05.720p.HDTV.x264-2HD/bobs.burgers.s05e05.720p.hdtv.x264-2hd.r00
+              a8b444e2cc895dfb    /mnt/Trapdoor/media/video/TV/Bobs.Burgers.S05E05.720p.HDTV.x264-2HD/bobs.burgers.s05e05.720p.hdtv.x264-2hd.r01
+              b23806140fab227e    /mnt/Trapdoor/media/video/TV/Bobs.Burgers.S05E05.720p.HDTV.x264-2HD/bobs.burgers.s05e05.720p.hdtv.x264-2hd.r02
+              3fd7ec057145f585    /mnt/Trapdoor/media/video/TV/Bobs.Burgers.S05E05.720p.HDTV.x264-2HD/bobs.burgers.s05e05.720p.hdtv.x264-2hd.rar
+              d1201018e4495634    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r00
+              824e2be94b5bae42    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r01
+              974e9d6722b629ad    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r02
+              66fc29d88daa71ee    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r03
+              49efdde123620637    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r04
+              24b625d2e92a849f    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r05
+              15ceed99feacf7dd    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r06
+              17e3c4bf3062c104    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r07
+              f13be2a7663412e7    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r08
+               6f70ca5344b5290    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r09
+              d1fd60657fc5847a    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r10
+               42977e712bf0674    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r11
+              68771425bae47ca3    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.r12
+              433fb7549858fe04    /mnt/Trapdoor/media/video/TV/Brooklyn.Nine-Nine.S02E09.720p.HDTV.x264-KILLERS/brooklyn.nine-nine.s02e09.720p.hdtv.x264-killers.rar
+              e5078bae1738d6bf    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r00
+              75638d947d686454    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r01
+              c03be6e8520cca2c    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r02
+              1ca4f3bb68334348    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r03
+              cd1150144297c3a6    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r04
+              1d254dd2651abe46    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r05
+              b96358ebb084a9f7    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r06
+              48c45057150aa563    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r07
+              fb29c9a72f78fdb8    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r08
+              2c410e41cc3a78d5    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r09
+              f2fb11cd0a667b70    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r10
+              db7e08828971cd72    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r11
+              a9764c5b75254629    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r12
+              8873b35e96ed84a5    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r13
+              79ad32350421424c    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r14
+              a00e6975eb902eb9    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r15
+              30800493c0482de0    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.r16
+               a8d0c7fac6dfea2    /mnt/Trapdoor/media/video/TV/QI.S12E08.UNCUT.720p.HDTV.x264-iNGOT/qi.s12e08.uncut.720p.hdtv.x264-ingot.rar
+              d1d9fd53344fc33b    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r00
+              4efc6a8aa64a5b82    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r01
+              86b7c1503cb7011e    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r02
+              cbc27e1936d0cc87    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r03
+              2864abd558222ee6    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r04
+              195a329691aae7b7    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r05
+              a0255104e0b0b698    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r06
+              59f1d483bc9bad01    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r07
+              a58686f0da0c417d    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r08
+              64ed7e34fe56f138    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.r09
+              2126f7bb1cd2cdec    /mnt/Trapdoor/media/video/TV/Archer/Season 6/Archer.2009.S06E04.720p.HDTV.x264-KILLERS/archer.2009.s06e04.720p.hdtv.x264-killers.rar
+              dfc98e483dd464c9    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r00
+              1f7140673c3818a2    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r01
+              870d45e024aacf31    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r02
+              d58add0c5c70d106    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r03
+              e577b7617edf43fd    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r04
+              567d7e3f92e6b1d4    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r05
+              400206dbaf1742d0    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r06
+              1a961b028d8db44b    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r07
+              197cdc37cd47c654    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r08
+              9d93fac4890e84dd    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r09
+              a5d3f25722d18687    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r10
+              3d75bb2e8fe78cb9    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r11
+              765fbb4907d8c5a7    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r12
+              fe807ac5de691c13    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r13
+              30693dec7b10e0e8    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r14
+              612080a3af051a24    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r15
+              a9da277c9104fe5b    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r16
+              182fd1a819770d55    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r17
+              7c35df2a2cd8cfdf    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r18
+              3e658140d98400e3    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r19
+              377b51f81c9d1e39    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r20
+              7e29e183a26d940c    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r21
+              59488afd3d384f63    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r22
+              35115d9b921b147e    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r23
+              1995e1becf5f61d4    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r24
+              1f5914c3b3c0e399    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r25
+              1345c725f3bc713b    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r26
+              ccf28696e1b08237    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r27
+              a6c2ae765588ea61    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r28
+              68349351b0a86d73    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r29
+              17aa495aaebc71ec    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r30
+              d7517b024d199ba2    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r31
+              652b58c9db5c971d    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r32
+              7dbc5192ad1a725f    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r33
+              8af26aacded6c9a5    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r34
+              d71a2b2adc4979ad    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r35
+              cf55494348ef06ef    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r36
+              38653da2bfc497c5    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r37
+              604ea39473290edf    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r38
+              e954fb2fc8e23da2    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r39
+              bacd17d41faa8b66    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r40
+              1f37f8475dfaca25    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r41
+              dd69f3152162bdf4    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.r42
+              4df0969f68659c39    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Season 7/Sons.of.Anarchy.S07E03.720p.HDTV.x264-KILLERS/sons.of.anarchy.s07e03.720p.hdtv.x264-killers.rar
+              3bff7b387e55f0f9    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r00
+              d557dc8ab41eedfd    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r01
+              e328cd5245b1dd1d    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r02
+              f305730c6a5bfa9c    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r03
+              74a9edb0278ac065    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r04
+              cddf8f5bd5d20760    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r05
+              a2eabf9b5641e975    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r06
+              6317cc5897587526    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r07
+              71e7489d1212a9ed    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r08
+              3a6ffbe2e5d693f4    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r09
+              af7fe742e2a5c813    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r10
+              772f3b8cd8ef29d5    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r11
+              49a7bfea470c634f    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r12
+              5dde3c237ab0fa56    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r13
+              c889da40cfae650b    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r14
+              ba92188b012de209    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r15
+              78481eedb677bee7    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r16
+              d21ffc00191c05f8    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r17
+              70fb1d57427ff238    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r18
+              5db9ce59a2f3f701    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r19
+              ccaed86eab93e377    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r20
+              adcd80c26008fe1a    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r21
+              99dbbd0dfd9daa2e    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r22
+              bdbe9bf37bf737a3    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r23
+              6c3ac6a911bb2ff8    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r24
+              8f68039269208c6a    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r25
+              ee8670668e62cc63    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r26
+              23a1373633319386    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r27
+              f2a5f4a2e50849bb    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r28
+              2a7826df5ccdb4c9    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r29
+              b9ae717c2a4ad5e0    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r30
+              57088d86ac555f71    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r31
+              eb128379032afd9b    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r32
+              2801c7891def952d    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.r33
+              e688f5bfe2f65307    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Music Making Tools/! VST Bundle/Steinberg.Hypersonic.2.DVDR.MERRY.XMAS--DELiRiUM/dlm-sh2.rar
+Total 6.29GB in group
+
+result #12: f.Size = 54.36MB (2 file results with matching size)
+              376e9a27991ec3a8    /mnt/Trapdoor/media/mp3/Paul Van Dyk/PAUL VAN DYKE - ESSENTIAL MIX II - (LIVE IN LONDON).MP3
+              376e9a27991ec3a8    /mnt/Trapdoor/media/mp3/00lostfiles/Copy of PAUL VAN DYKE - ESSENTIAL MIX II - (LIVE IN LONDON).MP3
+Total 108.73MB in group
+
+result #13: f.Size = 62.76MB (3 file results with matching size)
+              96bc0eaf2e9ca87e    /mnt/Trapdoor/media/mp3/Paul Van Dyk/PVD vs Paul Oakenfold.mp3
+              8f38f981d6e38d51    /mnt/Trapdoor/media/mp3/Paul Van Dyk/Unknown Album/Irish_vs_Nyman 1.mp3
+              94ce591d3f920352    /mnt/Trapdoor/media/mp3/Paul Van Dyk/Unknown Album/Irish_vs_Nyman.mp3
+Total 188.29MB in group
+
+result #14: f.Size = 22.62MB (2 file results with matching size)
+              a80f14b41bbc7177    /mnt/Trapdoor/media/mp3/Paul Van Dyk/Paul Van Dyk - Dyk Technik2.mp3
+              a80f14b41bbc7177    /mnt/Trapdoor/media/mp3/00lostfiles/Copy of Paul Van Dyk - Dyk Technik2.mp3
+Total 45.24MB in group
+
+result #15: f.Size = 70.68MB (2 file results with matching size)
+              e7e344d581e91c5b    /mnt/Trapdoor/media/mp3/Paul Van Dyk/paul van dyk - Paul Van Dyke & Peter Tong.mp3
+              e7e344d581e91c5b    /mnt/Trapdoor/media/mp3/00lostfiles/Copy of paul van dyk - Paul Van Dyke & Peter Tong.mp3
+Total 141.37MB in group
+
+result #16: f.Size = 699.11MB (2 file results with matching size)
+              e17ea054206fbfab    /mnt/Trapdoor/media/video/Movies/Documentary MoviePack/American Gypsy A Stranger in Everybody's Land [1999] DVDRip.avi
+              c4152a28a06d6514    /mnt/Trapdoor/media/video/Movies/Once Upon A Time In America/once.upon.a.time.in.america.1984.dvdrip.xvid.frag.cd1.avi
+Total 1.37GB in group
+
+result #17: f.Size = 700.01MB (2 file results with matching size)
+              80ac251e722c122d    /mnt/Trapdoor/media/video/Movies/Documentary MoviePack Part 4-IPT/HIGH - DVDRip.avi
+              299db9cdc94ec9d3    /mnt/Trapdoor/media/video/Movies/The.Butterfly.Tattoo.2008.LiMiTED.DVDRip.XviD-NODLABS/the.butterfly.tattoo.2008.limited.dvdrip.xvid-nodlabs.avi
+Total 1.37GB in group
+
+result #18: f.Size = 700.22MB (3 file results with matching size)
+              8dda9a1b341d3c3f    /mnt/Trapdoor/media/video/Movies/RocknRolla.DVDRip.XviD-DiAMOND/dmd-rocknrolla.avi
+              c33a96ff9cd91497    /mnt/Trapdoor/media/video/Movies/The.Omen.DVDRip.XviD-DoNE/CD2/The.Omen.DVDRip.XviD-DoNE.2.avi
+              518bc8c6970be522    /mnt/Trapdoor/media/video/Movies/Various Movies Pack 3/Bruce.Lee.The.Legend.Lives.On.2002.DVDRip.XviD-LiNE/line-bruce.avi
+Total 2.05GB in group
+
+result #19: f.Size = 700.11MB (2 file results with matching size)
+              80e7290f7f90c0ed    /mnt/Trapdoor/media/video/Movies/Roll.Bounce.DVDRip.XviD-DiAMOND/dmd-rollbounce.avi
+              29c207d974ff6326    /mnt/Trapdoor/media/video/Movies/The.Expendables.2010.BDRip.XviD-Larceny/l-expendables.xvid.avi
+Total 1.37GB in group
+
+result #20: f.Size = 16.87MB (2 file results with matching size)
+              1e570b87cb9a2919    /mnt/Trapdoor/media/mp3/00lostfiles/1-04 Richie's Office At Channel 9 #2.mp3
+              1e570b87cb9a2919    /mnt/Trapdoor/media/mp3/The 12th Man/The Final Dig_/1-04 Richie's Office At Channel 9 #2.mp3
+Total 33.73MB in group
+
+result #21: f.Size = 700.17MB (3 file results with matching size)
+              5afb18d160fc1e94    /mnt/Trapdoor/media/video/Movies/September.Dawn.DVDRip.XviD-DiAMOND/dmd-sepdawn.avi
+              e58f1e61286299d6    /mnt/Trapdoor/media/video/Movies/Shaft 1971 DVDRip XviD-DiNGiE (Kingdom Release)/Shaft 1971 DVDRip XviD-DiNGiE (Kingdom Release).avi
+              38b9a0b9ce3ffd4d    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice.Season 1-OnlyMe1/Burn Notice.S01E11-Dead Drop.S01E12-Loose Ends.avi
+Total 2.05GB in group
+
+result #22: f.Size = 19.45MB (2 file results with matching size)
+              d671ed25e85765fb    /mnt/Trapdoor/media/mp3/00lostfiles/1-09 Australia V New Zealand - Part Four.mp3
+              2c05a03278abca92    /mnt/Trapdoor/media/mp3/The 12th Man/The Final Dig_/1-09 Australia V New Zealand - Part Four.mp3
+Total 38.89MB in group
+
+result #23: f.Size = 699.57MB (2 file results with matching size)
+               423c38e21a6086b    /mnt/Trapdoor/media/video/Movies/Shes.The.Man.DVDRip.XviD-DiAMOND/dmd-shestm-cd1.avi
+              514a39a716e9fc29    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/HoodWinked..avi
+Total 1.37GB in group
+
+result #24: f.Size = 699.46MB (2 file results with matching size)
+              cca8511299e118c0    /mnt/Trapdoor/media/video/Movies/The Jaws Collection/Jaws 2.avi
+              2f3f43b5acecd973    /mnt/Trapdoor/media/video/Movies/The Jaws Collection/Jaws 3.avi
+Total 1.37GB in group
+
+result #25: f.Size = 20.44MB (2 file results with matching size)
+              79628d18b96a5163    /mnt/Trapdoor/media/mp3/00lostfiles/13 Sick Life.mp3
+              79628d18b96a5163    /mnt/Trapdoor/media/mp3/Nailbomb/Point Blank/13 Sick Life.mp3
+Total 40.88MB in group
+
+result #26: f.Size = 699.96MB (2 file results with matching size)
+              8c69f0f0eaf96e8b    /mnt/Trapdoor/media/video/Movies/Underbelly/aaf-underbelly.files.the.man.who.got.away.proper.dvdrip.xvid.avi
+              8697f8d5e4223e9c    /mnt/Trapdoor/media/video/Movies/Underbelly/underbelly.files.the.man.who.got.away.proper.dvdrip.xvid.avi
+Total 1.37GB in group
+
+result #27: f.Size = 175.02MB (2 file results with matching size)
+              5a0557daeb86f244    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R7L9H3M/How.I.Met.Your.Mother.S04E09.HDTV.XviD-LOL.[VTV].avi
+              5a0557daeb86f244    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 4/How.I.Met.Your.Mother.S04E09.HDTV.XviD-LOL.[VTV].avi
+Total 350.05MB in group
+
+result #28: f.Size = 175.02MB (2 file results with matching size)
+              3fea91b328f3e84a    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R7L9H3M/How.I.Met.Your.Mother.S04E21.HDTV.XviD-LOL.avi
+              42cc8900232a926d    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 4/How.I.Met.Your.Mother.S04E21.HDTV.XviD-LOL.avi
+Total 350.04MB in group
+
+result #29: f.Size = 175.00MB (2 file results with matching size)
+               ed54d5e35f1b3fa    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R7L9H3M/How.I.Met.Your.Mother.S04E22.HDTV.XviD-LOL.avi
+              26d0d86c6badb400    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 4/How.I.Met.Your.Mother.S04E22.HDTV.XviD-LOL.avi
+Total 350.00MB in group
+
+result #30: f.Size = 175.02MB (3 file results with matching size)
+              80af27d335116a88    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R7L9H3M/how.i.met.your.mother.423.hdtv-lol.avi
+              80af27d335116a88    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 4/how.i.met.your.mother.423.hdtv-lol.avi
+              a21628979fd7c1f5    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Code Monkeys/code.monkeys.season.2/Code.Monkeys.S02E07.DSR.XviD-TuBES.avi
+Total 525.05MB in group
+
+result #31: f.Size = 175.04MB (2 file results with matching size)
+              56bf0f4bcb220c75    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R7L9H3M/how.i.met.your.mother.424.hdtv-lol.avi
+              56bf0f4bcb220c75    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 4/how.i.met.your.mother.424.hdtv-lol.avi
+Total 350.07MB in group
+
+result #32: f.Size = 175.00MB (2 file results with matching size)
+              1579dad8d5be794c    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.301.avi
+              1579dad8d5be794c    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.301.avi
+Total 349.99MB in group
+
+result #33: f.Size = 174.11MB (2 file results with matching size)
+              28c0833ad6e96dcf    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.302.avi
+              13a6d886d62c8fc8    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.302.avi
+Total 348.21MB in group
+
+result #34: f.Size = 175.01MB (2 file results with matching size)
+               a59d682a69718e4    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.303.avi
+               a59d682a69718e4    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.303.avi
+Total 350.02MB in group
+
+result #35: f.Size = 175.01MB (2 file results with matching size)
+               9859f3505246abc    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.304.avi
+              65cc6427c8586ab5    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.304.avi
+Total 350.01MB in group
+
+result #36: f.Size = 175.05MB (2 file results with matching size)
+              fdc8876938bb3679    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.305.avi
+              fdc8876938bb3679    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.305.avi
+Total 350.09MB in group
+
+result #37: f.Size = 174.50MB (2 file results with matching size)
+              80c034dfb2220b76    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.306.avi
+              80c034dfb2220b76    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.306.avi
+Total 349.00MB in group
+
+result #38: f.Size = 175.01MB (2 file results with matching size)
+              daf9326913770583    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.307.avi
+              7a097c59cd2f057a    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.307.avi
+Total 350.02MB in group
+
+result #39: f.Size = 175.03MB (2 file results with matching size)
+              4039e83c4070635e    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.308.avi
+              6f6de7f55dcc80cb    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.308.avi
+Total 350.06MB in group
+
+result #40: f.Size = 175.02MB (2 file results with matching size)
+              c781921e77ec67a6    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.309.avi
+              c781921e77ec67a6    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.309.avi
+Total 350.05MB in group
+
+result #41: f.Size = 175.04MB (6 file results with matching size)
+              784049377a7791b2    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.310.avi
+              85f5c21f183826a7    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.320.avi
+              9dbe40861cec0f7f    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.310.avi
+              25badca30fe8154a    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.320.avi
+              d6c2f9785db6eb5f    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad Season 4/American.Dad.S04E12.PDTV.XviD-LOL.avi
+              888c7f16a826ef68    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad Season 4/American.Dad.S04E13.PDTV.XviD-LOL.avi
+Total 1.03GB in group
+
+result #42: f.Size = 175.05MB (2 file results with matching size)
+              c66dded70ec547c8    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.311.avi
+              c66dded70ec547c8    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.311.avi
+Total 350.09MB in group
+
+result #43: f.Size = 175.25MB (2 file results with matching size)
+              70a078c410fcddd3    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.312.avi
+              70a078c410fcddd3    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.312.avi
+Total 350.51MB in group
+
+result #44: f.Size = 175.13MB (2 file results with matching size)
+              e095d93c1187f82d    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.313.avi
+              7f0dd0b0c0dedb6a    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.313.avi
+Total 350.27MB in group
+
+result #45: f.Size = 175.14MB (2 file results with matching size)
+              7c6e08658f7808df    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.314.avi
+               6fa9f95880608dd    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.314.avi
+Total 350.28MB in group
+
+result #46: f.Size = 175.53MB (2 file results with matching size)
+              a2488cf4b941af12    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.315.avi
+              a2488cf4b941af12    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.315.avi
+Total 351.06MB in group
+
+result #47: f.Size = 175.30MB (2 file results with matching size)
+              192d1501b8b8bb19    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.316.avi
+              192d1501b8b8bb19    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.316.avi
+Total 350.60MB in group
+
+result #48: f.Size = 174.90MB (2 file results with matching size)
+              8f4c14136519d2df    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.317.avi
+              8f4c14136519d2df    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.317.avi
+Total 349.81MB in group
+
+result #49: f.Size = 175.44MB (2 file results with matching size)
+              127eff51b610ef26    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.318.avi
+              cdb34401aad8ef27    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.318.avi
+Total 350.88MB in group
+
+result #50: f.Size = 174.97MB (2 file results with matching size)
+              b2538400e0fecb64    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.319.avi
+              761cb208d8cbfd02    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.319.avi
+Total 349.94MB in group
+
+result #51: f.Size = 175.07MB (4 file results with matching size)
+              106984c4b6aed8e2    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/How I Met Your Mother - 218.avi
+              af8d7cca24f2c209    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e18.hdtv.xvid-xor.[VTV].avi
+              af8d7cca24f2c209    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/How I Met Your Mother - 218.avi
+              af8d7cca24f2c209    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e18.hdtv.xvid-xor.[VTV].avi
+Total 700.28MB in group
+
+result #52: f.Size = 174.99MB (2 file results with matching size)
+              525005db21300eea    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/How.I.Met.Your.Mother.S02E19.REPACK.HDTV.XviD-XOR.avi
+              525005db21300eea    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/How.I.Met.Your.Mother.S02E19.REPACK.HDTV.XviD-XOR.avi
+Total 349.98MB in group
+
+result #53: f.Size = 174.59MB (2 file results with matching size)
+              3e530b75fa603cc2    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.203.hdtv-lol.[VTV].avi
+              3e530b75fa603cc2    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.203.hdtv-lol.[VTV].avi
+Total 349.18MB in group
+
+result #54: f.Size = 174.76MB (2 file results with matching size)
+              d0c65076ab0d52c6    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.205.hdtv-lol.[VTV].avi
+              d0c65076ab0d52c6    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.205.hdtv-lol.[VTV].avi
+Total 349.53MB in group
+
+result #55: f.Size = 175.09MB (2 file results with matching size)
+              7f3447725ea0a0df    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.207.hdtv.notv.[VTV].avi
+              d26ed025531aa0e0    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.207.hdtv.notv.[VTV].avi
+Total 350.18MB in group
+
+result #56: f.Size = 172.32MB (2 file results with matching size)
+              723d1a4633c9c82a    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.209.hdtv-lol.[VTV].avi
+              723d1a4633c9c82a    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.209.hdtv-lol.[VTV].avi
+Total 344.63MB in group
+
+result #57: f.Size = 174.47MB (2 file results with matching size)
+              27974353cd902269    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.210.hdtv-lol.[VTV].avi
+              27974353cd902269    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.210.hdtv-lol.[VTV].avi
+Total 348.95MB in group
+
+result #58: f.Size = 174.79MB (2 file results with matching size)
+               4ed38a918bbf636    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.211.hdtv.notv.[VTV].avi
+               4ed38a918bbf636    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.211.hdtv.notv.[VTV].avi
+Total 349.58MB in group
+
+result #59: f.Size = 175.40MB (2 file results with matching size)
+              ed26aab845b2e6a9    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.212.hdtv.xvid.notv.[VTV].avi
+              ed26aab845b2e6a9    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.212.hdtv.xvid.notv.[VTV].avi
+Total 350.80MB in group
+
+result #60: f.Size = 174.28MB (2 file results with matching size)
+               2c1c4dd0f8febfe    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.213.hdtv.xvid.notv.[VTV].avi
+              bdddbd11a1ac9381    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.213.hdtv.xvid.notv.[VTV].avi
+Total 348.56MB in group
+
+result #61: f.Size = 174.65MB (3 file results with matching size)
+              23c397261febcfba    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.220.hdtv-lol.[VTV].avi
+              23c397261febcfba    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.220.hdtv-lol.[VTV].avi
+              f55ee09c0eff9cd8    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 1/american_dad.1x07.avi
+Total 523.96MB in group
+
+result #62: f.Size = 174.88MB (2 file results with matching size)
+              a777f1ad4b2a72a1    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e01.hdtv.xvid-xor.[VTV].avi
+              a777f1ad4b2a72a1    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e01.hdtv.xvid-xor.[VTV].avi
+Total 349.77MB in group
+
+result #63: f.Size = 174.46MB (2 file results with matching size)
+              4e461c01f1a6e436    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e02.repack.hdtv.xvid-xor.[VTV].avi
+              4e461c01f1a6e436    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e02.repack.hdtv.xvid-xor.[VTV].avi
+Total 348.92MB in group
+
+result #64: f.Size = 174.36MB (2 file results with matching size)
+              4f536e92990ebe58    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e04.hdtv.xvid-xor.[VTV].avi
+              4f536e92990ebe58    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e04.hdtv.xvid-xor.[VTV].avi
+Total 348.73MB in group
+
+result #65: f.Size = 174.96MB (2 file results with matching size)
+              e87ce53985b167c2    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e06.hdtv.xvid-xor.[VTV].avi
+              e87ce53985b167c2    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e06.hdtv.xvid-xor.[VTV].avi
+Total 349.92MB in group
+
+result #66: f.Size = 175.57MB (2 file results with matching size)
+              6df9ee8938fd1e46    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e08.hdtv.xvid-xor.[VTV].avi
+              6df9ee8938fd1e46    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e08.hdtv.xvid-xor.[VTV].avi
+Total 351.13MB in group
+
+result #67: f.Size = 174.42MB (2 file results with matching size)
+              bcdeb7782fc3be05    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e14.hdtv.xvid-xor.[VTV].avi
+              bcdeb7782fc3be05    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e14.hdtv.xvid-xor.[VTV].avi
+Total 348.85MB in group
+
+result #68: f.Size = 174.68MB (2 file results with matching size)
+              b3ffc4fc19ac9bac    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e15.hdtv.xvid-xor.[VTV].avi
+              b3ffc4fc19ac9bac    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e15.hdtv.xvid-xor.[VTV].avi
+Total 349.36MB in group
+
+result #69: f.Size = 175.06MB (2 file results with matching size)
+               d927a866ac5e6fd    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e16.hdtv.xvid-xor.[VTV].avi
+              bdea836e2d544e7c    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e16.hdtv.xvid-xor.[VTV].avi
+Total 350.12MB in group
+
+result #70: f.Size = 175.04MB (2 file results with matching size)
+              c02442a36d1c171f    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e17.hdtv.xvid-xor.[VTV].avi
+              c02442a36d1c171f    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e17.hdtv.xvid-xor.[VTV].avi
+Total 350.07MB in group
+
+result #71: f.Size = 164.89MB (2 file results with matching size)
+              c950085cafe0680d    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e21.hdtv.xvid-xor.[VTV].avi
+              cdf141e8fd7467fe    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e21.hdtv.xvid-xor.[VTV].avi
+Total 329.78MB in group
+
+result #72: f.Size = 174.91MB (2 file results with matching size)
+              f542b2fb675a3674    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e22.hdtv.xvid-xor.[VTV].avi
+              f542b2fb675a3674    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e22.hdtv.xvid-xor.[VTV].avi
+Total 349.82MB in group
+
+result #73: f.Size = 225.16MB (2 file results with matching size)
+              e6641bdc17de7053    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/How.I.Met.Your.Mother.S05E05.HDTV.XviD-PRIVATECOWBOY.avi
+              f1726e38b79511b1    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/How.I.Met.Your.Mother.S05E05.HDTV.XviD-PRIVATECOWBOY.avi
+Total 450.33MB in group
+
+result #74: f.Size = 175.10MB (2 file results with matching size)
+              beed0b265134c3ed    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.0501.hdtv.xvid-notv.avi
+              beed0b265134c3ed    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.0501.hdtv.xvid-notv.avi
+Total 350.20MB in group
+
+result #75: f.Size = 175.02MB (2 file results with matching size)
+              28c57c5cbcefbb06    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e03.hdtv.xvid-fqm.avi
+              28c57c5cbcefbb06    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e03.hdtv.xvid-fqm.avi
+Total 350.04MB in group
+
+result #76: f.Size = 175.27MB (2 file results with matching size)
+              f326086e3289e186    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e04.hdtv.xvid-2hd.avi
+              f326086e3289e186    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e04.hdtv.xvid-2hd.avi
+Total 350.54MB in group
+
+result #77: f.Size = 175.10MB (2 file results with matching size)
+              55e50d9a54a84497    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e06.hdtv.xvid-fever.avi
+              5eabbaf14f1c9889    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e06.hdtv.xvid-fever.avi
+Total 350.21MB in group
+
+result #78: f.Size = 175.09MB (2 file results with matching size)
+               d664b0632c77a4d    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e08.hdtv.xvid-fqm.avi
+               d664b0632c77a4d    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e08.hdtv.xvid-fqm.avi
+Total 350.17MB in group
+
+result #79: f.Size = 175.08MB (2 file results with matching size)
+              afd4ae4019df00cd    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e09.hdtv.xvid-fqm.avi
+              1e307e0a75b500c3    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e09.hdtv.xvid-fqm.avi
+Total 350.16MB in group
+
+result #80: f.Size = 175.09MB (2 file results with matching size)
+              b83451991ec14a22    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e11.hdtv.xvid-fqm.avi
+              b83451991ec14a22    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e11.hdtv.xvid-fqm.avi
+Total 350.19MB in group
+
+result #81: f.Size = 174.53MB (2 file results with matching size)
+              7c5630f21a0128de    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e16.hdtv.xvid-xii.avi
+              3d54321f8d0f9fab    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e16.hdtv.xvid-xii.avi
+Total 349.07MB in group
+
+result #82: f.Size = 175.07MB (2 file results with matching size)
+              41a663b27e28c512    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RXBXERQ/How I Met Your Mother - 102 - Purple Giraffe.avi
+              9bb88549d20528fb    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RXBXERQ/How I Met Your Mother - 1x20 - Best Prom Ever - HDTV.XviD-LOL.avi
+Total 350.14MB in group
+
+result #83: f.Size = 175.02MB (2 file results with matching size)
+              161289c2067f5379    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E01.HDTV.XviD-LOL.[VTV].avi
+              161289c2067f5379    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E01.HDTV.XviD-LOL.[VTV].avi
+Total 350.03MB in group
+
+result #84: f.Size = 175.02MB (2 file results with matching size)
+              62c5c73865e59156    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E02.HDTV.XviD-LOL.[VTV].avi
+              62c5c73865e59156    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E02.HDTV.XviD-LOL.[VTV].avi
+Total 350.03MB in group
+
+result #85: f.Size = 174.97MB (2 file results with matching size)
+              f1d5c38c0fa3c413    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E03.HDTV.XviD-LOL.avi
+              ce9fcbe76ea57b4e    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E03.HDTV.XviD-LOL.avi
+Total 349.95MB in group
+
+result #86: f.Size = 175.06MB (2 file results with matching size)
+              9a655dde5aaf45dc    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E04.HDTV.XviD-LOL.[VTV].avi
+              a4f3e3b960a345de    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E04.HDTV.XviD-LOL.[VTV].avi
+Total 350.12MB in group
+
+result #87: f.Size = 174.98MB (2 file results with matching size)
+              563020fe644c551f    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E05.HDTV.XviD-LOL.[VTV].avi
+              563020fe644c551f    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E05.HDTV.XviD-LOL.[VTV].avi
+Total 349.95MB in group
+
+result #88: f.Size = 174.97MB (4 file results with matching size)
+              377d5bf7dfb84b50    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E06.HDTV.XviD-LOL.[VTV].avi
+              5cb4d8c8fb98ffe3    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E14.HDTV.XviD-LOL.[VTV].avi
+              377d5bf7dfb84b50    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E06.HDTV.XviD-LOL.[VTV].avi
+              9627896c0a78ea31    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E14.HDTV.XviD-LOL.[VTV].avi
+Total 699.89MB in group
+
+result #89: f.Size = 174.98MB (2 file results with matching size)
+              df15c256746e27fe    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E07.HDTV.XviD-LOL.[VTV].avi
+              df15c256746e27fe    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E07.HDTV.XviD-LOL.[VTV].avi
+Total 349.95MB in group
+
+result #90: f.Size = 175.09MB (2 file results with matching size)
+              f3a9dd00e7ae0d24    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E08.HDTV.XviD-FEVER.[VTV].avi
+              f3a9dd00e7ae0d24    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E08.HDTV.XviD-FEVER.[VTV].avi
+Total 350.18MB in group
+
+result #91: f.Size = 174.55MB (2 file results with matching size)
+              abda23235f087028    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E09.HDTV.XviD-LOL.[VTV].avi
+              abda23235f087028    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E09.HDTV.XviD-LOL.[VTV].avi
+Total 349.10MB in group
+
+result #92: f.Size = 174.63MB (2 file results with matching size)
+              bffd8e204fe35f39    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E10.HDTV.XviD-LOL.[VTV].avi
+              bffd8e204fe35f39    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E10.HDTV.XviD-LOL.[VTV].avi
+Total 349.26MB in group
+
+result #93: f.Size = 174.95MB (3 file results with matching size)
+              183909f5513861e9    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E11.HDTV.XviD-LOL.[VTV].avi
+              474c369d49814dc6    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E11.HDTV.XviD-LOL.[VTV].avi
+              82673e9ead247fa4    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 2/The.Big.Bang.Theory.S02E06.hdtv-lol.avi
+Total 524.85MB in group
+
+result #94: f.Size = 174.89MB (2 file results with matching size)
+              6e3e5a7f1fef890b    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E13.HDTV.XviD-LOL.[VTV].avi
+              6e3e5a7f1fef890b    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E13.HDTV.XviD-LOL.[VTV].avi
+Total 349.78MB in group
+
+result #95: f.Size = 174.88MB (2 file results with matching size)
+              e8dffb6c5e0892a5    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E15.HDTV.XviD-LOL.[VTV].avi
+              f9cdf40f4ed1f7a6    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E15.HDTV.XviD-LOL.[VTV].avi
+Total 349.76MB in group
+
+result #96: f.Size = 174.89MB (2 file results with matching size)
+              982bd63566743c70    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E16.HDTV.XviD-LOL.[VTV].avi
+              982bd63566743c70    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E16.HDTV.XviD-LOL.[VTV].avi
+Total 349.77MB in group
+
+result #97: f.Size = 174.81MB (2 file results with matching size)
+              8c3f2f81cdab95d9    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E18.HDTV.XviD-LOL.[VTV].avi
+              7270b490a0fcee53    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E18.HDTV.XviD-LOL.[VTV].avi
+Total 349.63MB in group
+
+result #98: f.Size = 174.99MB (2 file results with matching size)
+              b1b086407a855ff4    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E19.HDTV.XviD-LOL.avi
+              b1b086407a855ff4    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E19.HDTV.XviD-LOL.avi
+Total 349.99MB in group
+
+result #99: f.Size = 174.74MB (2 file results with matching size)
+               82269b33c601cc6    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E21.HDTV.XviD-LOL.[VTV].avi
+               82269b33c601cc6    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E21.HDTV.XviD-LOL.[VTV].avi
+Total 349.48MB in group
+
+result #100: f.Size = 174.83MB (2 file results with matching size)
+              d974da22d3e50870    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E22.HDTV.XviD-LOL.[VTV].avi
+              d974da22d3e50870    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E22.HDTV.XviD-LOL.[VTV].avi
+Total 349.65MB in group
+
+result #101: f.Size = 174.73MB (3 file results with matching size)
+              3fecd5e9df5f33e9    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E24.HDTV.XviD-LOL.[VTV].avi
+              3fecd5e9df5f33e9    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E24.HDTV.XviD-LOL.[VTV].avi
+               236aabd768927d4    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Code Monkeys/code.monkeys.season.1/code.monkeys.s01e08.dsr.xvid-sys.avi
+Total 524.19MB in group
+
+result #102: f.Size = 174.72MB (2 file results with matching size)
+               f05f3e7e03cd4af    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/how.i.met.your.mother.617.hdtv-lol.avi
+               f05f3e7e03cd4af    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/how.i.met.your.mother.617.hdtv-lol.avi
+Total 349.44MB in group
+
+result #103: f.Size = 174.87MB (2 file results with matching size)
+              6e051cb54a5ff9c7    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/how.i.met.your.mother.620.hdtv-lol.avi
+              6e051cb54a5ff9c7    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/how.i.met.your.mother.620.hdtv-lol.avi
+Total 349.73MB in group
+
+result #104: f.Size = 174.88MB (2 file results with matching size)
+              9dd33809c05a679d    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/how.i.met.your.mother.623.hdtv-lol.avi
+              9dd33809c05a679d    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/how.i.met.your.mother.623.hdtv-lol.avi
+Total 349.77MB in group
+
+result #105: f.Size = 175.22MB (2 file results with matching size)
+              5d69c75f26fbe3ca    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/how.i.met.your.mother.s06e12.hdtv.xvid-fqm.avi
+              5d69c75f26fbe3ca    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/how.i.met.your.mother.s06e12.hdtv.xvid-fqm.avi
+Total 350.44MB in group
+
+result #106: f.Size = 72.34MB (2 file results with matching size)
+              ddb83b988e5c037a    /mnt/Trapdoor/media/new_mp3/DNB Mixes/High Contrast/01high_contrast__live_at_cosmic_trip07232005boss.mp3
+              ddb83b988e5c037a    /mnt/Trapdoor/media/new_mp3/DNB Mixes/High Contrast - Live at Cosmic Trip 07-23-2005-boss/High Contrast - Live at Cosmic Trip 07-23-2005-boss.mp3
+Total 144.69MB in group
+
+result #107: f.Size = 22.62MB (2 file results with matching size)
+              e89bae214d098e1e    /mnt/Trapdoor/media/mp3/00lostfiles/Dyk Technik CD2 (Not full Version).mp3
+              6dca6ec7b43146bc    /mnt/Trapdoor/media/mp3/Paul Van Dyk/Unknown Album/Dyk Technik CD2 (Not full Version).mp3
+Total 45.24MB in group
+
+result #108: f.Size = 18.99MB (2 file results with matching size)
+               e586a341346690f    /mnt/Trapdoor/media/new_mp3/Kraftwerk/1970 - Kraftwerk (Organisation) - Tone Float/01 - Tone Float.mp3
+              96f02d8d4d867399    /mnt/Trapdoor/media/new_mp3/Kraftwerk/1969 - Frühwerke/01 - Tone Float.mp3
+Total 37.97MB in group
+
+result #109: f.Size = 500.12MB (2 file results with matching size)
+              98775f38a0e902f8    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/04 - Fearless Leader.avi
+              4f92828925c808ab    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/10 - A Dark Road.avi
+Total 1,000.23MB in group
+
+result #110: f.Size = 500.11MB (4 file results with matching size)
+              540936a64c0aca97    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/05 - Signals and Codes.avi
+              50125a54b2fdf327    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/07 - Shot In The Dark.avi
+              5d580cc4274e0788    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/11 - Friendly Fire.avi
+              6e2ffba919c8cb05    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/14 - Partners in Crime.avi
+Total 1.95GB in group
+
+result #111: f.Size = 500.14MB (2 file results with matching size)
+              1b88a8afbe9735c7    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/06 - The Hunter.avi
+              699f026c4210a741    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/13 - Enemies Closer.avi
+Total 1,000.28MB in group
+
+result #112: f.Size = 500.11MB (2 file results with matching size)
+              26606400c4b55755    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/09 - Long Way Back.avi
+              b4efd44a366f5a36    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice - Season 3/12 - Noble Causes.avi
+Total 1,000.21MB in group
+
+result #113: f.Size = 350.62MB (2 file results with matching size)
+              9e4287fd74b24031    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/201 - Breaking & Entering.avi
+              9e4287fd74b24031    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E01.HDTV.XviD-2HD.avi
+Total 701.23MB in group
+
+result #114: f.Size = 349.85MB (2 file results with matching size)
+              c940e5a1a4294f9f    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/202 - Turn & Burn.avi
+              c940e5a1a4294f9f    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E02.avi
+Total 699.70MB in group
+
+result #115: f.Size = 349.79MB (2 file results with matching size)
+              509da5237aa103bc    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/203 - Trust Me.avi
+              509da5237aa103bc    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E03.hdtv-0tv.avi
+Total 699.58MB in group
+
+result #116: f.Size = 350.59MB (2 file results with matching size)
+              7d93c12fd2d216bd    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/204 - Comrades.avi
+              7d93c12fd2d216bd    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E04.comrades.hdtv_xvid-fov.avi
+Total 701.18MB in group
+
+result #117: f.Size = 350.27MB (2 file results with matching size)
+               157c704be473ef8    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/205 - Scatter Point.avi
+               157c704be473ef8    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E05.proper.hdtv.xvid-fqm.avi
+Total 700.54MB in group
+
+result #118: f.Size = 351.00MB (2 file results with matching size)
+              aa41eeb377b44375    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/206 - Bad Blood.avi
+              79eff7b040662ecc    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/burn.notice.s02e06.hdtv.xvid-notv.avi
+Total 702.01MB in group
+
+result #119: f.Size = 349.40MB (2 file results with matching size)
+              89479083d1c789d2    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/207 - Rough Seas.avi
+              89479083d1c789d2    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/burn.notice.s02e07.hdtv.xvid-fqm.avi
+Total 698.80MB in group
+
+result #120: f.Size = 350.85MB (2 file results with matching size)
+              8f0d530a113dc608    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/208 - Double Booked.avi
+              8f0d530a113dc608    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/burn.notice.s02e08.hdtv.xvid-notv.avi
+Total 701.70MB in group
+
+result #121: f.Size = 349.16MB (2 file results with matching size)
+              9d5ea15ae1d2562e    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/209 - Good Soldier.avi
+              9d5ea15ae1d2562e    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E09.HDTV.XviD-NoTV.[VTV].avi
+Total 698.32MB in group
+
+result #122: f.Size = 349.97MB (2 file results with matching size)
+              2966076ca337611e    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E01.Pilot.avi
+              2966076ca337611e    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E01.Pilot.avi
+Total 699.95MB in group
+
+result #123: f.Size = 350.02MB (2 file results with matching size)
+              ca435e9f26009242    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E02.Charged.avi
+              d3e182aff8894a8a    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E02.Charged.avi
+Total 700.04MB in group
+
+result #124: f.Size = 349.78MB (2 file results with matching size)
+              12f518a52a1bfbee    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E03.All Mine.avi
+              1a35e856533ab014    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E03.All Mine.avi
+Total 699.55MB in group
+
+result #125: f.Size = 350.01MB (2 file results with matching size)
+              322bbd0bdce7edcc    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E04.Magic.avi
+              293823cb18e6aff8    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E04.Magic.avi
+Total 700.01MB in group
+
+result #126: f.Size = 350.21MB (2 file results with matching size)
+              93900aef341e721e    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E05.What About Blob.avi
+              93900aef341e721e    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E05.What About Blob.avi
+Total 700.42MB in group
+
+result #127: f.Size = 353.33MB (2 file results with matching size)
+              94def7b5a5fdea12    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E07.Love, Bullets and Blacktop.avi
+              94def7b5a5fdea12    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E07.Love, Bullets and Blacktop.avi
+Total 706.67MB in group
+
+result #128: f.Size = 350.66MB (2 file results with matching size)
+              daeac86479bc2f8f    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E08.The Cop.avi
+              daeac86479bc2f8f    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E08.The Cop.avi
+Total 701.32MB in group
+
+result #129: f.Size = 350.03MB (2 file results with matching size)
+              ae22b3c54606e4aa    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E09.Ashes To Ashes.avi
+              a45f82a93dd5f295    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E09.Ashes To Ashes.avi
+Total 700.05MB in group
+
+result #130: f.Size = 351.09MB (2 file results with matching size)
+              149af6499f806676    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E10.Cash Out.avi
+              fe56ff69741eadca    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E10.Cash Out.avi
+Total 702.18MB in group
+
+result #131: f.Size = 350.18MB (2 file results with matching size)
+              b8c073ee3f043ba5    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E11.Hungry For Fame.avi
+              b8c073ee3f043ba5    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E11.Hungry For Fame.avi
+Total 700.36MB in group
+
+result #132: f.Size = 352.71MB (2 file results with matching size)
+               bb68b82205b34c1    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E12.Unseen.avi
+               bb68b82205b34c1    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E12.Unseen.avi
+Total 705.41MB in group
+
+result #133: f.Size = 350.58MB (2 file results with matching size)
+              82bf1aed66d845f5    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E13.Acid Queen.avi
+              82bf1aed66d845f5    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E13.Acid Queen.avi
+Total 701.15MB in group
+
+result #134: f.Size = 350.95MB (2 file results with matching size)
+              ebae815ee78de9f3    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E14.Rebellion.avi
+              3c2ae785cd2fe9f3    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E14.Rebellion.avi
+Total 701.91MB in group
+
+result #135: f.Size = 350.66MB (2 file results with matching size)
+               6c8f31a733faec8    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E15.Coming To Grips.avi
+               6c8f31a733faec8    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E15.Coming To Grips.avi
+Total 701.31MB in group
+
+result #136: f.Size = 351.25MB (2 file results with matching size)
+              10655668b458ec69    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E16.Greg, Schmeg.avi
+              d1cc8eb0ac1278c7    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E16.Greg, Schmeg.avi
+Total 702.49MB in group
+
+result #137: f.Size = 349.87MB (2 file results with matching size)
+              169019996a9b6ba5    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E17.The Leak.avi
+              169019996a9b6ba5    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E17.The Leak.avi
+Total 699.75MB in group
+
+result #138: f.Size = 350.39MB (2 file results with matching size)
+              9bf137727b7a1fc0    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E18.Cancun.avi
+              9bf137727b7a1fc0    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E18.Cancun.avi
+Total 700.79MB in group
+
+result #139: f.Size = 350.97MB (2 file results with matching size)
+              39b9673e4190e817    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/reaper.S01E06.Leon.avi
+              39b9673e4190e817    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/reaper.S01E06.Leon.avi
+Total 701.94MB in group
+
+result #140: f.Size = 16.38MB (2 file results with matching size)
+              2480be984b686fc1    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Dub Step/4509-Kito - Exclusive Guest Mix on Triple J 28th may 09.mp3
+              bfcb0b18bf44b7b8    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Dub Step/Kito-ExclusiveGuestMixonTripleJ28thmay09.mp3
+Total 32.75MB in group
+
+result #141: f.Size = 39.89MB (2 file results with matching size)
+               e61901be9a162d3    /mnt/Trapdoor/media/mp3/Paul Van Dyk/Unknown Album/(full set) 1.mp3
+              10727c9e8fad02b7    /mnt/Trapdoor/media/mp3/Paul Van Dyk/Unknown Album/(full set).mp3
+Total 79.78MB in group
+
+result #142: f.Size = 19.07MB (2 file results with matching size)
+              e829032a2c88a3ac    /mnt/Trapdoor/media/mp3/The 12th Man/The Final Dig_/1-01 The Lunch 1.mp3
+               4e785d76049ef60    /mnt/Trapdoor/media/mp3/The 12th Man/The Final Dig_/1-01 The Lunch.mp3
+Total 38.15MB in group
+
+result #143: f.Size = 1,024.00MB (8 file results with matching size)
+              e60610a7d41bc563    /mnt/Trapdoor/media/video/Movies/Shaun the Sheep - Back inthe Baa! - (2009) - DVDrip - BTC/Shaun the Sheep - Back in the Baath/VTS_01_1.VOB
+              60e0b5dc0f1867d0    /mnt/Trapdoor/media/00unsorted/keith/Music/Zumba het complete Pakket! 3 DVD S/zumba pakket/Zumba basics/VTS_01_1.VOB
+              53567e539002af6e    /mnt/Trapdoor/media/00unsorted/keith/Music/Zumba het complete Pakket! 3 DVD S/zumba pakket/Zumba basics/VTS_01_2.VOB
+              2d80371075312227    /mnt/Trapdoor/media/00unsorted/keith/Music/Zumba het complete Pakket! 3 DVD S/zumba pakket/Zumba basics/VTS_01_3.VOB
+              cbb10431ae097612    /mnt/Trapdoor/media/00unsorted/keith/Music/Zumba het complete Pakket! 3 DVD S/zumba pakket/zumba cardio/VTS_01_1.VOB
+              b8856e3e350ba2dd    /mnt/Trapdoor/media/00unsorted/keith/Music/Zumba het complete Pakket! 3 DVD S/zumba pakket/zumba cardio/VTS_01_2.VOB
+              f5b8aad0beda1e68    /mnt/Trapdoor/media/00unsorted/keith/Music/Zumba het complete Pakket! 3 DVD S/zumba pakket/zumba cardio/VTS_01_3.VOB
+              9d0e11ec7af7465b    /mnt/Trapdoor/media/00unsorted/keith/Music/Zumba het complete Pakket! 3 DVD S/zumba pakket/zumba sculpt/zumba sculpt/VTS_01_1.VOB
+Total 8.00GB in group
+
+result #144: f.Size = 334.95MB (2 file results with matching size)
+              855b38d408eb17e8    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Sons.of.Anarchy.Season.6.Episode.12.You.Are.My.Sunshine.2013.HDTV.x264-LNC.[ettv]/.goutputstream-FB858W
+              855b38d408eb17e8    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Sons.of.Anarchy.Season.6.Episode.12.You.Are.My.Sunshine.2013.HDTV.x264-LNC.[ettv]/Sons.of.Anarchy.Season.6.Episode.12.You.Are.My.Sunshine.2013.HDTV.x264-LNC.[ettv].avi
+Total 669.90MB in group
+
+result #145: f.Size = 100.33MB (2 file results with matching size)
+              67a8eee3ededbd2b    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/Robot.Chicken.S03.Christmas.Special.DSRip.XviD-aAF.avi
+              67a8eee3ededbd2b    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/aaf-rc.s03e14.avi
+Total 200.66MB in group
+
+result #146: f.Size = 100.25MB (2 file results with matching size)
+              a6a33cc7fd430a80    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/Robot.Chicken.S03E13.DSR.XviD-aAF.avi
+              a6a33cc7fd430a80    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/aaf-rc.s03e13.avi
+Total 200.50MB in group
+
+result #147: f.Size = 100.37MB (2 file results with matching size)
+              f5239d286b60ad01    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken - Season 2/RCS2E2.avi
+              b8d2b9b9de3c22ac    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/Robot Chicken - Season 3/Robot.Chicken.S03E12.DSR.XviD-aAF.avi
+Total 200.73MB in group
+
+result #148: f.Size = 124.24MB (2 file results with matching size)
+              9cc5ae70902dc0ba    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Dub Step/M2J/m2j26jul09subfm.mp3
+              9cc5ae70902dc0ba    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Dub Step/M2J/2009/July 09/M2J26Jul09SubFM.mp3
+Total 248.48MB in group
+
+result #149: f.Size = 237.80MB (2 file results with matching size)
+              9ba1b0ca10629738    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Black Angelika Dominica Dolce Donna Bell New Years Orgy With Black Angelika - MadThumbs™.mp4
+              9ba1b0ca10629738    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Black Angelika Dominica Dolce Donna Bell New Years Orgy With Black Angelika - MadThumbs™.mp4
+Total 475.60MB in group
+
+result #150: f.Size = 256.36MB (2 file results with matching size)
+              15dac2db9fdb4a13    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Bondage Amateurs Anal Fuck - MadThumbs™.mp4
+              11bfee9afd30b90b    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Bondage Amateurs Anal Fuck - MadThumbs™.mp4
+Total 512.72MB in group
+
+result #151: f.Size = 72.73MB (2 file results with matching size)
+              1fc6c608533c9f6a    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Cathy In Sexy Dress Up For Realitykings - MadThumbs™.mp4
+              1fc6c608533c9f6a    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Cathy In Sexy Dress Up For Realitykings - MadThumbs™.mp4
+Total 145.46MB in group
+
+result #152: f.Size = 179.73MB (2 file results with matching size)
+              513293fceb74e5ca    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Claudia Rossi Gets Doubled Stuffed With A Nice Cum Facial Finale - MadThumbs™.mp4
+              513293fceb74e5ca    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Claudia Rossi Gets Doubled Stuffed With A Nice Cum Facial Finale - MadThumbs™.mp4
+Total 359.47MB in group
+
+result #153: f.Size = 61.19MB (2 file results with matching size)
+              cf5ba18b8dda6c4b    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Club Harlots Suck And Fuck - MadThumbs™.mp4
+              f5b87de847782bbb    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Club Harlots Suck And Fuck - MadThumbs™.mp4
+Total 122.38MB in group
+
+result #154: f.Size = 270.61MB (2 file results with matching size)
+               e70b2ccce404cd9    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Deadra Dee A Cream Pie BigTit Cream Pie - MadThumbs™.mp4
+               e70b2ccce404cd9    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Deadra Dee A Cream Pie BigTit Cream Pie - MadThumbs™.mp4
+Total 541.21MB in group
+
+result #155: f.Size = 269.72MB (2 file results with matching size)
+              ee1e01da73feaa8c    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Hot Euro Blonde Elinor Loves The Taste Of American Cocks To Gang Bang Her For Reality Kings - MadThumbs™.mp4
+              ee1e01da73feaa8c    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Hot Euro Blonde Elinor Loves The Taste Of American Cocks To Gang Bang Her For Reality Kings - MadThumbs™.mp4
+Total 539.44MB in group
+
+result #156: f.Size = 87.95MB (2 file results with matching size)
+              52f0df14d2003215    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Kinky Party Girls Likes Spanking And Fucking - MadThumbs™.mp4
+              52f0df14d2003215    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Kinky Party Girls Likes Spanking And Fucking - MadThumbs™.mp4
+Total 175.90MB in group
+
+result #157: f.Size = 50.58MB (2 file results with matching size)
+               ad55bc7091616dd    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Missy Woods Double Penetrated And Sucking Cock In Interracial Gang Bang - MadThumbs™.mp4
+               ad55bc7091616dd    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Missy Woods Double Penetrated And Sucking Cock In Interracial Gang Bang - MadThumbs™.mp4
+Total 101.17MB in group
+
+result #158: f.Size = 50.80MB (2 file results with matching size)
+              b4449aa6c40d5836    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Sasha Knox Opens Up Her Holes And Is Banged By Three Hard Studs - MadThumbs™.mp4
+              b4449aa6c40d5836    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Sasha Knox Opens Up Her Holes And Is Banged By Three Hard Studs - MadThumbs™.mp4
+Total 101.59MB in group
+
+result #159: f.Size = 32.50MB (2 file results with matching size)
+              42af6ca6dce7dfee    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Surprise Cock Feat Bettina Dicapri David Perry - MadThumbs™.mp4
+              42af6ca6dce7dfee    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Surprise Cock Feat Bettina Dicapri David Perry - MadThumbs™.mp4
+Total 65.00MB in group
+
+result #160: f.Size = 50.51MB (2 file results with matching size)
+              418c5aca147a0b7f    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Wild Porn Star Harmony Rose Is Fucking Ready For Balls Deep Anal In Threesome - MadThumbs™.mp4
+              ead402bce07acf9e    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Wild Porn Star Harmony Rose Is Fucking Ready For Balls Deep Anal In Threesome - MadThumbs™.mp4
+Total 101.02MB in group
+
+result #161: f.Size = 174.66MB (8 file results with matching size)
+              fe85650753226200    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 2/American.Dad.S02E05.avi
+              54a2a728484f734e    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 2/American.Dad.S02E06.avi
+              69e22fbef13d2701    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 1/american_dad.1x06.avi
+              5a274182230b992c    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 1/american_dad.1x08.avi
+              f6be32958b99c051    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 1/american_dad.1x20.avi
+              eb7bde0c4b0a78fd    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 1/american_dad.1x21.avi
+              e0dc9143912e0de5    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 1/american_dad.1x22.avi
+              e2640d4cb043fcd3    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 3/American.Dad.S03E04.PDTV.XviD-LOL.avi
+Total 1.36GB in group
+
+result #162: f.Size = 174.66MB (2 file results with matching size)
+              796a4e4002897bd2    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 2/American.Dad.S02E11.avi
+              c8c90642b7f70b83    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 1/american_dad.1x18.avi
+Total 349.32MB in group
+
+result #163: f.Size = 174.88MB (2 file results with matching size)
+              1e9262958235c8d6    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 3/American.Dad.S03E08.PDTV.XViD-BlueTV.avi
+              d5837a50c1326b2d    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad - Season 3/American.Dad.S03E08.PDTV.XViD-BlueTV_.avi
+Total 349.76MB in group
+
+result #164: f.Size = 175.06MB (2 file results with matching size)
+              415e9a9a01cad964    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad Season 4/American.Dad.S04E05.PDTV.XVID-ROGER.avi
+              232fe0d04dc86437    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad Season 4/American.Dad.S04E14.pdtv-lol.avi
+Total 350.12MB in group
+
+result #165: f.Size = 175.05MB (2 file results with matching size)
+              42bfc914cc8add45    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/American Dad/American Dad Season 4/American.Dad.S04E20.PDTV.XviD-LOL.avi
+              c1fcb1c4dda308ce    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 2/The.Big.Bang.Theory.S02E04.PROPER.HDTV.XviD-iDontLikeFQM.avi
+Total 350.10MB in group
+
+result #166: f.Size = 174.41MB (2 file results with matching size)
+              a4a0a6fb2c537ee0    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Code Monkeys/code.monkeys.season.1/code.monkeys.s01e07.dsr.xvid-w4f.avi
+              edc6cee19f40c82d    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Code Monkeys/code.monkeys.season.2/Code.Monkeys.S02E03.dsr.xvid-sys.avi
+Total 348.83MB in group
+
+result #167: f.Size = 175.22MB (3 file results with matching size)
+              9df12d0031f599d7    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 1/big_bang_theory.1x05.the_hamburger_postulate.dvdrip_xvid-fov.avi
+              8e3fe54afbe35129    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 1/big_bang_theory.1x07.the_dumpling_paradox.dvdrip_xvid-fov.avi
+              ccd080b080efc5a6    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 1/big_bang_theory.1x15.the_pork_chop_indeterminacy.dvdrip_xvid-fov.avi
+Total 525.66MB in group
+
+result #168: f.Size = 175.19MB (2 file results with matching size)
+               7bdd0f174f9b968    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 1/big_bang_theory.1x08.the_grasshopper_experiment.dvdrip_xvid-fov.avi
+              c49cfc1ddc722b56    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 1/big_bang_theory.1x17.the_tangerine_factor.dvdrip_xvid-fov.avi
+Total 350.39MB in group
+
+result #169: f.Size = 175.17MB (2 file results with matching size)
+              27e4e3e68ecf77a1    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 1/big_bang_theory.1x11.the_pancake_batter_anomaly.dvdrip_xvid-fov.avi
+              5ba042d7f8579313    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/The Big Bang Theory/The Big Bang Theory - Season 1/big_bang_theory.1x12.the_jerusalem_duality.dvdrip_xvid-fov.avi
+Total 350.33MB in group
+
+result #170: f.Size = 700.03MB (2 file results with matching size)
+              7cffc5383afb301f    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E01.Boardwalk.Empire.HDTV.XviD-FQM.avi
+              8704a9da16e7c557    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E01.Boardwalk.Empire.HDTV.XviD-FQM.avi
+Total 1.37GB in group
+
+result #171: f.Size = 549.77MB (2 file results with matching size)
+              965adb75400a9050    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E02.The.Ivory.Tower.HDTV.XviD-FQM.avi
+               e1d0e5b3a84a210    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E02.The.Ivory.Tower.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+
+result #172: f.Size = 549.69MB (2 file results with matching size)
+              f2c2a0c8a03614a9    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E03.Broadway.Limited.HDTV.XviD-FQM.avi
+              f2c2a0c8a03614a9    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E03.Broadway.Limited.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+
+result #173: f.Size = 548.44MB (2 file results with matching size)
+              79f9376c5e5b0fcb    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E04.Anastasia.HDTV.XviD-2HD.avi
+              79f9376c5e5b0fcb    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E04.Anastasia.HDTV.XviD-2HD.avi
+Total 1.07GB in group
+
+result #174: f.Size = 549.58MB (2 file results with matching size)
+              61e07673752b3df2    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E05.Nights.in.Ballygran.HDTV.XviD-FQM.avi
+              61e07673752b3df2    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E05.Nights.in.Ballygran.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+
+result #175: f.Size = 549.72MB (2 file results with matching size)
+              853aee537e9605bc    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E06.Family.Limitation.HDTV.XviD-FQM.avi
+              853aee537e9605bc    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E06.Family.Limitation.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+
+result #176: f.Size = 549.59MB (2 file results with matching size)
+              75caf0f3f9cb984a    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E07.Home.HDTV.XviD-FQM.avi
+              75caf0f3f9cb984a    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E07.Home.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+
+result #177: f.Size = 549.08MB (2 file results with matching size)
+              26eb9756e1a9a531    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E08.Hold.Me.in.Paradise.HDTV.XviD-FQM.avi
+              26eb9756e1a9a531    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E08.Hold.Me.in.Paradise.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+
+result #178: f.Size = 549.80MB (2 file results with matching size)
+              65d95dc3de3da829    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E09.Belle.Femme.HDTV.XviD-FQM.avi
+              65d95dc3de3da829    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E09.Belle.Femme.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+
+result #179: f.Size = 550.11MB (2 file results with matching size)
+              b6f1ca770808fa5c    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E10.The.Emerald.City.HDTV.XviD-FEVER.avi
+              fe149bcf016722a4    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E10.The.Emerald.City.HDTV.XviD-FEVER.avi
+Total 1.07GB in group
+
+result #180: f.Size = 550.09MB (2 file results with matching size)
+              4d442984f9f12fb4    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E11.Paris.Green.HDTV.XviD-FQM.avi
+              4d442984f9f12fb4    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E11.Paris.Green.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+
+result #181: f.Size = 550.19MB (2 file results with matching size)
+              d789c6e1f247c320    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E12.A.Return.to.Normalcy.HDTV.XviD-FEVER.avi
+              d789c6e1f247c320    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E12.A.Return.to.Normalcy.HDTV.XviD-FEVER.avi
+Total 1.07GB in group
+
+result #182: f.Size = 16.25MB (4 file results with matching size)
+              db2efad69dc4e95f    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/01 - Bad Company - Digital Nation.mp3
+              dd9f9e70ea8a4305    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (none)/01 - Bad Company - Digital Nation.mp3
+              db2efad69dc4e95f    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/01 - Bad Company - Digital Nation.mp3
+              dd9f9e70ea8a4305    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (none)/01 - Bad Company - Digital Nation.mp3
+Total 65.01MB in group
+
+result #183: f.Size = 16.22MB (4 file results with matching size)
+              bbf5b82c190cb2b2    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/02 - Bad Company - Breathe.mp3
+              aa82820a625df9a5    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (none)/02 - Bad Company - Breathe.mp3
+              bbf5b82c190cb2b2    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/02 - Bad Company - Breathe.mp3
+              aa82820a625df9a5    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (none)/02 - Bad Company - Breathe.mp3
+Total 64.88MB in group
+
+result #184: f.Size = 16.89MB (2 file results with matching size)
+              c9520541554beb90    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/10 - Bad Company - Navajo.mp3
+              c9520541554beb90    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/10 - Bad Company - Navajo.mp3
+Total 33.78MB in group
+
+result #185: f.Size = 16.62MB (6 file results with matching size)
+              be9945e65cd5caec    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/01 - Bad Company - Nitrous.mp3
+              be9945e65cd5caec    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/01 - Bad Company - Nitrous.mp3
+              d2f9efce8450db26    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/09 - Bad Company - Nitrous.mp3
+              be9945df54d5caec    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/09.mp3
+              d2f9efce8450db26    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/09 - Bad Company - Nitrous.mp3
+              be9945df54d5caec    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/09.mp3
+Total 99.74MB in group
+
+result #186: f.Size = 20.21MB (6 file results with matching size)
+              70d73add21179fa9    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/02 - Bad Company - Colonies.mp3
+              70d73add21179fa9    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/02 - Bad Company - Colonies.mp3
+              8d93d9a08a5379ea    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/01 - Bad Company - Colonies.mp3
+              70d03bdd21179fa9    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/01.mp3
+              8d93d9a08a5379ea    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/01 - Bad Company - Colonies.mp3
+              70d03bdd21179fa9    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/01.mp3
+Total 121.25MB in group
+
+result #187: f.Size = 16.28MB (6 file results with matching size)
+              97c2d3d32bc324b0    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/03 - Bad Company - Brain-Scan.mp3
+              97c2d3d32bc324b0    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/03 - Bad Company - Brain-Scan.mp3
+              faf6f62f9cd12c0d    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/03 - Bad Company - Brain-Scan.mp3
+              90c2d3d32bc324b0    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/03.mp3
+              c94334a3553394eb    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/03 - Bad Company - Brain-Scan.mp3
+              d4bb8dfae837931c    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/03.mp3
+Total 97.65MB in group
+
+result #188: f.Size = 16.02MB (6 file results with matching size)
+              36e5887c6df539cc    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/04 - Bad Company - Trick Of The Light.mp3
+              36e5887c6df539cc    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/04 - Bad Company - Trick Of The Light.mp3
+              86af2a03a14b1321    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/04 - Bad Company - Trick Of The Light.mp3
+              36e5887c6dee39cc    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/04.mp3
+              86af2a03a14b1321    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/04 - Bad Company - Trick Of The Light.mp3
+              36e5887c6dee39cc    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/04.mp3
+Total 96.12MB in group
+
+result #189: f.Size = 17.90MB (6 file results with matching size)
+              cd103bab0ac31509    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/06 - Bad Company - Forgotten.mp3
+              cd103bab0ac31509    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/06 - Bad Company - Forgotten.mp3
+              e2a617483606f792    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/05 - Bad Company - Forgotten.mp3
+              ce103bab0ac31502    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/05.mp3
+              7b8a36d2e01014c6    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/05 - Bad Company - Forgotten.mp3
+              ce103bab0ac31502    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/05.mp3
+Total 107.39MB in group
+
+result #190: f.Size = 17.25MB (6 file results with matching size)
+              636b400ff73cb523    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/07 - Bad Company - Oxygen.mp3
+              8a43b9c705c3ada0    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/07 - Bad Company - Oxygen.mp3
+              a88a2d9ca41ed494    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/06 - Bad Company - Oxygen.mp3
+              8b43b2c705c3ada0    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/06.mp3
+              cf62a753b2a5cd11    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/06 - Bad Company - Oxygen.mp3
+              8b43b2c705c3ada0    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/06.mp3
+Total 103.52MB in group
+
+result #191: f.Size = 16.71MB (2 file results with matching size)
+               55e3527f0eaa51f    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2002) Shot Down On Safari (BCRUKLP002)/08.mp3
+               55e3527f0eaa51f    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2002) Shot Down On Safari (BCRUKLP002)/08.mp3
+Total 33.43MB in group
+
+result #192: f.Size = 16.24MB (2 file results with matching size)
+              e16c193d035c0683    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/A-Bad_Company-The_Nine-dmz.mp3
+              e16c193d035c0683    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/A-Bad_Company-The_Nine-dmz.mp3
+Total 32.47MB in group
+
+result #193: f.Size = 16.21MB (2 file results with matching size)
+              a5bab8bc6c9971d3    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/B-Bad_Company-Four_Days-dmz.mp3
+              a5bab8bc6c9971d3    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/B-Bad_Company-Four_Days-dmz.mp3
+Total 32.42MB in group
+
+result #194: f.Size = 16.45MB (2 file results with matching size)
+              87bd8fa066f79882    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/D-Bad_Company-Planet_Dust-dmz.mp3
+              87bd8fa066f79882    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/D-Bad_Company-Planet_Dust-dmz.mp3
+Total 32.90MB in group
+
+result #195: f.Size = 16.58MB (2 file results with matching size)
+              ed35060f44c3715f    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/E-Bad_Company-Nitrous-dmz.mp3
+              ed35060f44c3715f    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/E-Bad_Company-Nitrous-dmz.mp3
+Total 33.15MB in group
+
+result #196: f.Size = 16.42MB (4 file results with matching size)
+              ccba2817f3ec856a    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 1 (BCRUKEP001)/02.mp3
+              ccba2817f3ec856a    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 1 (BCRUKEP001)/02.mp3
+              edcba8d353da7cab    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/03.mp3
+              edcba8d353da7cab    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/03.mp3
+Total 65.69MB in group
+
+result #197: f.Size = 16.03MB (4 file results with matching size)
+              450fae20369165ee    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 2 (BCRUKEP002)/01.mp3
+              bbf59c7f5206cf92    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 2 (BCRUKEP002)/01.mp3
+              c5cb0f0d2dd68701    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/04.mp3
+              c5cb0f0d2dd68701    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/04.mp3
+Total 64.13MB in group
+
+result #198: f.Size = 18.88MB (4 file results with matching size)
+              4a849d1a2d3d5613    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 2 (BCRUKEP002)/04.mp3
+              4a849d1a2d3d5613    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 2 (BCRUKEP002)/04.mp3
+              6a961dd58e2d4d54    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 2/03.mp3
+              6a961dd58e2d4d54    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 2/03.mp3
+Total 75.50MB in group
+
+result #199: f.Size = 16.70MB (4 file results with matching size)
+              acac27056d804dfa    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 3 (BCRUKEP003)/01.mp3
+              acac27056d804dfa    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 3 (BCRUKEP003)/01.mp3
+               e991e4a8d8cceb9    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 2/08.mp3
+               e991e4a8d8cceb9    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 2/08.mp3
+Total 66.79MB in group
+
+result #200: f.Size = 49.92MB (2 file results with matching size)
+              d17a12f6a41280bc    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/DJ Cwacsimum - Dark Mix (Ed Rush Trace) (1).mp3
+              d17a12f6a41280bc    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/DJ Cwacsimum - Dark Mix (Ed Rush Trace) (1).mp3
+Total 99.83MB in group
+
+result #201: f.Size = 16.76MB (4 file results with matching size)
+              195468a157814e86    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/10 - Bad Company - The Flood.mp3
+              c5ab3bc284099d88    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/10.mp3
+              195468a157814e86    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/10 - Bad Company - The Flood.mp3
+              f9ccc5abf8e1fb6e    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/10.mp3
+Total 67.06MB in group
+
+result #202: f.Size = 17.20MB (2 file results with matching size)
+              ee9c0596cc6d31fa    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/01.mp3
+              17d9fe08b3901bf7    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/01.mp3
+Total 34.40MB in group
+
+result #203: f.Size = 16.42MB (2 file results with matching size)
+               25e9304a3e3f686    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/02.mp3
+               56d15c9ac4524dc    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/02.mp3
+Total 32.85MB in group
+
+result #204: f.Size = 16.86MB (2 file results with matching size)
+              e09d8711f8171b5f    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2002) Shot Down On Safari (BCUKCD002)/Disc 1/03.mp3
+              e09d8711f8171b5f    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2002) Shot Down On Safari (BCUKCD002)/Disc 1/03.mp3
+Total 33.72MB in group
+
+result #205: f.Size = 96.90MB (2 file results with matching size)
+              ef0f4035a425692a    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 1).mp3
+              ef0f4035a425692a    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 1).mp3
+Total 193.81MB in group
+
+result #206: f.Size = 104.82MB (2 file results with matching size)
+              f48f7fd7cee15cb4    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 2).mp3
+              f48f7fd7cee15cb4    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 2).mp3
+Total 209.64MB in group
+
+result #207: f.Size = 48.22MB (2 file results with matching size)
+              f4e92a6e62a649cd    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 3).mp3
+              f4e92a6e62a649cd    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 3).mp3
+Total 96.44MB in group
+
+result #208: f.Size = 17.70MB (2 file results with matching size)
+              768e8b1ed17e56f6    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/02.mp3
+              768e8b1ed17e56f6    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/02.mp3
+Total 35.41MB in group
+
+result #209: f.Size = 16.38MB (2 file results with matching size)
+              229a32023e448e40    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/06.mp3
+              229a32023e448e40    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/06.mp3
+Total 32.76MB in group
+
+result #210: f.Size = 17.70MB (2 file results with matching size)
+              6785cd8e1bf0739e    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/09.mp3
+              6785cd8e1bf0739e    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/09.mp3
+Total 35.40MB in group
+
+result #211: f.Size = 73.17MB (2 file results with matching size)
+              dc5d36adc262b276    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Oldskool Set-1992 (Krome & Time, Acen, Hyper On Experience, DJ Seduction, DJ Phantasy, Ellis Dee, 2 Bad Mice, Mickey Finn, Tango, Xenophobia).mp3
+              dc5d36adc262b276    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Oldskool Set-1992 (Krome & Time, Acen, Hyper On Experience, DJ Seduction, DJ Phantasy, Ellis Dee, 2 Bad Mice, Mickey Finn, Tango, Xenophobia).mp3
+Total 146.35MB in group
+
+result #212: f.Size = 16.19MB (2 file results with matching size)
+              b217324b7ba89c06    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Stakka & Skynet - Spider Monkey (Cause 4 Concern Remix).mp3
+              b217324b7ba89c06    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Stakka & Skynet - Spider Monkey (Cause 4 Concern Remix).mp3
+Total 32.38MB in group
+
+result #213: f.Size = 67.32MB (2 file results with matching size)
+              a709ae90910ac5a5    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/[Drum & Bass]Drum and Bass Volume 3 - Mixed by DJ Hype.mp3
+              a709ae90910ac5a5    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/[Drum & Bass]Drum and Bass Volume 3 - Mixed by DJ Hype.mp3
+Total 134.65MB in group
+
+result #214: f.Size = 55.13MB (2 file results with matching size)
+              59a881fafb5788cb    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/[Front-Cut] Soi+Saphir+4EZ - Heatwave.mp3
+              bb9c5036ef933d18    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/[Front-Cut] Soi+Saphir+4EZ - Heatwave.mp3
+Total 110.25MB in group
+
+result #215: f.Size = 17.30MB (2 file results with matching size)
+              40417659b2bfbb3b    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/acen - 75 minutes - 04 - close your eyes ('xxx' mix).mp3
+              40417659b2bfbb3b    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/acen - 75 minutes - 04 - close your eyes ('xxx' mix).mp3
+Total 34.59MB in group
+
+result #216: f.Size = 78.34MB (2 file results with matching size)
+              16776954e954c259    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/va_-_drum_and_bass_arena_the_classics_mixed_by goldie-boss 2.mp3
+              16776954e954c259    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/va_-_drum_and_bass_arena_the_classics_mixed_by goldie-boss 2.mp3
+Total 156.68MB in group
+
+result #217: f.Size = 91.19MB (2 file results with matching size)
+              69563078a288702e    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/va_-_drum_and_bass_arena_the_classics_mixed_by_goldie-boss 1.mp3
+              69563078a288702e    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/va_-_drum_and_bass_arena_the_classics_mixed_by_goldie-boss 1.mp3
+Total 182.37MB in group
+
+result #218: f.Size = 20.81MB f.CRC = 50bd86acb66ec9e5 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/Roni Size/roni size - jungle drum and bass.mp3
+    /mnt/Trapdoor/media/mp3/Jungle Bothers/Jungle drum and bass (BEST MIX YOU WILL EVER HEAR) better th.mp3
+Total 41.63MB in group
+result #219: f.Size = 18.76MB f.CRC = 4ffe5d97ccd1317c (2 file results with matching CRC)
+    /mnt/Trapdoor/media/mp3/Cosmic Gate/Cosmic Gate vs Mauro Picotto - Fire Wire Komodo.mp3
+    /mnt/Trapdoor/media/mp3/00lostfiles/Cosmic Gate vs Mauro Picotto - Fire Wire Komodo.mp3
+Total 37.52MB in group
+result #220: f.Size = 54.36MB f.CRC = 376e9a27991ec3a8 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/mp3/Paul Van Dyk/PAUL VAN DYKE - ESSENTIAL MIX II - (LIVE IN LONDON).MP3
+    /mnt/Trapdoor/media/mp3/00lostfiles/Copy of PAUL VAN DYKE - ESSENTIAL MIX II - (LIVE IN LONDON).MP3
+Total 108.73MB in group
+result #221: f.Size = 22.62MB f.CRC = a80f14b41bbc7177 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/mp3/Paul Van Dyk/Paul Van Dyk - Dyk Technik2.mp3
+    /mnt/Trapdoor/media/mp3/00lostfiles/Copy of Paul Van Dyk - Dyk Technik2.mp3
+Total 45.24MB in group
+result #222: f.Size = 70.68MB f.CRC = e7e344d581e91c5b (2 file results with matching CRC)
+    /mnt/Trapdoor/media/mp3/Paul Van Dyk/paul van dyk - Paul Van Dyke & Peter Tong.mp3
+    /mnt/Trapdoor/media/mp3/00lostfiles/Copy of paul van dyk - Paul Van Dyke & Peter Tong.mp3
+Total 141.37MB in group
+result #223: f.Size = 16.87MB f.CRC = 1e570b87cb9a2919 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/mp3/00lostfiles/1-04 Richie's Office At Channel 9 #2.mp3
+    /mnt/Trapdoor/media/mp3/The 12th Man/The Final Dig_/1-04 Richie's Office At Channel 9 #2.mp3
+Total 33.73MB in group
+result #224: f.Size = 20.44MB f.CRC = 79628d18b96a5163 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/mp3/00lostfiles/13 Sick Life.mp3
+    /mnt/Trapdoor/media/mp3/Nailbomb/Point Blank/13 Sick Life.mp3
+Total 40.88MB in group
+result #225: f.Size = 175.02MB f.CRC = 5a0557daeb86f244 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R7L9H3M/How.I.Met.Your.Mother.S04E09.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 4/How.I.Met.Your.Mother.S04E09.HDTV.XviD-LOL.[VTV].avi
+Total 350.05MB in group
+result #226: f.Size = 175.02MB f.CRC = 80af27d335116a88 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R7L9H3M/how.i.met.your.mother.423.hdtv-lol.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 4/how.i.met.your.mother.423.hdtv-lol.avi
+Total 350.04MB in group
+result #227: f.Size = 175.04MB f.CRC = 56bf0f4bcb220c75 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R7L9H3M/how.i.met.your.mother.424.hdtv-lol.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 4/how.i.met.your.mother.424.hdtv-lol.avi
+Total 350.07MB in group
+result #228: f.Size = 175.00MB f.CRC = 1579dad8d5be794c (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.301.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.301.avi
+Total 349.99MB in group
+result #229: f.Size = 175.01MB f.CRC = a59d682a69718e4 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.303.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.303.avi
+Total 350.02MB in group
+result #230: f.Size = 175.05MB f.CRC = fdc8876938bb3679 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.305.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.305.avi
+Total 350.09MB in group
+result #231: f.Size = 174.50MB f.CRC = 80c034dfb2220b76 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.306.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.306.avi
+Total 349.00MB in group
+result #232: f.Size = 175.02MB f.CRC = c781921e77ec67a6 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.309.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.309.avi
+Total 350.05MB in group
+result #233: f.Size = 175.05MB f.CRC = c66dded70ec547c8 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.311.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.311.avi
+Total 350.09MB in group
+result #234: f.Size = 175.25MB f.CRC = 70a078c410fcddd3 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.312.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.312.avi
+Total 350.51MB in group
+result #235: f.Size = 175.53MB f.CRC = a2488cf4b941af12 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.315.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.315.avi
+Total 351.06MB in group
+result #236: f.Size = 175.30MB f.CRC = 192d1501b8b8bb19 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.316.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.316.avi
+Total 350.60MB in group
+result #237: f.Size = 174.90MB f.CRC = 8f4c14136519d2df (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$R8SAFHS/how.i.met.your.mother.317.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 3/how.i.met.your.mother.317.avi
+Total 349.81MB in group
+result #238: f.Size = 175.07MB f.CRC = af8d7cca24f2c209 (3 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e18.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/How I Met Your Mother - 218.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e18.hdtv.xvid-xor.[VTV].avi
+Total 525.21MB in group
+result #239: f.Size = 174.99MB f.CRC = 525005db21300eea (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/How.I.Met.Your.Mother.S02E19.REPACK.HDTV.XviD-XOR.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/How.I.Met.Your.Mother.S02E19.REPACK.HDTV.XviD-XOR.avi
+Total 349.98MB in group
+result #240: f.Size = 174.59MB f.CRC = 3e530b75fa603cc2 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.203.hdtv-lol.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.203.hdtv-lol.[VTV].avi
+Total 349.18MB in group
+result #241: f.Size = 174.76MB f.CRC = d0c65076ab0d52c6 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.205.hdtv-lol.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.205.hdtv-lol.[VTV].avi
+Total 349.53MB in group
+result #242: f.Size = 172.32MB f.CRC = 723d1a4633c9c82a (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.209.hdtv-lol.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.209.hdtv-lol.[VTV].avi
+Total 344.63MB in group
+result #243: f.Size = 174.47MB f.CRC = 27974353cd902269 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.210.hdtv-lol.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.210.hdtv-lol.[VTV].avi
+Total 348.95MB in group
+result #244: f.Size = 174.79MB f.CRC = 4ed38a918bbf636 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.211.hdtv.notv.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.211.hdtv.notv.[VTV].avi
+Total 349.58MB in group
+result #245: f.Size = 175.40MB f.CRC = ed26aab845b2e6a9 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.212.hdtv.xvid.notv.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.212.hdtv.xvid.notv.[VTV].avi
+Total 350.80MB in group
+result #246: f.Size = 174.65MB f.CRC = 23c397261febcfba (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.220.hdtv-lol.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.220.hdtv-lol.[VTV].avi
+Total 349.31MB in group
+result #247: f.Size = 174.88MB f.CRC = a777f1ad4b2a72a1 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e01.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e01.hdtv.xvid-xor.[VTV].avi
+Total 349.77MB in group
+result #248: f.Size = 174.46MB f.CRC = 4e461c01f1a6e436 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e02.repack.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e02.repack.hdtv.xvid-xor.[VTV].avi
+Total 348.92MB in group
+result #249: f.Size = 174.36MB f.CRC = 4f536e92990ebe58 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e04.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e04.hdtv.xvid-xor.[VTV].avi
+Total 348.73MB in group
+result #250: f.Size = 174.96MB f.CRC = e87ce53985b167c2 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e06.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e06.hdtv.xvid-xor.[VTV].avi
+Total 349.92MB in group
+result #251: f.Size = 175.57MB f.CRC = 6df9ee8938fd1e46 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e08.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e08.hdtv.xvid-xor.[VTV].avi
+Total 351.13MB in group
+result #252: f.Size = 174.42MB f.CRC = bcdeb7782fc3be05 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e14.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e14.hdtv.xvid-xor.[VTV].avi
+Total 348.85MB in group
+result #253: f.Size = 174.68MB f.CRC = b3ffc4fc19ac9bac (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e15.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e15.hdtv.xvid-xor.[VTV].avi
+Total 349.36MB in group
+result #254: f.Size = 175.04MB f.CRC = c02442a36d1c171f (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e17.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e17.hdtv.xvid-xor.[VTV].avi
+Total 350.07MB in group
+result #255: f.Size = 174.91MB f.CRC = f542b2fb675a3674 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RCLQZHF/how.i.met.your.mother.s02e22.hdtv.xvid-xor.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 2 (2006-2007)/how.i.met.your.mother.s02e22.hdtv.xvid-xor.[VTV].avi
+Total 349.82MB in group
+result #256: f.Size = 175.10MB f.CRC = beed0b265134c3ed (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.0501.hdtv.xvid-notv.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.0501.hdtv.xvid-notv.avi
+Total 350.20MB in group
+result #257: f.Size = 175.02MB f.CRC = 28c57c5cbcefbb06 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e03.hdtv.xvid-fqm.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e03.hdtv.xvid-fqm.avi
+Total 350.04MB in group
+result #258: f.Size = 175.27MB f.CRC = f326086e3289e186 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e04.hdtv.xvid-2hd.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e04.hdtv.xvid-2hd.avi
+Total 350.54MB in group
+result #259: f.Size = 175.09MB f.CRC = d664b0632c77a4d (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e08.hdtv.xvid-fqm.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e08.hdtv.xvid-fqm.avi
+Total 350.17MB in group
+result #260: f.Size = 175.09MB f.CRC = b83451991ec14a22 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$ROD86LR/how.i.met.your.mother.s05e11.hdtv.xvid-fqm.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 5/how.i.met.your.mother.s05e11.hdtv.xvid-fqm.avi
+Total 350.19MB in group
+result #261: f.Size = 175.02MB f.CRC = 161289c2067f5379 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E01.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E01.HDTV.XviD-LOL.[VTV].avi
+Total 350.03MB in group
+result #262: f.Size = 175.02MB f.CRC = 62c5c73865e59156 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E02.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E02.HDTV.XviD-LOL.[VTV].avi
+Total 350.03MB in group
+result #263: f.Size = 174.98MB f.CRC = 563020fe644c551f (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E05.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E05.HDTV.XviD-LOL.[VTV].avi
+Total 349.95MB in group
+result #264: f.Size = 174.97MB f.CRC = 377d5bf7dfb84b50 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E06.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E06.HDTV.XviD-LOL.[VTV].avi
+Total 349.94MB in group
+result #265: f.Size = 174.98MB f.CRC = df15c256746e27fe (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E07.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E07.HDTV.XviD-LOL.[VTV].avi
+Total 349.95MB in group
+result #266: f.Size = 175.09MB f.CRC = f3a9dd00e7ae0d24 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E08.HDTV.XviD-FEVER.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E08.HDTV.XviD-FEVER.[VTV].avi
+Total 350.18MB in group
+result #267: f.Size = 174.55MB f.CRC = abda23235f087028 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E09.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E09.HDTV.XviD-LOL.[VTV].avi
+Total 349.10MB in group
+result #268: f.Size = 174.63MB f.CRC = bffd8e204fe35f39 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E10.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E10.HDTV.XviD-LOL.[VTV].avi
+Total 349.26MB in group
+result #269: f.Size = 174.89MB f.CRC = 6e3e5a7f1fef890b (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E13.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E13.HDTV.XviD-LOL.[VTV].avi
+Total 349.78MB in group
+result #270: f.Size = 174.89MB f.CRC = 982bd63566743c70 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E16.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E16.HDTV.XviD-LOL.[VTV].avi
+Total 349.77MB in group
+result #271: f.Size = 174.99MB f.CRC = b1b086407a855ff4 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E19.HDTV.XviD-LOL.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E19.HDTV.XviD-LOL.avi
+Total 349.99MB in group
+result #272: f.Size = 174.74MB f.CRC = 82269b33c601cc6 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E21.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E21.HDTV.XviD-LOL.[VTV].avi
+Total 349.48MB in group
+result #273: f.Size = 174.83MB f.CRC = d974da22d3e50870 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E22.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E22.HDTV.XviD-LOL.[VTV].avi
+Total 349.65MB in group
+result #274: f.Size = 174.73MB f.CRC = 3fecd5e9df5f33e9 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/How.I.Met.Your.Mother.S06E24.HDTV.XviD-LOL.[VTV].avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/How.I.Met.Your.Mother.S06E24.HDTV.XviD-LOL.[VTV].avi
+Total 349.46MB in group
+result #275: f.Size = 174.72MB f.CRC = f05f3e7e03cd4af (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/how.i.met.your.mother.617.hdtv-lol.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/how.i.met.your.mother.617.hdtv-lol.avi
+Total 349.44MB in group
+result #276: f.Size = 174.87MB f.CRC = 6e051cb54a5ff9c7 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/how.i.met.your.mother.620.hdtv-lol.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/how.i.met.your.mother.620.hdtv-lol.avi
+Total 349.73MB in group
+result #277: f.Size = 174.88MB f.CRC = 9dd33809c05a679d (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/how.i.met.your.mother.623.hdtv-lol.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/how.i.met.your.mother.623.hdtv-lol.avi
+Total 349.77MB in group
+result #278: f.Size = 175.22MB f.CRC = 5d69c75f26fbe3ca (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/incoming/$RECYCLE.BIN/$RWA7JPC/how.i.met.your.mother.s06e12.hdtv.xvid-fqm.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/How I Met Your Mother/Season 6/how.i.met.your.mother.s06e12.hdtv.xvid-fqm.avi
+Total 350.44MB in group
+result #279: f.Size = 72.34MB f.CRC = ddb83b988e5c037a (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/DNB Mixes/High Contrast/01high_contrast__live_at_cosmic_trip07232005boss.mp3
+    /mnt/Trapdoor/media/new_mp3/DNB Mixes/High Contrast - Live at Cosmic Trip 07-23-2005-boss/High Contrast - Live at Cosmic Trip 07-23-2005-boss.mp3
+Total 144.69MB in group
+result #280: f.Size = 350.62MB f.CRC = 9e4287fd74b24031 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/201 - Breaking & Entering.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E01.HDTV.XviD-2HD.avi
+Total 701.23MB in group
+result #281: f.Size = 349.85MB f.CRC = c940e5a1a4294f9f (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/202 - Turn & Burn.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E02.avi
+Total 699.70MB in group
+result #282: f.Size = 349.79MB f.CRC = 509da5237aa103bc (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/203 - Trust Me.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E03.hdtv-0tv.avi
+Total 699.58MB in group
+result #283: f.Size = 350.59MB f.CRC = 7d93c12fd2d216bd (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/204 - Comrades.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E04.comrades.hdtv_xvid-fov.avi
+Total 701.18MB in group
+result #284: f.Size = 350.27MB f.CRC = 157c704be473ef8 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/205 - Scatter Point.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E05.proper.hdtv.xvid-fqm.avi
+Total 700.54MB in group
+result #285: f.Size = 349.40MB f.CRC = 89479083d1c789d2 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/207 - Rough Seas.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/burn.notice.s02e07.hdtv.xvid-fqm.avi
+Total 698.80MB in group
+result #286: f.Size = 350.85MB f.CRC = 8f0d530a113dc608 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/208 - Double Booked.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/burn.notice.s02e08.hdtv.xvid-notv.avi
+Total 701.70MB in group
+result #287: f.Size = 349.16MB f.CRC = 9d5ea15ae1d2562e (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Burn Notice/Burn Notice Season 2/209 - Good Soldier.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Burn Notice/Burn Notice Season 2/Burn.Notice.S02E09.HDTV.XviD-NoTV.[VTV].avi
+Total 698.32MB in group
+result #288: f.Size = 349.97MB f.CRC = 2966076ca337611e (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E01.Pilot.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E01.Pilot.avi
+Total 699.95MB in group
+result #289: f.Size = 350.21MB f.CRC = 93900aef341e721e (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E05.What About Blob.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E05.What About Blob.avi
+Total 700.42MB in group
+result #290: f.Size = 353.33MB f.CRC = 94def7b5a5fdea12 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E07.Love, Bullets and Blacktop.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E07.Love, Bullets and Blacktop.avi
+Total 706.67MB in group
+result #291: f.Size = 350.66MB f.CRC = daeac86479bc2f8f (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E08.The Cop.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E08.The Cop.avi
+Total 701.32MB in group
+result #292: f.Size = 350.18MB f.CRC = b8c073ee3f043ba5 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E11.Hungry For Fame.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E11.Hungry For Fame.avi
+Total 700.36MB in group
+result #293: f.Size = 352.71MB f.CRC = bb68b82205b34c1 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E12.Unseen.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E12.Unseen.avi
+Total 705.41MB in group
+result #294: f.Size = 350.58MB f.CRC = 82bf1aed66d845f5 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E13.Acid Queen.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E13.Acid Queen.avi
+Total 701.15MB in group
+result #295: f.Size = 350.66MB f.CRC = 6c8f31a733faec8 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E15.Coming To Grips.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E15.Coming To Grips.avi
+Total 701.31MB in group
+result #296: f.Size = 349.87MB f.CRC = 169019996a9b6ba5 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E17.The Leak.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E17.The Leak.avi
+Total 699.75MB in group
+result #297: f.Size = 350.39MB f.CRC = 9bf137727b7a1fc0 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/Reaper.S01E18.Cancun.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/Reaper.S01E18.Cancun.avi
+Total 700.79MB in group
+result #298: f.Size = 350.97MB f.CRC = 39b9673e4190e817 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/keith/Reaper/Season 1 of Reaper.Divx/reaper.S01E06.Leon.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/New Films/Season 1 of Reaper.Divx/reaper.S01E06.Leon.avi
+Total 701.94MB in group
+result #299: f.Size = 334.95MB f.CRC = 855b38d408eb17e8 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Sons.of.Anarchy.Season.6.Episode.12.You.Are.My.Sunshine.2013.HDTV.x264-LNC.[ettv]/.goutputstream-FB858W
+    /mnt/Trapdoor/media/video/TV/Sons Of Anarchy/Sons.of.Anarchy.Season.6.Episode.12.You.Are.My.Sunshine.2013.HDTV.x264-LNC.[ettv]/Sons.of.Anarchy.Season.6.Episode.12.You.Are.My.Sunshine.2013.HDTV.x264-LNC.[ettv].avi
+Total 669.90MB in group
+result #300: f.Size = 100.33MB f.CRC = 67a8eee3ededbd2b (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/Robot.Chicken.S03.Christmas.Special.DSRip.XviD-aAF.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/aaf-rc.s03e14.avi
+Total 200.66MB in group
+result #301: f.Size = 100.25MB f.CRC = a6a33cc7fd430a80 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/Robot.Chicken.S03E13.DSR.XviD-aAF.avi
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/TV Shows/Robot Chicken/aaf-rc.s03e13.avi
+Total 200.50MB in group
+result #302: f.Size = 124.24MB f.CRC = 9cc5ae70902dc0ba (2 file results with matching CRC)
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Dub Step/M2J/m2j26jul09subfm.mp3
+    /mnt/Trapdoor/media/00unsorted/rip/Ray Stuff/Dub Step/M2J/2009/July 09/M2J26Jul09SubFM.mp3
+Total 248.48MB in group
+result #303: f.Size = 237.80MB f.CRC = 9ba1b0ca10629738 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Black Angelika Dominica Dolce Donna Bell New Years Orgy With Black Angelika - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Black Angelika Dominica Dolce Donna Bell New Years Orgy With Black Angelika - MadThumbs™.mp4
+Total 475.60MB in group
+result #304: f.Size = 72.73MB f.CRC = 1fc6c608533c9f6a (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Cathy In Sexy Dress Up For Realitykings - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Cathy In Sexy Dress Up For Realitykings - MadThumbs™.mp4
+Total 145.46MB in group
+result #305: f.Size = 179.73MB f.CRC = 513293fceb74e5ca (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Claudia Rossi Gets Doubled Stuffed With A Nice Cum Facial Finale - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Claudia Rossi Gets Doubled Stuffed With A Nice Cum Facial Finale - MadThumbs™.mp4
+Total 359.47MB in group
+result #306: f.Size = 270.61MB f.CRC = e70b2ccce404cd9 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Deadra Dee A Cream Pie BigTit Cream Pie - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Deadra Dee A Cream Pie BigTit Cream Pie - MadThumbs™.mp4
+Total 541.21MB in group
+result #307: f.Size = 269.72MB f.CRC = ee1e01da73feaa8c (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Hot Euro Blonde Elinor Loves The Taste Of American Cocks To Gang Bang Her For Reality Kings - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Hot Euro Blonde Elinor Loves The Taste Of American Cocks To Gang Bang Her For Reality Kings - MadThumbs™.mp4
+Total 539.44MB in group
+result #308: f.Size = 87.95MB f.CRC = 52f0df14d2003215 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Kinky Party Girls Likes Spanking And Fucking - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Kinky Party Girls Likes Spanking And Fucking - MadThumbs™.mp4
+Total 175.90MB in group
+result #309: f.Size = 50.58MB f.CRC = ad55bc7091616dd (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Missy Woods Double Penetrated And Sucking Cock In Interracial Gang Bang - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Missy Woods Double Penetrated And Sucking Cock In Interracial Gang Bang - MadThumbs™.mp4
+Total 101.17MB in group
+result #310: f.Size = 50.80MB f.CRC = b4449aa6c40d5836 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Sasha Knox Opens Up Her Holes And Is Banged By Three Hard Studs - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Sasha Knox Opens Up Her Holes And Is Banged By Three Hard Studs - MadThumbs™.mp4
+Total 101.59MB in group
+result #311: f.Size = 32.50MB f.CRC = 42af6ca6dce7dfee (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/m/01/Surprise Cock Feat Bettina Dicapri David Perry - MadThumbs™.mp4
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/m/01/Surprise Cock Feat Bettina Dicapri David Perry - MadThumbs™.mp4
+Total 65.00MB in group
+result #312: f.Size = 549.69MB f.CRC = f2c2a0c8a03614a9 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E03.Broadway.Limited.HDTV.XviD-FQM.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E03.Broadway.Limited.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+result #313: f.Size = 548.44MB f.CRC = 79f9376c5e5b0fcb (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E04.Anastasia.HDTV.XviD-2HD.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E04.Anastasia.HDTV.XviD-2HD.avi
+Total 1.07GB in group
+result #314: f.Size = 549.58MB f.CRC = 61e07673752b3df2 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E05.Nights.in.Ballygran.HDTV.XviD-FQM.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E05.Nights.in.Ballygran.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+result #315: f.Size = 549.72MB f.CRC = 853aee537e9605bc (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E06.Family.Limitation.HDTV.XviD-FQM.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E06.Family.Limitation.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+result #316: f.Size = 549.59MB f.CRC = 75caf0f3f9cb984a (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E07.Home.HDTV.XviD-FQM.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E07.Home.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+result #317: f.Size = 549.08MB f.CRC = 26eb9756e1a9a531 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E08.Hold.Me.in.Paradise.HDTV.XviD-FQM.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E08.Hold.Me.in.Paradise.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+result #318: f.Size = 549.80MB f.CRC = 65d95dc3de3da829 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E09.Belle.Femme.HDTV.XviD-FQM.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E09.Belle.Femme.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+result #319: f.Size = 550.09MB f.CRC = 4d442984f9f12fb4 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E11.Paris.Green.HDTV.XviD-FQM.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E11.Paris.Green.HDTV.XviD-FQM.avi
+Total 1.07GB in group
+result #320: f.Size = 550.19MB f.CRC = d789c6e1f247c320 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E12.A.Return.to.Normalcy.HDTV.XviD-FEVER.avi
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Boardwalk.Empire.Season.1.HDTV.XviD/Boardwalk.Empire.S01E12.A.Return.to.Normalcy.HDTV.XviD-FEVER.avi
+Total 1.07GB in group
+result #321: f.Size = 16.25MB f.CRC = db2efad69dc4e95f (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/01 - Bad Company - Digital Nation.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/01 - Bad Company - Digital Nation.mp3
+Total 32.50MB in group
+result #322: f.Size = 16.25MB f.CRC = dd9f9e70ea8a4305 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (none)/01 - Bad Company - Digital Nation.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (none)/01 - Bad Company - Digital Nation.mp3
+Total 32.50MB in group
+result #323: f.Size = 16.22MB f.CRC = bbf5b82c190cb2b2 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/02 - Bad Company - Breathe.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/02 - Bad Company - Breathe.mp3
+Total 32.44MB in group
+result #324: f.Size = 16.22MB f.CRC = aa82820a625df9a5 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (none)/02 - Bad Company - Breathe.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (none)/02 - Bad Company - Breathe.mp3
+Total 32.44MB in group
+result #325: f.Size = 16.89MB f.CRC = c9520541554beb90 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/10 - Bad Company - Navajo.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Digital Nation (BCRUKLP01)/10 - Bad Company - Navajo.mp3
+Total 33.78MB in group
+result #326: f.Size = 16.62MB f.CRC = be9945e65cd5caec (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/01 - Bad Company - Nitrous.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/01 - Bad Company - Nitrous.mp3
+Total 33.25MB in group
+result #327: f.Size = 16.62MB f.CRC = d2f9efce8450db26 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/09 - Bad Company - Nitrous.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/09 - Bad Company - Nitrous.mp3
+Total 33.25MB in group
+result #328: f.Size = 16.62MB f.CRC = be9945df54d5caec (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/09.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/09.mp3
+Total 33.25MB in group
+result #329: f.Size = 20.21MB f.CRC = 70d73add21179fa9 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/02 - Bad Company - Colonies.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/02 - Bad Company - Colonies.mp3
+Total 40.42MB in group
+result #330: f.Size = 20.21MB f.CRC = 8d93d9a08a5379ea (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/01 - Bad Company - Colonies.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/01 - Bad Company - Colonies.mp3
+Total 40.42MB in group
+result #331: f.Size = 20.21MB f.CRC = 70d03bdd21179fa9 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/01.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/01.mp3
+Total 40.42MB in group
+result #332: f.Size = 16.28MB f.CRC = 97c2d3d32bc324b0 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/03 - Bad Company - Brain-Scan.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/03 - Bad Company - Brain-Scan.mp3
+Total 32.55MB in group
+result #333: f.Size = 16.02MB f.CRC = 36e5887c6df539cc (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/04 - Bad Company - Trick Of The Light.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/04 - Bad Company - Trick Of The Light.mp3
+Total 32.04MB in group
+result #334: f.Size = 16.02MB f.CRC = 86af2a03a14b1321 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/04 - Bad Company - Trick Of The Light.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/04 - Bad Company - Trick Of The Light.mp3
+Total 32.04MB in group
+result #335: f.Size = 16.02MB f.CRC = 36e5887c6dee39cc (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/04.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/04.mp3
+Total 32.04MB in group
+result #336: f.Size = 17.90MB f.CRC = cd103bab0ac31509 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/06 - Bad Company - Forgotten.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRLP001)/06 - Bad Company - Forgotten.mp3
+Total 35.80MB in group
+result #337: f.Size = 17.90MB f.CRC = ce103bab0ac31502 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/05.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/05.mp3
+Total 35.80MB in group
+result #338: f.Size = 17.25MB f.CRC = 8b43b2c705c3ada0 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/06.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 1/06.mp3
+Total 34.51MB in group
+result #339: f.Size = 16.71MB f.CRC = 55e3527f0eaa51f (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2002) Shot Down On Safari (BCRUKLP002)/08.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2002) Shot Down On Safari (BCRUKLP002)/08.mp3
+Total 33.43MB in group
+result #340: f.Size = 16.24MB f.CRC = e16c193d035c0683 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/A-Bad_Company-The_Nine-dmz.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/A-Bad_Company-The_Nine-dmz.mp3
+Total 32.47MB in group
+result #341: f.Size = 16.21MB f.CRC = a5bab8bc6c9971d3 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/B-Bad_Company-Four_Days-dmz.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/B-Bad_Company-Four_Days-dmz.mp3
+Total 32.42MB in group
+result #342: f.Size = 16.45MB f.CRC = 87bd8fa066f79882 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/D-Bad_Company-Planet_Dust-dmz.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/D-Bad_Company-Planet_Dust-dmz.mp3
+Total 32.90MB in group
+result #343: f.Size = 16.58MB f.CRC = ed35060f44c3715f (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/E-Bad_Company-Nitrous-dmz.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Bad Company Classics (BCUK001LP)/E-Bad_Company-Nitrous-dmz.mp3
+Total 33.15MB in group
+result #344: f.Size = 16.42MB f.CRC = ccba2817f3ec856a (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 1 (BCRUKEP001)/02.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 1 (BCRUKEP001)/02.mp3
+Total 32.84MB in group
+result #345: f.Size = 16.42MB f.CRC = edcba8d353da7cab (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/03.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/03.mp3
+Total 32.84MB in group
+result #346: f.Size = 16.03MB f.CRC = c5cb0f0d2dd68701 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/04.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 1/04.mp3
+Total 32.06MB in group
+result #347: f.Size = 18.88MB f.CRC = 4a849d1a2d3d5613 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 2 (BCRUKEP002)/04.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 2 (BCRUKEP002)/04.mp3
+Total 37.75MB in group
+result #348: f.Size = 18.88MB f.CRC = 6a961dd58e2d4d54 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 2/03.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 2/03.mp3
+Total 37.75MB in group
+result #349: f.Size = 16.70MB f.CRC = acac27056d804dfa (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 3 (BCRUKEP003)/01.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Мини альбомы/(2001) Book Of The Bad Volume 3 (BCRUKEP003)/01.mp3
+Total 33.40MB in group
+result #350: f.Size = 16.70MB f.CRC = e991e4a8d8cceb9 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 2/08.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2001) Book Of The Bad (BCRUKEPCD001)/Disc 2/08.mp3
+Total 33.40MB in group
+result #351: f.Size = 49.92MB f.CRC = d17a12f6a41280bc (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/DJ Cwacsimum - Dark Mix (Ed Rush Trace) (1).mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/DJ Cwacsimum - Dark Mix (Ed Rush Trace) (1).mp3
+Total 99.83MB in group
+result #352: f.Size = 16.76MB f.CRC = 195468a157814e86 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/10 - Bad Company - The Flood.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2000) Inside The Machine (VDBCRCD001)/Disc 1/10 - Bad Company - The Flood.mp3
+Total 33.53MB in group
+result #353: f.Size = 16.86MB f.CRC = e09d8711f8171b5f (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2002) Shot Down On Safari (BCUKCD002)/Disc 1/03.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2002) Shot Down On Safari (BCUKCD002)/Disc 1/03.mp3
+Total 33.72MB in group
+result #354: f.Size = 96.90MB f.CRC = ef0f4035a425692a (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 1).mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 1).mp3
+Total 193.81MB in group
+result #355: f.Size = 104.82MB f.CRC = f48f7fd7cee15cb4 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 2).mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 2).mp3
+Total 209.64MB in group
+result #356: f.Size = 48.22MB f.CRC = f4e92a6e62a649cd (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 3).mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Various - Drum & Bass Essentials/Drum & Bass Essentials (Disc 3).mp3
+Total 96.44MB in group
+result #357: f.Size = 17.70MB f.CRC = 768e8b1ed17e56f6 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/02.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/02.mp3
+Total 35.41MB in group
+result #358: f.Size = 16.38MB f.CRC = 229a32023e448e40 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/06.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/06.mp3
+Total 32.76MB in group
+result #359: f.Size = 17.70MB f.CRC = 6785cd8e1bf0739e (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/09.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/Bad Company UK/Альбомы/(2007) Inside The Machine & Lost And Found (BCUK001CDR)/Disc 2/09.mp3
+Total 35.40MB in group
+result #360: f.Size = 73.17MB f.CRC = dc5d36adc262b276 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Oldskool Set-1992 (Krome & Time, Acen, Hyper On Experience, DJ Seduction, DJ Phantasy, Ellis Dee, 2 Bad Mice, Mickey Finn, Tango, Xenophobia).mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Oldskool Set-1992 (Krome & Time, Acen, Hyper On Experience, DJ Seduction, DJ Phantasy, Ellis Dee, 2 Bad Mice, Mickey Finn, Tango, Xenophobia).mp3
+Total 146.35MB in group
+result #361: f.Size = 16.19MB f.CRC = b217324b7ba89c06 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/Stakka & Skynet - Spider Monkey (Cause 4 Concern Remix).mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/Stakka & Skynet - Spider Monkey (Cause 4 Concern Remix).mp3
+Total 32.38MB in group
+result #362: f.Size = 67.32MB f.CRC = a709ae90910ac5a5 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/[Drum & Bass]Drum and Bass Volume 3 - Mixed by DJ Hype.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/[Drum & Bass]Drum and Bass Volume 3 - Mixed by DJ Hype.mp3
+Total 134.65MB in group
+result #363: f.Size = 17.30MB f.CRC = 40417659b2bfbb3b (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/acen - 75 minutes - 04 - close your eyes ('xxx' mix).mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/acen - 75 minutes - 04 - close your eyes ('xxx' mix).mp3
+Total 34.59MB in group
+result #364: f.Size = 78.34MB f.CRC = 16776954e954c259 (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/va_-_drum_and_bass_arena_the_classics_mixed_by goldie-boss 2.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/va_-_drum_and_bass_arena_the_classics_mixed_by goldie-boss 2.mp3
+Total 156.68MB in group
+result #365: f.Size = 91.19MB f.CRC = 69563078a288702e (2 file results with matching CRC)
+    /mnt/Trapdoor/media/new_mp3/mike hasla/mystuff/download/torrent/DnB/va_-_drum_and_bass_arena_the_classics_mixed_by_goldie-boss 1.mp3
+    /mnt/Trapdoor/media/00unsorted/incoming/sources/en-us/mystuff/download/torrent/DnB/va_-_drum_and_bass_arena_the_classics_mixed_by_goldie-boss 1.mp3
+Total 182.37MB in group
+Total 48.02GB in 148/489 groups
+
+--------Finished: Artefacts.TestClient.ArtefactsTestClient.GetLargeFilesWithDupeSize-------- 31/12/2015 5:42:03 PM Td=02:43:42.0510170
+

@@ -7,3 +7,12 @@ replace Serialize.Linq with another drop in library or code something adequate.
 	151114-1156
 	- May/may not prove useful to recall that Expression.ToString() was almost sufficient
 	  It only failed to support generic types
+	  
+151225-1525
+ArtefactTestClient test methods RecurseDirectory() GetLargeFilesWithDupeSize() seem to work
+	- Numeric values serializing over SS (and therefore into Mongo) as strings
+		- Must be due to JsConfig.TryParseNumericTypes or JsCOnfig.TryParsePrimitiveTypes
+	- All values should be persisted in Mongo as an expected appropriate type (e.g. numerics, dates, enums)
+		- Probably better suited to server-side queries (don't have to do a lot of expression conversions / visitors)
+		- How best to serialize/determine data types to server? If artefact.Data on server-side has desired types
+		  for data members they will mostly persist into Mongo the same way

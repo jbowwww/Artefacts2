@@ -76,9 +76,10 @@ namespace Artefacts.Service
 			Log.DebugFormat("ArtefactsHost.Start(\"{0}\")", serviceBaseUrl);
 			base.Start(serviceBaseUrl);
 			output.WriteLine("OK");
-			_appHostThread = new Thread(() => { Run(); }) { Priority = ThreadPriority.Lowest };	//.BelowNormal };
-			Log.DebugFormat("new Thread(() => ArtefactsHost.Run()) {{ Priority = {0} }}.Start()", _appHostThread.Priority);
-			_appHostThread.Start();
+			//_appHostThread = new Thread(() => { Run(); }) { Priority = ThreadPriority.Lowest };	//.BelowNormal };
+			//Run();
+			//Log.DebugFormat("new Thread(() => ArtefactsHost.Run()) {{ Priority = {0} }}.Start()", _appHostThread.Priority);
+			//_appHostThread.Start();
 		}
 
 		/// <summary>

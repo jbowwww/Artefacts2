@@ -46,7 +46,9 @@ public Gtk.TextBuffer HostTextBuffer {
 			if (_autoScrollHost && (DateTime.Now - _autoScrollMarkHost > TimeSpan.FromSeconds(1)))
 			{
 				_autoScrollMarkHost = DateTime.Now;
-				tvHost.ScrollToIter(args.Pos, 0, false, 0, 0);
+				TextIter pos = args.Pos;
+				pos.LineOffset = 0;
+				tvHost.ScrollToIter(pos, 0, false, 0, 0);
 			}
 		};
 		tvClient.Buffer.InsertText += (object o, InsertTextArgs args) => 
@@ -54,7 +56,9 @@ public Gtk.TextBuffer HostTextBuffer {
 			if (_autoScrollClient && (DateTime.Now - _autoScrollMarkClient > TimeSpan.FromSeconds(1)))
 			{
 				_autoScrollMarkClient = DateTime.Now;
-				tvClient.ScrollToIter(args.Pos, 0, false, 0, 0);
+				TextIter pos = args.Pos;
+				pos.LineOffset = 0;
+				tvClient.ScrollToIter(pos, 0, false, 0, 0);
 			}
 		};
 //		tvHost.InsertAtCursor += (object o, InsertAtCursorArgs args) =>
@@ -77,9 +81,6 @@ public Gtk.TextBuffer HostTextBuffer {
 	#region Event Handlers
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
 	{
-		Application.Quit();
-		
-		a.RetVal = true;
 	}
 	
 	protected void OnConfigureEvent(object sender, ConfigureEventArgs a)

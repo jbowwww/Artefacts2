@@ -12,6 +12,8 @@ using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
 using System.Linq;
 using System.Collections.Concurrent;
+using ServiceStack.Text;
+using MongoDB.Bson.Serialization;
 
 namespace Artefacts
 {
@@ -32,8 +34,8 @@ namespace Artefacts
 	/// Try all of the above, compare code readability / format suitability/readability / performance
 	/// </remarks>
 	[Route("/Artefacts/{Collection}/{Id}/", "POST,PUT")]
-	[DataContract]
-	public class Artefact : DynamicObject	//, IConvertibleToBsonDocument	//, IDictionary<string, object>
+//	[DataContract]
+	public class Artefact : DynamicObject, IReturn	//, IConvertibleToBsonDocument	//, IDictionary<string, object>
 	{
 		#region Static members
 		public static readonly ILogFactory LogFactory;
@@ -42,18 +44,23 @@ namespace Artefacts
 		
 		public class ArtefactTypedInstanceCache : ConcurrentDictionary<Type, object>
 		{
-			public string ArtefactId { get; internal set; }
+			public Artefact Artefact { get; internal set; }
 			
 			public T GetInstance<T>()
 			{
-				return (T)base.GetOrAdd(typeof(T), (type) => Activator.CreateInstance(type));
+				Type type = typeof(T);
+				if (base.ContainsKey(type))
+					return (T)base[type];
+				T instance = (T)Activator.CreateInstance(type);
+				base[type] = instance;
+				return instance;
 			}
 			
-			internal ArtefactTypedInstanceCache(string artefactId) : base(4, 4)
+			internal ArtefactTypedInstanceCache(Artefact artefact) : base(4, 4)
 			{
-				if (string.IsNullOrWhiteSpace(artefactId))
-					throw new ArgumentOutOfRangeException("artefactId", artefactId, "Cannot be null or whitespace");
-				ArtefactId = artefactId;
+				if (artefact == null)
+					throw new ArgumentNullException("artefact");
+				Artefact = artefact;
 			}
 		}
 		
@@ -78,15 +85,15 @@ namespace Artefacts
 				return artefact;
 			}
 
-			public ArtefactTypedInstanceCache GetTypedInstanceCache(string artefactId)
+			public ArtefactTypedInstanceCache GetTypedInstanceCache(Artefact artefact)
 			{
-				return (ArtefactTypedInstanceCache)InstancesFromArtefact.GetOrAdd(artefactId, (_artefactId) => new ArtefactTypedInstanceCache(_artefactId));
+				return (ArtefactTypedInstanceCache)InstancesFromArtefact.GetOrAdd(artefact.Id, (_artefactId) => new ArtefactTypedInstanceCache(artefact));
 			}
 			
 			public T GetInstance<T>(Artefact artefact)
 			{
 				T instance;
-				ArtefactTypedInstanceCache cache = GetTypedInstanceCache(artefact.Id);
+				ArtefactTypedInstanceCache cache = GetTypedInstanceCache(artefact);
 				return cache.GetInstance<T>();
 			}
 		}
@@ -100,6 +107,70 @@ namespace Artefacts
 		{
 			LogFactory = new StringBuilderLogFactory();
 			Log = Artefact.LogFactory.GetLogger(typeof(Artefact));
+		}
+		
+		/// <summary>
+		/// Configures service stack - serialisers etc
+		/// </summary>
+		public static void ConfigureServiceStack()
+		{
+			
+			MongoDB.Bson.IO.JsonWriterSettings _jsonSettings =
+				new MongoDB.Bson.IO.JsonWriterSettings()
+			{
+				OutputMode = MongoDB.Bson.IO.JsonOutputMode.Strict
+			};
+			MongoDB.Bson.Serialization.IBsonSerializationOptions _serializationOptions =
+				MongoDB.Bson.Serialization.Options.DictionarySerializationOptions.Document;
+			
+			JsConfig.ThrowOnDeserializationError = true;
+			//JsConfig<Artefact>.IncludeTypeInfo = true;
+			JsConfig.IncludeNullValues = false;
+			JsConfig.IncludeDefaultEnums = true;
+			JsConfig.TreatEnumAsInteger = true;
+			JsConfig.TryToParsePrimitiveTypeValues = true;
+			JsConfig.TryToParseNumericType = true;
+			JsConfig.ParsePrimitiveIntegerTypes =
+				ParseAsType.Byte | ParseAsType.Decimal |
+					ParseAsType.Single | ParseAsType.Double |
+					ParseAsType.Int32 | ParseAsType.Int64 |
+					ParseAsType.UInt32 | ParseAsType.UInt64;
+			JsConfig.ParsePrimitiveFloatingPointTypes =
+				ParseAsType.Single |
+				ParseAsType.Double |
+				ParseAsType.Decimal;
+
+			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJson<DataDictionary>(_serializationOptions, _jsonSettings);
+			JsConfig<Artefact>.DeSerializeFn = a => new Artefact(BsonSerializer.Deserialize<DataDictionary>(a));
+			
+//			JsConfig<DataDictionary>.SerializeFn = a => a.ToJson<DataDictionary>(_serializationOptions, _jsonSettings);
+//			JsConfig<DataDictionary>.DeSerializeFn = a => BsonSerializer.Deserialize<DataDictionary>(a);
+			//			
+//						JsConfig<DataDictionary>.SerializeFn = a => StringExtensions.ToJson(a).EncodeJson();
+//						JsConfig<DataDictionary>.DeSerializeFn = a => a.UrlDecode().FromJson<DataDictionary>();
+			//			JsConfig<BsonDocument>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson(b);
+			//			JsConfig<BsonDocument>.DeSerializeFn = b => BsonDocument.Parse(b);
+			//
+			//			JsConfig.TryToParsePrimitiveTypeValues = true;
+			//			JsConfig.TreatEnumAsInteger = true;
+			//JsConfig<Artefact>.IncludeTypeInfo = true;
+			//			JsConfig.TryToParseNumericType = true;
+			//
+			//			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJson<DataDictionary>(_serializationOptions, _jsonSettings);
+			//			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = BsonSerializer.Deserialize<DataDictionary>(a) };
+			//			JsConfig<BsonDocument>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson(b);
+			//			JsConfig<BsonDocument>.DeSerializeFn = b => BsonDocument.Parse(b);		
+			//			
+			// Old
+			//			JsConfig<Artefact>.SerializeFn = a => StringExtensions.ToJsv<DataDictionary>(a./*Persisted*/Data);	// a.Data.ToJson();	// TypeSerializer.SerializeToString<DataDictionary>(a.Data);	// a.Data.SerializeToString();
+			//			JsConfig<Artefact>.DeSerializeFn = a => new Artefact() { Data = a.FromJsv<DataDictionary>() };	// TypeSerializer.DeserializeFromString<DataDictionary>(a) };//.FromJson<DataDictionary>() };
+			//			JsConfig<BsonDocument>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson(b);
+			//			JsConfig<BsonDocument>.DeSerializeFn = b => BsonDocument.Parse(b);
+			//			JsConfig<QueryRequest>.SerializeFn = b => MongoDB.Bson.BsonExtensionMethods.ToJson<QueryRequest>(b);// b.ToJson();
+			//			JsConfig<QueryRequest>.DeSerializeFn = b => (QueryRequest)BsonDocument.Parse(b);
+
+			//			_artefactsClient = new ArtefactsClient(_serviceBaseUrl, _bufferWriter);
+			//			_bufferWriter.WriteLine("_artefactsClient: {0}", _artefactsClient);
 		}
 		
 		/// <summary>
@@ -158,10 +229,10 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the artefact's identifier.
 		/// </summary>
-		[BsonId, DataMember]
+//		[BsonId, DataMember]
 		public string Id {
-			get;// { return (string)Data["_id"]; }
-			set;// { Data["_id"] = value/*.ToString()*/; }
+			get { return (string)Data["_id"]; }
+			set { Data["_id"] = value/*.ToString()*/; }
 		}
 
 		/// <summary>
@@ -175,7 +246,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the server-side collection name
 		/// </summary>
-		[BsonIgnore, DataMember]
+//		[BsonIgnore, DataMember]
 		public string Collection {
 			get;// { return (string)this["_collection"]; }
 			set;// { this["_collection"] = value; }
@@ -184,8 +255,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets the <see cref="ArtefactState"/> of this artefact
 		/// </summary>
-		[BsonIgnore]
-		//, DataMember]
+//		[BsonIgnore]	//, DataMember]
 		public ArtefactState State {
 			get;
 			set;
@@ -194,8 +264,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time created.
         /// </summary>
-		[BsonIgnore]
-		//BsonElement("_timeCreated"), DataMember]
+//		[BsonIgnore]	//BsonElement("_timeCreated"), DataMember]
 		public DateTime TimeCreated {
 			get { return (DateTime/*.Parse((string*/)this["_timeCreated"]; }
 			set { this["_timeCreated"] = value/*.ToString()*/; }
@@ -204,7 +273,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time checked.
 		/// </summary>
-		[BsonIgnore]
+//		[BsonIgnore]
 		//BsonElement("_timeChecked"), BsonRepresentation(BsonType.String), DataMember]
 		public DateTime TimeChecked {
 			get { return (DateTime/*.Parse((string*/)this["_timeChecked"]; }
@@ -214,7 +283,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the time modified.
 		/// </summary>
-		[BsonIgnore]
+//		[BsonIgnore]
 		//BsonElement("_timeModified"), BsonRepresentation(BsonType.String), DataMember]
 		public DateTime TimeModified {
 			get { return (DateTime/*.Parse((string*/)this["_timeModified"]; }
@@ -224,7 +293,7 @@ namespace Artefacts
 		/// <summary>
 		/// Timestamp when last this <see cref="Artefact"/> was saved/sent to server
 		/// </summary>
-		[BsonIgnore]
+//		[BsonIgnore]
 		//BsonElement("_timeSaved"), BsonRepresentation(BsonType.String), DataMember]
 		public DateTime TimeSaved {
 			get { return (DateTime/*.Parse((string*/)this["_timeSaved"]; }
@@ -234,7 +303,7 @@ namespace Artefacts
 		/// <summary>
 		/// Gets or sets the artefact data.
 		/// </summary>
-		[BsonExtraElements, DataMember]
+		[BsonExtraElements]//, DataMember]
 		[DebuggerBrowsable(DebuggerBrowsableState.Collapsed)]
 		public DataDictionary Data {
 			get { return _artefactData ?? (_artefactData = new DataDictionary()); }
@@ -255,12 +324,9 @@ namespace Artefacts
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
-		public Artefact()
+		protected Artefact(DataDictionary data)
 		{
-			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
-			TimeSaved = DateTime.MinValue;
-			Id = ObjectId.GenerateNewId(TimeCreated).ToString();
-			State = ArtefactState.Unknown;
+			_artefactData = data;
 //			_instanceCache = new ArtefactTypedInstanceCache(Id);
 		}
 
@@ -268,8 +334,12 @@ namespace Artefacts
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
 		/// <param name="instance">Instance.</param>
-		public Artefact(object instance) : this()
+		public Artefact(object instance)
 		{
+			TimeChecked = TimeModified = TimeCreated = DateTime.Now;
+			TimeSaved = DateTime.MinValue;
+			State = ArtefactState.Unknown;
+			Id = ObjectId.GenerateNewId(TimeCreated).ToString();
 			State = ArtefactState.Created;
 //			_client = client;
 			if (instance == null)
@@ -321,7 +391,7 @@ namespace Artefacts
 			IEnumerable<MemberInfo> members = GetDataMembers(instanceType);
 			foreach (MemberInfo member in members)
 			{
-				object value = member.GetPropertyOrField(instance);
+				object value = member.GetValue(instance);	// .GetPropertyOrField(instance);
 //				Type valueType = value != null ? value.GetType() : typeof(object);
 				//				if (value != null && valueType.IsClass()
 				//				 &&	valueType != typeof(string)
@@ -331,7 +401,7 @@ namespace Artefacts
 				//				else
 				Data[member.Name] = value;
 			}
-			Artefact.Cache.GetTypedInstanceCache(Id)[instanceType] = instance;
+			Artefact.Cache.GetTypedInstanceCache(this)[instanceType] = instance;
 			Artefact.Cache.ArtefactFromInstance[instance] = this;
 			return this;
 //			return Data.Count;
@@ -366,9 +436,10 @@ namespace Artefacts
 								if (valueType == typeof(string))
 									value = Enum.Parse(memberType, (string)value, true);
 								else
-									throw new ArgumentOutOfRangeException("value", valueType,
-										"Could not convert value of type " + valueType.FullName +
-										" to Enum type " + memberType.FullName);
+									value = Enum.ToObject(memberType, value);
+//								throw new ArgumentOutOfRangeException("value", valueType,
+//									"Could not convert value of type " + valueType.FullName +
+//									" to Enum type " + memberType.FullName);
 							}
 							else if (memberType.IsNullableType())	// Not sure this is needed - I think a value type and its Nullable<> equiv are assignable
 								value = Activator.CreateInstance(memberType, new object[] { value });
@@ -379,6 +450,7 @@ namespace Artefacts
 					}
 				}
 			}
+			Artefact.Cache.ArtefactFromInstance[instance] = this;
 			return instance;
 		}
 		
@@ -487,7 +559,10 @@ namespace Artefacts
 		/// </remarks>
 		public override bool TryCreateInstance(CreateInstanceBinder binder, object[] args, out object result)
 		{
-			result = args.Length == 1 ? new Artefact(args[0]) : new Artefact();
+			if (args.Length == 1)
+				result = new Artefact(args[0]);
+			else
+				throw new InvalidOperationException("Artefact.TryCreateInstance(): args.Length=" + args.Length + " != 1");
 			return true;
 		}
 
