@@ -14,6 +14,7 @@ namespace Artefacts.FileSystem
 	/// </summary>
 	public class File : FileSystemEntry
 	{
+		#region Static members
 		protected static ILog Log = Artefact.Log;
 
 		/// <summary>
@@ -57,6 +58,7 @@ namespace Artefacts.FileSystem
 			while (Volatile.Read<Thread>(ref _crcThread) != null)
 				Thread.Sleep(77);
 		}
+		#endregion
 
 		private bool _crcQueued;
 		private readonly EventWaitHandle _crcWaitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
@@ -263,16 +265,34 @@ namespace Artefacts.FileSystem
 		}
 
 		/// <summary>
+		/// Waits the CR.
+		/// </summary>
+		/// <remarks>
+		/// Does not check that this file has been queued for CRC calculation - caller must ensure it is so
+		/// </remarks>
+		/// <returns><c>true</c> if waiting was required, <c>false</c> if not (CRC already calculated)</returns>
+		public bool WaitCRC()
+		{
+			if (!CRC.HasValue)
+			{
+				if (!CRCWaitHandle.WaitOne())
+					throw new InvalidOperationException("File.CRCWaitHandle.WaitOne() returned false");
+				return true;
+			}
+			return false;
+		}
+
+		/// <summary>
 		/// Queues the wait calculate CR.
 		/// </summary>
 		/// <returns>The CRC</returns>
 		public long QueueWaitCalculateCRC(bool recalculate = false)
 		{
 			QueueCalculateCRC(false);
-			if (CRCWaitHandle.WaitOne())
-				return CRC.Value;
-			else
-				throw new InvalidOperationException("File.CRCWaitHandle.WaitOne() returned false");
+			WaitCRC();
+			if (!CRC.HasValue)
+				throw new InvalidDataException("File.CRC does not have value");
+			return CRC.Value;
 		}
 
 		/// <summary>

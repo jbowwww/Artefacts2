@@ -75,7 +75,7 @@ namespace Artefacts.TestClient
 			bufferWriter.WriteLine();
 		}
 		
-		[Test]
+//		[Test]
 		public void RecurseDirectory()
 		{
 			int maxDepth = -1;	// max FS file depth
@@ -189,7 +189,7 @@ namespace Artefacts.TestClient
 									Volatile.Write(ref scanThreadActiveCount, Volatile.Read(ref scanThreadActiveCount) + 1);
 									try
 									{
-										bool isExpired = (DateTime.Now - threadDir.LastWriteTime) < TimeSpan.FromDays(1);
+										bool isExpired = (DateTime.Now - threadDir.LastWriteTime) < TimeSpan.FromDays(7);
 										_bufferWriter.WriteLine("Thread #" + num + " running on directory number " + count + " at " +
 											DateTime.Now.ToShortTimeString() + " " + threadDir.Path + ": " +
 											(isExpired ? "Expired" : "Current"));
@@ -245,48 +245,41 @@ namespace Artefacts.TestClient
 			_postThread.Join();
 			_bufferWriter.WriteLine("All threads finished at " + DateTime.Now + ", total time " + totalTime + ", " + mainCount + " directories traversed");
 		}
-		private ConcurrentBag<FileSystemEntry> _failedEntries = new ConcurrentBag<FileSystemEntry>();
-		
-//		[Test]
-		public void GetFiles()
-		{
-			QueryResults results = _client.Get<QueryResults>(QueryRequest.Make<File>(f => f.Path != null));
-			_bufferWriter.WriteLine("results = " + results);
-			foreach (Artefact artefact in results.Artefacts)
-				_bufferWriter.WriteLine("results.Artefacts[] = " + artefact);
-			_bufferWriter.WriteLine("Total results: " + results.Count);
-		}
-		
-//		[Test]
-		public void GetLargeFiles()
-		{
-			//QueryResults testResult = _artefactsClient.Get<File>(f => f.Size > (Int64) (100 * 1024 * 1024));
-			QueryRequest request = QueryRequest.Make<File>(f => (f.Size  > (100 * 1024  )));
-			QueryResults results = _client.Get<QueryResults>(request);
-			_bufferWriter.WriteLine("results = " + results);
-			foreach (Artefact artefact in results.Artefacts)
-				_bufferWriter.WriteLine("results.Artefacts[] = " + artefact);
-		}
 		
 		[Test]
 		public void GetLargeFilesWithDupeSize()
 		{
 			int maxPostRetries = 3;
+			int threadWaitTime = 333;
 			Dictionary<long, QueryResults> sizeGroups = new Dictionary<long, QueryResults>();	// file size keyed
 			Dictionary<long, QueryResults> dupeGroups = new Dictionary<long, QueryResults>();	// file CRC keyed
-			QueryRequest request = QueryRequest.Make<File>(f => (f.Size  > (16 * 1024 * 1024)));
+			QueryRequest request = QueryRequest.Make<File>(f => f.Path.StartsWith("/mnt/Trapdoor/media/mp3/") && (f.Size  > (16 * 1024 * 1024)));
 			QueryResults results = _client.Get<QueryResults>(request);
 			_bufferWriter.WriteLine(string.Format("{0} file results >= 16MB ", results.Count));
 			long i = 0;
 			long totalSize = 0;
-			foreach (Artefact artefact in results.Artefacts)
-			{
+		
+			ParallelLoopResult result = Parallel.ForEach(
+				results.Artefacts,
+				new ParallelOptions() {
+				MaxDegreeOfParallelism = 4
+			},
+				(artefact) => {
+//			foreach (Artefact artefact in results.Artefacts)
+//			{
 				long groupSize = 0;
 				File file = artefact.As<File>();
 				if (!sizeGroups.ContainsKey(file.Size))
 				{
 					QueryResults results2 = _client.Get<QueryResults>(QueryRequest.Make<File>(f => (f.Size == file.Size)));
-					sizeGroups.Add(file.Size, results2);
+					
+					using (new CriticalRegion())
+					{
+						if (sizeGroups.ContainsKey(file.Size))
+							return;
+						sizeGroups.Add(file.Size, results2);
+					}
+					
 					if (results2.Count > 1)
 					{
 						_bufferWriter.WriteLine(string.Format(
@@ -294,46 +287,56 @@ namespace Artefacts.TestClient
 							i++, File.FormatSize(file.Size), results2.Count));
 						IEnumerable<File> files = results2.Artefacts.Select(a => a.As<File>());
 						files.Each(f => {
-							f.QueueCalculateCRC(true); });
+							if (!f.CRC.HasValue || f.CRC.Value == 0)
+								f.QueueCalculateCRC(true);
+						});
 						foreach (File file2 in files)
 						{
-							file2.CRCWaitHandle.WaitOne();
+							bool calculatedCRC = file2.WaitCRC();
 							long crc = file2.CRC.Value;
+							
 							if (!dupeGroups.ContainsKey(crc))
 								dupeGroups.Add(crc, new QueryResults(new Artefact[] { Artefact.Cache.GetArtefact(file2) }));	//new Artefact[] { artefact2 }));
 							else
 								dupeGroups[crc].Add(Artefact.Cache.GetArtefact(file2));
-							int j;
-							for (j = 0; j < maxPostRetries; j++)
+							
+							if (calculatedCRC)
 							{
-								try
+								int j;
+								for (j = 0; j < maxPostRetries; j++)
 								{
-									_client.Put(Artefact.Cache.GetArtefact(file2));
-									break;
+									try
+									{
+										_client.Put(Artefact.Cache.GetArtefact(file2));
+										break;
+									}
+									catch (System.Net.WebException ex)
+									{
+										Log.ErrorFormat(" ! ERROR: {0}: Retry attempt #{1} of {2}\n", ex.GetType().FullName, j + 1, maxPostRetries);
+										Thread.Sleep(500);
+										continue;
+									}
 								}
-								catch (System.Net.WebException ex)
+								if (j == maxPostRetries)
 								{
-									Log.ErrorFormat(" ! ERROR: {0}: Retry attempt #{1} of {2}\n", ex.GetType().FullName, j + 1, maxPostRetries);
-									Thread.Sleep(500);
-									continue;
+									_bufferWriter.WriteLine("Failed to PUT 3 times for file \"" + file2.Path + "\" !!");
 								}
 							}
-							if (j == maxPostRetries)
-							{
-								_bufferWriter.WriteLine("Failed to PUT 3 times for file \"" + file2.Path + "\" !!");
-							}
-							_bufferWriter.WriteLine("    " + file2.CRC.Value.ToHex().PadLeft(26) + "    " + file2.Path);
+							_bufferWriter.WriteLine("    " + file2.CRC.Value.ToHex().PadLeft(26) + (calculatedCRC ? "*" : "") + "    " + File.FormatSize(file2.Size) + "    " + file2.Path);
 							groupSize += file2.Size;
 						}
 						_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group\n");	// results2.Artefacts.Sum(a => a.As<File>().Size)
 						totalSize += groupSize;
 					}
-
-					else
-						Thread.Sleep(150);
-//					_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in all groups\n");
 				}
-			}
+			});
+			
+			if (!result.IsCompleted)
+				_bufferWriter.WriteLine("Parallel.Foreach() not complete... waiting");
+			while (!result.IsCompleted)
+				Thread.Sleep(threadWaitTime);
+			_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in all groups\n");
+			
 			totalSize = 0;
 			foreach (KeyValuePair<long, QueryResults> qrPair in dupeGroups)
 			{
@@ -353,7 +356,13 @@ namespace Artefacts.TestClient
 					}
 					_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group");
 					totalSize += groupSize;
-//					new DupeProcessWindow(qr.Artefacts.Select<Artefact,File>(a => a.As<File>())).Show();
+					Gtk.Application.Invoke(
+						(sender, e) => {
+							DupeProcessWindow _dupeWin = new DupeProcessWindow(qr.Artefacts.Select<Artefact,File>(a => a.As<File>()));
+							_dupeWin.Show();
+						});
+//					_win.Add(_dupeWin);
+					
 				}
 			}
 			int totalUsedGroups = dupeGroups.Count(pair => pair.Value.Count > 1);
@@ -473,6 +482,30 @@ namespace Artefacts.TestClient
 //			}
 //		}
 		//		[Test]
+		
+		
+		//		[Test]
+		public void GetFiles()
+		{
+			QueryResults results = _client.Get<QueryResults>(QueryRequest.Make<File>(f => f.Path != null));
+			_bufferWriter.WriteLine("results = " + results);
+			foreach (Artefact artefact in results.Artefacts)
+				_bufferWriter.WriteLine("results.Artefacts[] = " + artefact);
+			_bufferWriter.WriteLine("Total results: " + results.Count);
+		}
+
+		//		[Test]
+		public void GetLargeFiles()
+		{
+			//QueryResults testResult = _artefactsClient.Get<File>(f => f.Size > (Int64) (100 * 1024 * 1024));
+			QueryRequest request = QueryRequest.Make<File>(f => (f.Size  > (100 * 1024  )));
+			QueryResults results = _client.Get<QueryResults>(request);
+			_bufferWriter.WriteLine("results = " + results);
+			foreach (Artefact artefact in results.Artefacts)
+				_bufferWriter.WriteLine("results.Artefacts[] = " + artefact);
+		}
+		
+		
 		public void PutArtefact()
 		{
 			DoClientPut(_artefact, "_artefact");

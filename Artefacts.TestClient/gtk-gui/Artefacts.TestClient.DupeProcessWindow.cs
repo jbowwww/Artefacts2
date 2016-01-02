@@ -15,11 +15,10 @@ namespace Artefacts.TestClient
 		private global::Gtk.Action SelectNoneAction;
 		private global::Gtk.Action InvertSelectionAction;
 		private global::Gtk.VBox vbox1;
-		private global::Gtk.MenuBar menubar1;
 		private global::Gtk.HBox hbox1;
-		private global::Gtk.Label label1;
-		private global::Gtk.Entry txtFilename;
-		private global::Gtk.IconView viewDupes;
+		private global::Gtk.ScrolledWindow GtkScrolledWindow;
+		private global::Gtk.TreeView viewDupes;
+		private global::Gtk.TextView txtSelectionInfo;
 
 		protected virtual void Build ()
 		{
@@ -64,50 +63,33 @@ namespace Artefacts.TestClient
 			this.vbox1.Name = "vbox1";
 			this.vbox1.Spacing = 6;
 			// Container child vbox1.Gtk.Box+BoxChild
-			this.UIManager.AddUiFromString ("<ui><menubar name='menubar1'><menu name='FileSystemAction' action='FileSystemAction'><menuitem name='saveAction' action='saveAction'/></menu><menu name='DupeListAction' action='DupeListAction'><menuitem name='SelectAllAction' action='SelectAllAction'/><menuitem name='SelectNoneAction' action='SelectNoneAction'/><menuitem name='InvertSelectionAction' action='InvertSelectionAction'/></menu></menubar></ui>");
-			this.menubar1 = ((global::Gtk.MenuBar)(this.UIManager.GetWidget ("/menubar1")));
-			this.menubar1.Name = "menubar1";
-			this.vbox1.Add (this.menubar1);
-			global::Gtk.Box.BoxChild w2 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.menubar1]));
-			w2.Position = 0;
-			w2.Expand = false;
-			w2.Fill = false;
-			// Container child vbox1.Gtk.Box+BoxChild
 			this.hbox1 = new global::Gtk.HBox ();
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
-			this.label1 = new global::Gtk.Label ();
-			this.label1.Name = "label1";
-			this.label1.LabelProp = global::Mono.Unix.Catalog.GetString ("File name:");
-			this.hbox1.Add (this.label1);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.label1]));
-			w3.Position = 0;
-			w3.Expand = false;
-			w3.Fill = false;
-			// Container child hbox1.Gtk.Box+BoxChild
-			this.txtFilename = new global::Gtk.Entry ();
-			this.txtFilename.CanFocus = true;
-			this.txtFilename.Name = "txtFilename";
-			this.txtFilename.IsEditable = false;
-			this.txtFilename.InvisibleChar = '●';
-			this.hbox1.Add (this.txtFilename);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.txtFilename]));
-			w4.Position = 1;
-			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
-			w5.Position = 1;
-			w5.Expand = false;
-			w5.Fill = false;
-			// Container child vbox1.Gtk.Box+BoxChild
-			this.viewDupes = new global::Gtk.IconView ();
+			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
+			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
+			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
+			// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
+			this.viewDupes = new global::Gtk.TreeView ();
 			this.viewDupes.CanFocus = true;
 			this.viewDupes.Name = "viewDupes";
-			this.viewDupes.Columns = 2;
-			this.viewDupes.Reorderable = true;
-			this.vbox1.Add (this.viewDupes);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.viewDupes]));
-			w6.Position = 2;
+			this.GtkScrolledWindow.Add (this.viewDupes);
+			this.hbox1.Add (this.GtkScrolledWindow);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.GtkScrolledWindow]));
+			w3.Position = 0;
+			this.vbox1.Add (this.hbox1);
+			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
+			w4.Position = 0;
+			// Container child vbox1.Gtk.Box+BoxChild
+			this.txtSelectionInfo = new global::Gtk.TextView ();
+			this.txtSelectionInfo.CanFocus = true;
+			this.txtSelectionInfo.Name = "txtSelectionInfo";
+			this.txtSelectionInfo.Editable = false;
+			this.txtSelectionInfo.CursorVisible = false;
+			this.vbox1.Add (this.txtSelectionInfo);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.txtSelectionInfo]));
+			w5.Position = 1;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();

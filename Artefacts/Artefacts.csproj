@@ -41,6 +41,7 @@
     <Compile Include="IDebugTimerTarget.cs" />
     <Compile Include="Extensions\Thread.cs" />
     <Compile Include="Extensions\int.cs" />
+    <Compile Include="CriticalRegion.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Extensions\Expression.cs" />

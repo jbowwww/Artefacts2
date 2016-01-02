@@ -105,8 +105,6 @@
     <Compile Include="ArtefactsTestClient.cs" />
     <Compile Include="DupeProcessWindow.cs" />
     <Compile Include="gtk-gui\Artefacts.TestClient.DupeProcessWindow.cs" />
-    <Compile Include="DupeFileItem.cs" />
-    <Compile Include="gtk-gui\Artefacts.TestClient.DupeFileItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

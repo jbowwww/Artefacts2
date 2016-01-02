@@ -198,153 +198,42 @@
         <property name="MemberName" />
         <property name="Spacing">6</property>
         <child>
-          <widget class="Gtk.MenuBar" id="menubar1">
-            <property name="MemberName" />
-            <node name="menubar1" type="Menubar">
-              <node type="Menu" action="FileSystemAction">
-                <node type="Menuitem" action="saveAction" />
-              </node>
-              <node type="Menu" action="DupeListAction">
-                <node type="Menuitem" action="SelectAllAction" />
-                <node type="Menuitem" action="SelectNoneAction" />
-                <node type="Menuitem" action="InvertSelectionAction" />
-              </node>
-            </node>
-          </widget>
-          <packing>
-            <property name="Position">0</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
           <widget class="Gtk.HBox" id="hbox1">
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.Label" id="label1">
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">File name:</property>
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TreeView" id="viewDupes">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                  </widget>
+                </child>
               </widget>
               <packing>
                 <property name="Position">0</property>
                 <property name="AutoSize">True</property>
-                <property name="Expand">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
-            <child>
-              <widget class="Gtk.Entry" id="txtFilename">
-                <property name="MemberName" />
-                <property name="CanFocus">True</property>
-                <property name="IsEditable">False</property>
-                <property name="InvisibleChar">●</property>
-              </widget>
-              <packing>
-                <property name="Position">1</property>
-                <property name="AutoSize">True</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.IconView" id="viewDupes">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Columns">2</property>
-            <property name="Reorderable">True</property>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-          </packing>
-        </child>
-      </widget>
-    </child>
-  </widget>
-  <widget class="Gtk.Bin" id="Artefacts.TestClient.DupeFileItem" design-size="813 300">
-    <action-group name="Default">
-      <action id="floppyAction">
-        <property name="Type">Action</property>
-        <property name="Label" translatable="yes" />
-        <property name="StockId">gtk-floppy</property>
-      </action>
-      <action id="applyAction">
-        <property name="Type">Toggle</property>
-        <property name="Label" translatable="yes" />
-        <property name="StockId">gtk-apply</property>
-        <property name="DrawAsRadio">False</property>
-        <property name="Active">False</property>
-      </action>
-    </action-group>
-    <property name="MemberName" />
-    <property name="Visible">False</property>
-    <child>
-      <widget class="Gtk.HBox" id="hbox1">
-        <property name="MemberName" />
-        <property name="Spacing">6</property>
-        <child>
-          <widget class="Gtk.Button" id="btnDupeKeep">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-apply</property>
-            <property name="label">gtk-apply</property>
           </widget>
           <packing>
             <property name="Position">0</property>
             <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
           </packing>
         </child>
         <child>
-          <widget class="Gtk.CheckButton" id="chkDupeSelect">
+          <widget class="Gtk.TextView" id="txtSelectionInfo">
             <property name="MemberName" />
             <property name="CanFocus">True</property>
-            <property name="Label" translatable="yes">checkbutton3</property>
-            <property name="DrawIndicator">True</property>
-            <property name="HasLabel">True</property>
-            <property name="UseUnderline">True</property>
+            <property name="Editable">False</property>
+            <property name="CursorVisible">False</property>
+            <property name="Text" translatable="yes" />
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="AutoSize">True</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Button" id="btnDupeOpenFolder">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="UseStock">True</property>
-            <property name="Type">StockItem</property>
-            <property name="StockId">gtk-open</property>
-            <property name="label">gtk-open</property>
-          </widget>
-          <packing>
-            <property name="Position">2</property>
-            <property name="AutoSize">True</property>
-            <property name="Expand">False</property>
-            <property name="Fill">False</property>
-          </packing>
-        </child>
-        <child>
-          <widget class="Gtk.Entry" id="txtDupePath">
-            <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="IsEditable">False</property>
-            <property name="InvisibleChar">●</property>
-          </widget>
-          <packing>
-            <property name="Position">3</property>
             <property name="AutoSize">True</property>
           </packing>
         </child>

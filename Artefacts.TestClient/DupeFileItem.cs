@@ -13,7 +13,7 @@ namespace Artefacts.TestClient
 			set { chkDupeSelect.Active = value; }
 		}
 		
-		public string Path {
+		public string new Path {
 			get { return txtDupePath.Text; }
 			set { txtDupePath.Text = value; }
 		}
