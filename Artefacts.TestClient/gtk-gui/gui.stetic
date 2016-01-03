@@ -64,10 +64,48 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.Toolbar" id="toolbar1">
+          <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
-            <property name="ShowArrow">False</property>
-            <node name="toolbar1" type="Toolbar" />
+            <property name="Homogeneous">True</property>
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.FileChooserButton" id="btnTrashDefaultChooser">
+                <property name="MemberName" />
+                <property name="Title" translatable="yes">Select Trash Folder</property>
+                <property name="Action">SelectFolder</property>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Button" id="btnStartMain">
+                <property name="MemberName" />
+                <property name="CanFocus">True</property>
+                <property name="Type">TextOnly</property>
+                <property name="Label" translatable="yes">Start</property>
+                <property name="UseUnderline">True</property>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="label2">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">label2</property>
+              </widget>
+              <packing>
+                <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="Position">1</property>
@@ -135,7 +173,7 @@
       </widget>
     </child>
   </widget>
-  <widget class="Gtk.Window" id="Artefacts.TestClient.DupeProcessWindow" design-size="661 448">
+  <widget class="Gtk.Window" id="Artefacts.TestClient.DupeProcessWindow" design-size="1096 406">
     <action-group name="Default">
       <action id="DupesAction">
         <property name="Type">Action</property>
@@ -210,6 +248,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="ShowScrollbars">True</property>
+                    <signal name="SelectCursorRow" handler="OnViewDupesSelectCursorRow" />
                   </widget>
                 </child>
               </widget>
@@ -225,16 +264,78 @@
           </packing>
         </child>
         <child>
-          <widget class="Gtk.TextView" id="txtSelectionInfo">
+          <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
-            <property name="CanFocus">True</property>
-            <property name="Editable">False</property>
-            <property name="CursorVisible">False</property>
-            <property name="Text" translatable="yes" />
+            <property name="HeightRequest">128</property>
+            <property name="Spacing">6</property>
+            <child>
+              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow1">
+                <property name="MemberName" />
+                <property name="ShadowType">In</property>
+                <child>
+                  <widget class="Gtk.TextView" id="txtSelectionSummary">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="ShowScrollbars">True</property>
+                    <property name="Text" translatable="yes" />
+                  </widget>
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">0</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.VBox" id="vbox2">
+                <property name="MemberName" />
+                <property name="WidthRequest">132</property>
+                <property name="Spacing">6</property>
+                <child>
+                  <widget class="Gtk.Button" id="btnMoveTrash">
+                    <property name="MemberName" />
+                    <property name="CanFocus">True</property>
+                    <property name="Type">TextOnly</property>
+                    <property name="Label" translatable="yes">GtkButton</property>
+                    <property name="UseUnderline">True</property>
+                    <signal name="Clicked" handler="OnBtnMoveTrashClicked" />
+                  </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.FileChooserButton" id="btnChooseTrashDir">
+                    <property name="MemberName" />
+                    <property name="Title" translatable="yes">Select Trash Folder</property>
+                    <property name="Action">SelectFolder</property>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder />
+                </child>
+              </widget>
+              <packing>
+                <property name="Position">1</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
           </widget>
           <packing>
             <property name="Position">1</property>
-            <property name="AutoSize">True</property>
+            <property name="AutoSize">False</property>
+            <property name="Expand">False</property>
           </packing>
         </child>
       </widget>

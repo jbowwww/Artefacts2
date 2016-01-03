@@ -4,12 +4,15 @@ using Artefacts;
 using Artefacts.Service;
 using System.Threading;
 using ServiceStack.Logging;
+using System.Configuration;
 
 namespace Artefacts.TestClient
 {
 	class MainClass
 	{
 		public static readonly ILog Log;
+		
+		public static ConfigurationSettings Settings { get; private set; }
 		
 		public static string serviceBaseUrl = "http://localhost:8888/Artefacts/";
 		
@@ -32,6 +35,7 @@ namespace Artefacts.TestClient
 		static MainClass()
 		{
 			Log = new ConsoleLogger(typeof(MainClass));	// DebugLogger(typeof(MainClass));// Artefact.LogFactory.GetLogger(typeof(MainClass));
+//			ConfigurationManager.AppSettings;
 		}
 		
 		/// <summary>
@@ -76,16 +80,17 @@ namespace Artefacts.TestClient
 					{
 //						win.DeleteEvent += (o, a1) => { Host.Release(); };
 
-						Thread.Sleep(1111);
+//						Thread.Sleep(1111);
 	//					Host.Start(serviceBaseUrl);
+					win.OnBtnStartClicked += (object sender, EventArgs e) => 
+					{
 								clientThread = new Thread(() => {
 									try
 									{
 										using (ArtefactsTestClient Client = new ArtefactsTestClient(serviceBaseUrl, ClientWriter, win))
 										{
 											Client.Run();
-									
-			
+											
 										}
 									}
 									catch (Exception ex)
@@ -99,8 +104,8 @@ namespace Artefacts.TestClient
 									}
 								});
 								clientThread.Start();
-					
-					Thread.Sleep(888);
+					};
+//					Thread.Sleep(888);
 					Log.Debug("Application.Run()");
 					Application.Run();
 				}

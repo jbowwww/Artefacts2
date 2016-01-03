@@ -10,6 +10,7 @@ using System.Collections.Generic;
 //using ServiceStack;
 using System.Net;
 //using ServiceStack.Text;
+using System.Configuration;
 
 /// <summary>
 /// Main window.
@@ -35,12 +36,24 @@ public Gtk.TextBuffer HostTextBuffer {
 			return tvClient.Buffer;
 		}
 	}
+	
+	public event EventHandler OnBtnStartClicked {
+		add { btnStartMain.Clicked += value; }
+		remove { btnStartMain.Clicked -= value; }
+	}
+	
+	public string DefaultTrashFolder {
+		get { return btnTrashDefaultChooser.Filename; }
+	}
 	#endregion
 	
 	#region Construction & Disposal
 	public MainWindow() : base (Gtk.WindowType.Toplevel)
 	{
 		Build();
+		
+		btnTrashDefaultChooser.SetFilename(ConfigurationManager.AppSettings["defaultTrashPath"]);
+		
 		tvHost.Buffer.InsertText += (object o, InsertTextArgs args) => 
 		{
 			if (_autoScrollHost && (DateTime.Now - _autoScrollMarkHost > TimeSpan.FromSeconds(1)))
@@ -81,6 +94,11 @@ public Gtk.TextBuffer HostTextBuffer {
 	#region Event Handlers
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
 	{
+		if (System.IO.Directory.Exists(btnTrashDefaultChooser.Filename))
+		{
+//			ConfigurationManager.AppSettings["defaultTrashPath"] = btnTrashDefaultChooser.Filename;
+			
+		}
 	}
 	
 	protected void OnConfigureEvent(object sender, ConfigureEventArgs a)

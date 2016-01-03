@@ -75,7 +75,7 @@ namespace Artefacts.TestClient
 			bufferWriter.WriteLine();
 		}
 		
-//		[Test]
+		[Test]
 		public void RecurseDirectory()
 		{
 			int maxDepth = -1;	// max FS file depth
@@ -358,7 +358,9 @@ namespace Artefacts.TestClient
 					totalSize += groupSize;
 					Gtk.Application.Invoke(
 						(sender, e) => {
-							DupeProcessWindow _dupeWin = new DupeProcessWindow(qr.Artefacts.Select<Artefact,File>(a => a.As<File>()));
+							DupeProcessWindow _dupeWin = new DupeProcessWindow(
+								qr.Artefacts.Select<Artefact,File>(a => a.As<File>()),
+								_win.DefaultTrashFolder, _bufferWriter);
 							_dupeWin.Show();
 						});
 //					_win.Add(_dupeWin);

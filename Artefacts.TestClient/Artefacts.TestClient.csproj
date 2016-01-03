@@ -90,6 +90,7 @@
     <Reference Include="ServiceStack">
       <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.dll</HintPath>
     </Reference>
+    <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -120,5 +121,8 @@
       <Project>{55514DDE-1ED4-4C4F-B99B-9AB9EF2D2E56}</Project>
       <Name>Artefacts</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
 </Project>
