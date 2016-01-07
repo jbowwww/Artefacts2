@@ -15,44 +15,29 @@ namespace Artefacts.Service
 //
 //	public class ClientQueryVisitor<TArtefact> : ExpressionVisitor where TArtefact : Artefact
 	
-	public class ClientQueryVisitor : ExpressionVisitor
+	public class ClientQueryVisitor<T> : ExpressionVisitor
 	{
-		public static ClientQueryVisitor Singleton {
-			get;
-			private set;
-		}
-		
-		static ClientQueryVisitor()
-		{
-			if (Singleton != null)
-				throw new InvalidProgramException("ClientQueryVisitor.Singleton is not null in static constructor");
-			Singleton = new ClientQueryVisitor();
-		}
+		static readonly Type _enumerableStaticType = typeof(System.Linq.Enumerable);
+		static readonly Type _queryableStaticType = typeof(System.Linq.Queryable);
+		static readonly Type _queryResultType = typeof(QueryResults);
+		static readonly Type _artefactType = typeof(Artefact);
+		readonly Type _queryableType = typeof(IQueryable<T>);
+		readonly Type _enumerableType = typeof(IEnumerable<T>);
+		readonly Type _elementType = typeof(T);
 		
 		const BindingFlags bf =
 			BindingFlags.GetField | BindingFlags.GetProperty |
 			BindingFlags.Instance | BindingFlags.Static |
 			BindingFlags.Public | BindingFlags.NonPublic;
 		
-//		protected override Expression VisitConstant(ConstantExpression c)
-//		{
-//			if (c.Type.IsLargeInteger())
-//				return Expression.Convert(Expression.Constant(c.Value, c.Type), c.Type);
-//			return base.VisitConstant(c);
-//		}
-
-//		protected override Expression VisitBinary(BinaryExpression b)
-//		{
-////			return b;
-//			return base.VisitBinary(b);
-//		}
-		
-//		protected override Expression VisitConstant(ConstantExpression c)
-//		{
-////			return c;
-////			return Expression.Convert(c, c.Type);
-//			return Expression.Constant(c.Value, c.Value == null ? typeof(object) : c.Value.GetType());// base.VisitConstant(c);
-//		}
+		protected override Expression VisitParameter(ParameterExpression p)
+		{
+			if (p.Name == "collection" && p.Type == typeof(IQueryable<T>))
+				return Expression.Parameter(typeof(IQueryable<Artefact>), "collection");
+			else if (p.Type == typeof(T))
+				return Expression.Parameter(typeof(Artefact), p.Name);
+			return p;
+		}
 		
 		protected override Expression VisitMemberAccess(MemberExpression m)
 		{
@@ -72,33 +57,12 @@ namespace Artefacts.Service
 				
 				// If is a member of Artefact which doesn't actually exist in type, it must be a dynamic property. Convert
 				// the member expression to a indexer expression to return the dynamic property (ie artefact[m.Member.Name])
-//				else if (mExpression.Type == typeof(Artefact) && !typeof(Artefact).GetMembers(bf).Select(mi => mi.Name).Contains(m.Member.Name))
-//				{
-//					return Expression.MakeIndex(
-//						mExpression,
-//						typeof(Artefact).GetProperty("Item", typeof(object), new Type[] { typeof(string) }),
-//						new Expression[] { Expression.Constant(m.Member.Name) });
-//				}
-				
-				// Gets unknown parameter exception - must have to change the local var definition in the lambda as well I guess (too hard? other/better ways?)
-//				else if (mExpression.NodeType == ExpressionType.Parameter)
-//				{
-////					return Expression.Property(
-//////						.MakeMemberAccess(
-////						Expression.Parameter(typeof(Artefact)), m.Member.Name);
-////					return Expression.MakeIndex(
-////						mExpression,
-////						typeof(Artefact).GetProperty("Item", typeof(object), new Type[] { typeof(string) }),
-//					//						new Expression[] { Expression.Constant(m.Member.Name) });
-//					return Expression.Convert(
-//						Expression.Call(
-//						Expression.Parameter(
-//							typeof(Artefact),
-//							((ParameterExpression)mExpression).Name),
-//							typeof(Artefact).GetMethod("GetMember"),
-//							new Expression[] { Expression.Constant(m.Member.Name) 
-//					}), m.Member.GetMemberReturnType());
-//				}
+				else if (mExpression.Type == typeof(Artefact) && !typeof(Artefact).GetMembers(bf).Select(mi => mi.Name).Contains(m.Member.Name))
+				{
+					return Expression.Convert(
+						Expression.Call(mExpression, "GetDataMember", new Type[] {}, Expression.Constant(m.Member.Name)),
+						m.Member.GetMemberReturnType());
+				}
 			}
 			
 			// default
@@ -120,7 +84,7 @@ namespace Artefacts.Service
 		protected override Expression VisitMethodCall(MethodCallExpression m)
 		{
 			Expression mObject = Visit(m.Object);
-			ReadOnlyCollection<Expression> mArguments = VisitExpressionList(m.Arguments);			
+			IEnumerable<Expression> mArguments = VisitExpressionList(m.Arguments);			
 			MethodInfo mi = m.Method;
 			ParameterInfo[] pi = mi.GetParameters();
 			
@@ -131,28 +95,32 @@ namespace Artefacts.Service
 				return Expression.Constant(m.Method.Invoke((mObject as ConstantExpression).Value,
 					mArguments.Cast<ConstantExpression>().Select<ConstantExpression, object>((ce) => ce.Value).ToArray()));
 
-//			else if (pi.Length > 0 && (typeof(IEnumerable).IsAssignableFrom(pi[0].GetType()) || typeof(IQueryable).IsAssignableFrom(pi[0].GetType()))
-//				&& mi.ReturnType.GetElementType() == null)
-//			{
-//				object id = Repository.QueryPreload(Visit(m.Arguments[0]).ToBinary());
-//				int[] result = null;
-//				if (mi.Name.Equals("First") || mi.Name.Equals("FirstOrDefault")
-//				 || mi.Name.Equals("Single") || mi.Name.Equals("SingleOrDefault"))
-//					result = Repository.QueryResults(id, 0, 1);
-//				else if (mi.Name.Equals("Last") || mi.Name.Equals("LastOrDefault"))
-//					result = Repository.QueryResults(id, m.Arguments.Count() - 1, 1);
-//
-//				// TODO: ElementAt()
-//				Artefact artefact =
-//					result != null && result.Length > 0 ?
-//						Repository.GetById(result[0]) :
-//						(Artefact)Activator.CreateInstance(m.Arguments[0].Type.GetElementType());
-//				return Expression.Constant(artefact);
-//			}
+			// If is a member of Artefact which doesn't actually exist in type, it must be a dynamic property. Convert
+			// the member expression to a indexer expression to return the dynamic property (ie artefact[m.Member.Name])
+			else if (//mObject.Type == typeof(IEnumerable<Artefact>)
+			         mArguments.Count() > 0 && typeof(IEnumerable<Artefact>).IsAssignableFrom(mArguments.ElementAt(0).Type)
+			 && 	(m.Method.DeclaringType == _enumerableStaticType
+			      || m.Method.DeclaringType == _queryableStaticType))
+			{
+				if (m.Method.IsGenericMethod)
+				{
+					Type[] genericArgs = m.Method.GetGenericArguments();
+					for (int i = 0; i < genericArgs.Length; i++)
+						if (genericArgs[i] == _elementType)
+							genericArgs[i] = _artefactType;
+					return Expression.Call(
+						mObject,
+						m.Method.GetGenericMethodDefinition().MakeGenericMethod(genericArgs),
+						mArguments);
+				}
+				return Expression.Call(mObject, m.Method, mArguments);
+			}
 			
 			// default
 			return base.VisitMethodCall(m);
 		}
+		
+		
 		
 		protected override Expression VisitNewArray(NewArrayExpression na)
 		{
@@ -168,6 +136,15 @@ namespace Artefacts.Service
 			
 			// default
 			return base.VisitNewArray(na);
+		}
+		
+//		protected override ReadOnlyCollection<Expression> VisitExpressionList(ReadOnlyCollection<Expression> original)
+//		{
+//			return new ReadOnlyCollection<Expression>(original.Select(e => e.Type == _elementType ? _artefactType : e.Type).ToList());
+//		}
+		protected override Expression VisitLambda(LambdaExpression lambda)
+		{
+			return Expression.Lambda(lambda.Body, VisitExpressionList(lambda.Parameters));
 		}
 	}
 }

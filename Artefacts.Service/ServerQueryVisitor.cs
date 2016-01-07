@@ -9,23 +9,13 @@ namespace Artefacts.Service
 {
 	public class ServerQueryVisitor : ExpressionVisitor
 	{
-		public static ServerQueryVisitor Singleton {
-			get;
-			private set;
-		}
-
-		static ServerQueryVisitor()
-		{
-			if (Singleton != null)
-				throw new InvalidProgramException("ServerQueryVisitor.Singleton is not null in static constructor");
-			Singleton = new ServerQueryVisitor();
-		}
-
 		const BindingFlags bf =
 			BindingFlags.GetField | BindingFlags.GetProperty |
 				BindingFlags.Instance | BindingFlags.Static |
 				BindingFlags.Public | BindingFlags.NonPublic;
 
+		public IQueryable<Artefact> Collection { get; set; }
+		
 		/// <summary>
 		/// Visits the method call.
 		/// </summary>
@@ -47,7 +37,7 @@ namespace Artefacts.Service
 
 			// If method call is on a constant instance and all arguments are constants too,
 			// invoke method and replace with constant expression of method's return value
-			if (mObject != null && mObject.Type == typeof(Artefact) && mArguments.Count == 1)
+			if (mObject != null && mObject.Type != typeof(BsonDocument) && mArguments.Count == 1)
 				return Expression.MakeIndex(
 					Expression.Parameter(typeof(BsonDocument), ((ParameterExpression)mObject).Name),
 					typeof(BsonDocument).GetProperty("Item", new Type[] { typeof(string) }),
@@ -55,6 +45,13 @@ namespace Artefacts.Service
 			
 			// default
 			return base.VisitMethodCall(m);
+		}
+		
+		protected override Expression VisitParameter(ParameterExpression p)
+		{
+			if (p.Name == "collection" && p.Type.GetGenericTypeDefinition() == typeof(IQueryable<>))
+				return Expression.Constant(Collection);
+			return base.VisitParameter(p);
 		}
 	}
 }

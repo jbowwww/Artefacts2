@@ -11,6 +11,8 @@ using MongoDB.Driver.Builders;
 using ServiceStack;
 using ServiceStack.Logging;
 using MongoDB.Bson.Serialization;
+using MongoDB.Driver.Linq;
+using System.Linq.Expressions;
 
 namespace Artefacts.Service
 {
@@ -53,7 +55,7 @@ namespace Artefacts.Service
 		private MongoClientSettings _mClientSettings;
 		private MongoDatabase _mDb;
 		private MongoCollection<Artefact> _mcArtefacts;
-		private ExpressionVisitor _visitor;
+		private ServerQueryVisitor _visitor;
 		public Dictionary<string, Artefact> _artefactCache;
 		private MongoDB.Bson.IO.JsonWriterSettings _jsonSettings =
 			new MongoDB.Bson.IO.JsonWriterSettings()
@@ -65,7 +67,10 @@ namespace Artefacts.Service
 		#endregion
 		
 		#region Properties
-		public ExpressionVisitor Visitor {
+		/// <summary>
+		/// Gets the visitor.
+		/// </summary>
+		public ServerQueryVisitor Visitor {
 			get { return _visitor ?? (_visitor = new ServerQueryVisitor()); }
 		}
 		
@@ -168,46 +173,46 @@ namespace Artefacts.Service
 		/// <param name="query">Query.</param>
 		public QueryResults Get(QueryRequest query)
 		{
-//			try {
-//				using (new DebugTimer(this, &TotalTimeGet))
-//				{
-					Log.Debug("HTTP GET: " + query);
-					_output.WriteLine("HTTP GET: " + query);
-	//				_output.WriteLine("{0}: {1}", query.Predicate.GetType(), ExpressionPrettyPrinter.PrettyPrint(query.Predicate));
-	//				Type elementType = query.Predicate.Parameters[0].Type;
-	//				Type queryType = typeof(Query<>).MakeGenericType(elementType);
-	//				MethodInfo whereMethod = queryType.GetMethod("Where");
-	//				LambdaExpression predicate = (LambdaExpression)Visitor.Visit(query.Predicate);
-	//				IMongoQuery mongoQuery = (IMongoQuery)whereMethod.Invoke(null, new object[] { predicate });
-			MongoCollection<BsonDocument/*Artefact*/> _mcQueryCollection = _mDb.GetCollection<BsonDocument>(query.CollectionName);	// elementType.Name);
-			MongoCursor<Artefact> mongoQueryResult = _mcQueryCollection.FindAs<Artefact>(query.Query);
-			Log.Debug("_mcArtefacts.FindAs<Artefact>(query): " + mongoQueryResult);
-			_output.WriteLine("_mcArtefacts.FindAs<Artefact>(query): " + mongoQueryResult);
-//					List<Artefact> results = mongoQueryResult.ToList();
-//				result != null ? result.ToList() : new List<Artefact>();
-//						((IEnumerable<Artefact>)result).ToList() :
-//						new List<Artefact>();
-//					QueryResults r = new QueryResults(results);
-			QueryResults queryResult = new QueryResults();//mongoQueryResult);
-			foreach (Artefact artefact/*Data*/ in mongoQueryResult)
+			Log.Debug("HTTP GET: " + query);
+			_output.WriteLine("HTTP GET: " + query);
+			
+			MongoCursor<Artefact> mongoQueryResult = null;
+			object result = null;
+			IMongoQuery mq = null;
+			MongoCollection<Artefact> _mcQueryCollection = _mDb.GetCollection<Artefact>(query.CollectionName);
+			QueryResults queryResult = new QueryResults();
+			
+			if (query.DataFormat == "Query")
 			{
-//				string artefactId = artefactData["_id"].AsString;
-//				DataDictionary data = new DataDictionary(artefactData.ToDictionary());
-//				Artefact artefact = new Artefact(data);		//new DataDictionary(artefactData));
-				ArtefactCache[artefact.Id] = artefact;
-				queryResult.Artefacts.Add(artefact);
+				mq = query.Query;
+				mongoQueryResult = _mcQueryCollection.FindAs<Artefact>(mq);
+				Log.Debug("_mcArtefacts.FindAs<Artefact>(query): " + mongoQueryResult);
+				_output.WriteLine("_mcArtefacts.FindAs<Artefact>(query): " + mongoQueryResult);
+				foreach (Artefact artefact in mongoQueryResult)
+				{
+					ArtefactCache[artefact.Id] = artefact;
+					queryResult.Artefacts.Add(artefact);
+				}
 			}
-					Log.Debug("new QueryResults(): " + queryResult);
-					_output.WriteLine("new QueryResults(): " + queryResult);
-					return queryResult;
-//				}
-//			}
-//			catch (Exception ex)
-//			{
-//				Log.Error(ex);
-//				_output.WriteLine(ex.ToString());
-//				throw;
-//			}
+			
+			else if (query.DataFormat == "Expression")
+			{
+				MongoQueryProvider provider = new MongoQueryProvider(_mcQueryCollection);
+				Visitor.Collection = _mcQueryCollection.AsQueryable();
+				Expression visitedExpression = Visitor.Visit(query.Expression);
+				Log.Debug("Translated expression: " + visitedExpression);
+				_output.WriteLine("Translated expression: " + visitedExpression);
+				result = provider.Execute(visitedExpression);
+				foreach (Artefact artefact in (IEnumerable<Artefact>)result)
+				{
+					ArtefactCache[artefact.Id] = artefact;
+					queryResult.Artefacts.Add(artefact);
+				}
+			}
+			
+			Log.Debug("new QueryResults(): " + queryResult);
+			_output.WriteLine("new QueryResults(): " + queryResult);
+			return queryResult;
 		}
 		
 		/// <summary>
@@ -228,7 +233,7 @@ namespace Artefacts.Service
 				_output.WriteLine(ex.ToString());
 				throw;
 			}
-			return null;
+			//return null;
 		}
 		
 		/// <summary>

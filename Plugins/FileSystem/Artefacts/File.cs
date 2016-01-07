@@ -36,7 +36,7 @@ namespace Artefacts.FileSystem
 		}
 	
 		private static bool _CRCCancelThread = false;
-		private static int _crcBufferLongCount = 131072;
+		private static int _crcBufferLongCount = 1048576;		// number of long's to read at a time
 		private static readonly ConcurrentQueue<File> _crcQueue = new ConcurrentQueue<File>();
 		private static Thread _crcThread;
 		private static ThreadStart _crcThreadFunc = File.CRCThreadFunc;
@@ -58,6 +58,9 @@ namespace Artefacts.FileSystem
 			while (Volatile.Read<Thread>(ref _crcThread) != null)
 				Thread.Sleep(77);
 		}
+		public static int CRCQueueCount {
+			get { return _crcQueue.Count; }
+		}
 		#endregion
 
 		private bool _crcQueued;
@@ -77,6 +80,10 @@ namespace Artefacts.FileSystem
 			get;
 			set;
 		}
+
+		public bool HasCRC { get { return CRC != 0 && CRC.HasValue && CRC.Value != 0; } }
+
+		public bool IsCRCQueued { get { return _crcQueued; } }
 
 		/// <summary>
 		/// Gets the name.
@@ -181,22 +188,21 @@ namespace Artefacts.FileSystem
 		/// <summary>
 		/// Calculates the CR.
 		/// </summary>
-		public long CalculateCRC()
+		public long? CalculateCRC()
 		{
-			CRC = new long?();
 			long finalCRC = long.MaxValue;
 			try
 			{
+				Task readTask = null;
 				using (FileStream f = new System.IO.FileStream(Path, FileMode.Open, FileAccess.Read, FileShare.Read, sizeof(long) * _crcBufferLongCount, true))
 				       //.Open(Path, FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
 					int fLength = (int)f.Length;
-					Task readTask;
 					EventWaitHandle waitRead = new EventWaitHandle(false, EventResetMode.ManualReset);
 					while (fLength > 0)
 					{
 						if (File._CRCCancelThread)
-							return 0;
+							return null;		// finally block at end should still signal wait handle (??)
 						byte[] fileBytes = new byte[sizeof(long) * _crcBufferLongCount];
 						waitRead.Reset();
 //						int c;
@@ -228,6 +234,9 @@ namespace Artefacts.FileSystem
 						waitRead.WaitOne();
 					}
 				}
+				if (readTask != null)
+					readTask.Wait();
+				CRC = finalCRC;
 			}
 			catch (IOException ex)
 			{
@@ -236,10 +245,11 @@ namespace Artefacts.FileSystem
 			}
 			finally
 			{
-				CRC = finalCRC;
+				//CRC = finalCRC;
 				CRCWaitHandle.Set();
+				Volatile.Write(ref _crcQueued, false);
 			}
-			return CRC.Value;
+			return CRC;
 		}
 
 		/// <summary>
@@ -252,15 +262,17 @@ namespace Artefacts.FileSystem
 				if (CRC.HasValue && !recalculate)
 					CRCWaitHandle.Set();
 				else if (!Volatile.Read(ref _crcQueued))
+				{
+					Volatile.Write(ref _crcQueued, true);
+					CRC = new long?();
+					_crcQueue.Enqueue(this);
+					CRCWaitHandle.Reset();
+					if (Volatile.Read<Thread>(ref _crcThread) == null)
 					{
-						Volatile.Write(ref _crcQueued, true);
-						_crcQueue.Enqueue(this);
-						if (Volatile.Read<Thread>(ref _crcThread) == null)
-						{
-							Volatile.Write<Thread>(ref _crcThread, new Thread(_crcThreadFunc));
-							Volatile.Read<Thread>(ref _crcThread).Start();
-						}
+					Volatile.Write<Thread>(ref _crcThread, new Thread(_crcThreadFunc) { Priority = ThreadPriority.AboveNormal });
+						Volatile.Read<Thread>(ref _crcThread).Start();
 					}
+				}
 			}
 		}
 
@@ -270,29 +282,40 @@ namespace Artefacts.FileSystem
 		/// <remarks>
 		/// Does not check that this file has been queued for CRC calculation - caller must ensure it is so
 		/// </remarks>
-		/// <returns><c>true</c> if waiting was required, <c>false</c> if not (CRC already calculated)</returns>
+		/// <returns><c>true</c> if CRC has a value set, <c>false</c> if not</returns>
 		public bool WaitCRC()
 		{
 			if (!CRC.HasValue)
 			{
 				if (!CRCWaitHandle.WaitOne())
 					throw new InvalidOperationException("File.CRCWaitHandle.WaitOne() returned false");
-				return true;
+				return CRC.HasValue;
 			}
-			return false;
+			return true;
 		}
 
 		/// <summary>
 		/// Queues the wait calculate CR.
 		/// </summary>
 		/// <returns>The CRC</returns>
-		public long QueueWaitCalculateCRC(bool recalculate = false)
+		public long? QueueWaitCalculateCRC(bool recalculate = false)
 		{
 			QueueCalculateCRC(false);
 			WaitCRC();
-			if (!CRC.HasValue)
-				throw new InvalidDataException("File.CRC does not have value");
-			return CRC.Value;
+			return CRC;
+//			if (!CRC.HasValue)
+//				throw new InvalidDataException("File.CRC does not have value");
+//			return CRC.Value;
+		}
+
+		/// <summary>
+		/// Convenience override of System.IO.File/Directory.Exists()
+		/// Considered making it a property but then it's messy to get the artefacts system to ignore it
+		/// Actually could also replace 'Deleted' member as it performs the same purpose ... decisions??
+		/// </summary>
+		public override bool Exists()
+		{
+			return System.IO.File.Exists(Path);
 		}
 
 		/// <summary>
@@ -305,6 +328,11 @@ namespace Artefacts.FileSystem
 		{
 			return typeof(File).IsAssignableFrom(obj.GetType())
 				&& Size == ((File)obj).Size  && base.InnerEquals(obj);
+		}
+
+		public override string ToString()
+		{
+			return string.Format("[File: Path={8}, Size={0}, CRCWaitHandle={1}, CRC={2}, HasCRC={3}, IsCRCQueued={4}, Name={5}, NameWithoutExtension={6}, Extension={7}]", Size, CRCWaitHandle, CRC, HasCRC, IsCRCQueued, Name, NameWithoutExtension, Extension, Path);
 		}
 		#endregion
 	}

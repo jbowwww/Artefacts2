@@ -16,8 +16,11 @@ namespace Artefacts.TestClient
 		private global::Gtk.Action InvertSelectionAction;
 		private global::Gtk.VBox vbox1;
 		private global::Gtk.HBox hbox1;
+		private global::Gtk.HBox hbox3;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow;
 		private global::Gtk.TreeView viewDupes;
+		private global::Gtk.VButtonBox vbuttonbox1;
+		private global::Gtk.Button btnDupeGroupDismiss;
 		private global::Gtk.HBox hbox2;
 		private global::Gtk.ScrolledWindow GtkScrolledWindow1;
 		private global::Gtk.TextView txtSelectionSummary;
@@ -72,6 +75,10 @@ namespace Artefacts.TestClient
 			this.hbox1.Name = "hbox1";
 			this.hbox1.Spacing = 6;
 			// Container child hbox1.Gtk.Box+BoxChild
+			this.hbox3 = new global::Gtk.HBox ();
+			this.hbox3.Name = "hbox3";
+			this.hbox3.Spacing = 6;
+			// Container child hbox3.Gtk.Box+BoxChild
 			this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 			this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 			this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
@@ -80,12 +87,33 @@ namespace Artefacts.TestClient
 			this.viewDupes.CanFocus = true;
 			this.viewDupes.Name = "viewDupes";
 			this.GtkScrolledWindow.Add (this.viewDupes);
-			this.hbox1.Add (this.GtkScrolledWindow);
-			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.GtkScrolledWindow]));
+			this.hbox3.Add (this.GtkScrolledWindow);
+			global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.GtkScrolledWindow]));
 			w3.Position = 0;
+			// Container child hbox3.Gtk.Box+BoxChild
+			this.vbuttonbox1 = new global::Gtk.VButtonBox ();
+			this.vbuttonbox1.Name = "vbuttonbox1";
+			// Container child vbuttonbox1.Gtk.ButtonBox+ButtonBoxChild
+			this.btnDupeGroupDismiss = new global::Gtk.Button ();
+			this.btnDupeGroupDismiss.CanFocus = true;
+			this.btnDupeGroupDismiss.Name = "btnDupeGroupDismiss";
+			this.btnDupeGroupDismiss.UseUnderline = true;
+			this.btnDupeGroupDismiss.Label = global::Mono.Unix.Catalog.GetString ("Dismiss");
+			this.vbuttonbox1.Add (this.btnDupeGroupDismiss);
+			global::Gtk.ButtonBox.ButtonBoxChild w4 = ((global::Gtk.ButtonBox.ButtonBoxChild)(this.vbuttonbox1 [this.btnDupeGroupDismiss]));
+			w4.Expand = false;
+			w4.Fill = false;
+			this.hbox3.Add (this.vbuttonbox1);
+			global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox3 [this.vbuttonbox1]));
+			w5.Position = 1;
+			w5.Expand = false;
+			w5.Fill = false;
+			this.hbox1.Add (this.hbox3);
+			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox1 [this.hbox3]));
+			w6.Position = 0;
 			this.vbox1.Add (this.hbox1);
-			global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
-			w4.Position = 0;
+			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox1]));
+			w7.Position = 0;
 			// Container child vbox1.Gtk.Box+BoxChild
 			this.hbox2 = new global::Gtk.HBox ();
 			this.hbox2.HeightRequest = 128;
@@ -101,8 +129,8 @@ namespace Artefacts.TestClient
 			this.txtSelectionSummary.Name = "txtSelectionSummary";
 			this.GtkScrolledWindow1.Add (this.txtSelectionSummary);
 			this.hbox2.Add (this.GtkScrolledWindow1);
-			global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.GtkScrolledWindow1]));
-			w6.Position = 0;
+			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.GtkScrolledWindow1]));
+			w9.Position = 0;
 			// Container child hbox2.Gtk.Box+BoxChild
 			this.vbox2 = new global::Gtk.VBox ();
 			this.vbox2.WidthRequest = 132;
@@ -113,29 +141,29 @@ namespace Artefacts.TestClient
 			this.btnMoveTrash.CanFocus = true;
 			this.btnMoveTrash.Name = "btnMoveTrash";
 			this.btnMoveTrash.UseUnderline = true;
-			this.btnMoveTrash.Label = global::Mono.Unix.Catalog.GetString ("GtkButton");
+			this.btnMoveTrash.Label = global::Mono.Unix.Catalog.GetString ("To Trash");
 			this.vbox2.Add (this.btnMoveTrash);
-			global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.btnMoveTrash]));
-			w7.Position = 0;
-			w7.Expand = false;
-			w7.Fill = false;
+			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.btnMoveTrash]));
+			w10.Position = 0;
+			w10.Expand = false;
+			w10.Fill = false;
 			// Container child vbox2.Gtk.Box+BoxChild
 			this.btnChooseTrashDir = new global::Gtk.FileChooserButton (global::Mono.Unix.Catalog.GetString ("Select Trash Folder"), ((global::Gtk.FileChooserAction)(2)));
 			this.btnChooseTrashDir.Name = "btnChooseTrashDir";
 			this.vbox2.Add (this.btnChooseTrashDir);
-			global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.btnChooseTrashDir]));
-			w8.Position = 1;
-			w8.Expand = false;
-			w8.Fill = false;
+			global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox2 [this.btnChooseTrashDir]));
+			w11.Position = 1;
+			w11.Expand = false;
+			w11.Fill = false;
 			this.hbox2.Add (this.vbox2);
-			global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox2]));
-			w9.Position = 1;
-			w9.Expand = false;
-			w9.Fill = false;
+			global::Gtk.Box.BoxChild w12 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.vbox2]));
+			w12.Position = 1;
+			w12.Expand = false;
+			w12.Fill = false;
 			this.vbox1.Add (this.hbox2);
-			global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
-			w10.Position = 1;
-			w10.Expand = false;
+			global::Gtk.Box.BoxChild w13 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
+			w13.Position = 1;
+			w13.Expand = false;
 			this.Add (this.vbox1);
 			if ((this.Child != null)) {
 				this.Child.ShowAll ();
@@ -148,6 +176,7 @@ namespace Artefacts.TestClient
 			this.SelectNoneAction.Activated += new global::System.EventHandler (this.OnSelectNoneActionActivated);
 			this.InvertSelectionAction.Activated += new global::System.EventHandler (this.OnInvertSelectionActionActivated);
 			this.viewDupes.SelectCursorRow += new global::Gtk.SelectCursorRowHandler (this.OnViewDupesSelectCursorRow);
+			this.btnDupeGroupDismiss.Clicked += new global::System.EventHandler (this.OnBtnDupeGroupDismissClicked);
 			this.btnMoveTrash.Clicked += new global::System.EventHandler (this.OnBtnMoveTrashClicked);
 		}
 	}

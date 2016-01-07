@@ -6,11 +6,15 @@ using ServiceStack;
 using MongoDB.Driver.Builders;
 using MongoDB.Driver;
 using MongoDB.Bson;
+using Serialize.Linq.Nodes;
+using Serialize.Linq;
+using Serialize.Linq.Extensions;
+using Serialize.Linq.Serializers;
 
 namespace Artefacts.Service
 {
 	[DataContract]
-	[Route("/{CollectionName}/Query/{QueryData}/", "GET")]
+	[Route("/Artefacts/{CollectionName}/{DataFormat}/{QueryData}/", "GET")]
 	public class QueryRequest : IReturn<QueryResults>
 	{
 		#region Static members
@@ -19,23 +23,26 @@ namespace Artefacts.Service
 		/// </summary>
 		public static ExpressionVisitor Visitor { get; set; }
 		
+		public static ExpressionSerializer Serializer { get; set; }
+		
 		static QueryRequest()
 		{
-			Visitor = new ClientQueryVisitor();
+			//Visitor = new ClientQueryVisitor<T>();
+			Serializer = new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer());
 		}
 
 		public static QueryRequest Make<T>(Expression<Func<T, bool>> predicate)
 		{
 			return new QueryRequest(
 				Artefact.MakeSafeCollectionName(typeof(T).FullName),
-				Query<T>.Where((Expression<Func<T, bool>>)Visitor.Visit(predicate)));
+				Query<T>.Where((Expression<Func<T, bool>>) new ClientQueryVisitor<T>().Visit(predicate)));
 		}
 
 		public static QueryRequest Make<T>(string collectionName, Expression<Func<T, bool>> predicate)
 		{
 			return new QueryRequest(
 				Artefact.MakeSafeCollectionName(collectionName),
-				Query<T>.Where((Expression<Func<T, bool>>)Visitor.Visit(predicate)));
+				Query<T>.Where((Expression<Func<T, bool>>) new ClientQueryVisitor<T>().Visit(predicate)));
 		}
 		#endregion
 
@@ -52,6 +59,12 @@ namespace Artefacts.Service
 			set;	// { Query = new QueryDocument(BsonDocument.Parse(value.UrlDecode())); }
 		}
 		
+		[DataMember(Order = 3)]
+		public string DataFormat {
+			get;
+			set;
+		}
+		
 		public QueryDocument Query {
 			get
 			{
@@ -60,30 +73,61 @@ namespace Artefacts.Service
 						BsonDocument.Parse(
 							QueryData.UrlDecode())
 					));
+				
 			}
 			set
 			{
 				QueryData = (_query = value) == null ? 
 					string.Empty
 				:	_query.ToString().UrlEncode();
+				DataFormat = "Query";
 			}
 		}
 		private QueryDocument _query;
+		
+		public Expression Expression {
+			get
+			{
+				if (_expression != null)
+					return _expression;
+				ExpressionNode node = QueryData.UrlDecode().FromJson<ExpressionNode>();
+				_expression = node.ToExpression();
+				return _expression;
+				//Serializer.DeserializeText(QueryData));
+			}
+			set
+			{
+				ExpressionNode node = (_expression = value).ToExpressionNode();
+				QueryData = ServiceStack.StringExtensions.ToJson<ExpressionNode>(node).UrlEncode();
+				DataFormat = "Expression";
+			}
+		}
+		private Expression _expression;
 		#endregion
 
 		public QueryRequest(string collectionName, IMongoQuery query)
 		{
-			if (string.IsNullOrEmpty(collectionName))
-				throw new ArgumentNullException("collectionName");
+			if (collectionName.IsNullOrSpace())
+				throw new ArgumentOutOfRangeException("collectionName", collectionName, "collectionName is NULL or whitespace");
 			if (query == null)
 				throw new ArgumentNullException("query");
 			CollectionName = collectionName;
 			Query = (QueryDocument)query;
 		}
 		
+		public QueryRequest(string collectionName, Expression expression)
+		{
+			if (collectionName.IsNullOrSpace())
+				throw new ArgumentOutOfRangeException("collectionName", collectionName, "collectionName is NULL or whitespace");
+			if (expression == null)
+				throw new ArgumentNullException("expression");
+			CollectionName = collectionName;
+			Expression = expression;
+		}
+		
 		public override string ToString()
 		{
-			return string.Format("[QueryRequest: CollectionName={0}, Query={1}]", CollectionName, Query);
+			return string.Format("[QueryRequest: CollectionName={0} DataFormat={1} QueryData={2}]", CollectionName, DataFormat, QueryData);
 		}
 	}
 	

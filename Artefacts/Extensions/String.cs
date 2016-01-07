@@ -96,6 +96,21 @@ namespace Artefacts
 		{
 			return text.ToUpper().CompareTo(compare.ToUpper());
 		}
+		
+		public static bool IsNullOrEmpty(this string text)
+		{
+			return System.String.IsNullOrEmpty(text);
+		}
+		
+		/// <summary>
+		/// Determines if is null or space the specified text.
+		/// </summary>
+		/// <returns><c>true</c> if is null or space the specified text; otherwise, <c>false</c>.</returns>
+		/// <param name="text">Text.</param>
+		public static bool IsNullOrSpace(this string text)
+		{
+			return System.String.IsNullOrWhiteSpace(text);
+		}
 	}
 }
 

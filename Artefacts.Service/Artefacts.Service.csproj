@@ -74,6 +74,12 @@
       <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="ServiceStack.Client">
+      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Serialize.Linq">
+      <HintPath>..\..\..\..\Resources\CS\Serialize.Linq\src\Serialize.Linq\bin\Debug\Serialize.Linq.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -89,6 +95,7 @@
     <Compile Include="TestClientBase.cs" />
     <Compile Include="ServerQueryVisitor.cs" />
     <Compile Include="Extensions\IServiceClient.cs" />
+    <Compile Include="ArtefactCollection.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

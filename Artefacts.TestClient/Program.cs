@@ -24,6 +24,7 @@ namespace Artefacts.TestClient
 		
 		public static void Quit()
 		{
+			Artefacts.FileSystem.File.CRCAbortThread();
 			Volatile.Write(ref _quit, true);
 		}
 		
@@ -65,8 +66,8 @@ namespace Artefacts.TestClient
 					if (clientThread != null && clientThread.IsAlive)
 						clientThread.Abort();
 
-					Artefacts.FileSystem.File.CRCAbortThread(true);
-					ClientWriter.WriteLine("Artefacts.FileSystem.File CRC Thread cancelled!");
+//					Artefacts.FileSystem.File.CRCAbortThread(true);
+//					ClientWriter.WriteLine("Artefacts.FileSystem.File CRC Thread cancelled!");
 					
 					MainClass.Quit();
 					Thread.Sleep(111);
@@ -107,7 +108,7 @@ namespace Artefacts.TestClient
 					};
 //					Thread.Sleep(888);
 					Log.Debug("Application.Run()");
-					Application.Run();
+ 					Application.Run();
 				}
 				//}).Start();
 				

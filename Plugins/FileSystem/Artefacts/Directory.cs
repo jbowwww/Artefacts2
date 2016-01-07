@@ -76,7 +76,10 @@ namespace Artefacts.FileSystem
 		#endregion
 
 		#region Implementation
-
+		public override bool Exists()
+		{
+			return System.IO.Directory.Exists(Path);
+		}
 		#endregion
 		#endregion
 	}

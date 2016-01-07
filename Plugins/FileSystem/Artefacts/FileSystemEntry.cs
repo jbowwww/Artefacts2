@@ -8,7 +8,7 @@ namespace Artefacts.FileSystem
 	/// <summary>
 	/// File system entry.
 	/// </summary>
-	public class FileSystemEntry
+	public abstract class FileSystemEntry
 	{
 		#region Private fields
 		/// <summary>
@@ -38,6 +38,35 @@ namespace Artefacts.FileSystem
 		/// The path.
 		/// </summary>
 		public string Path { get; set; }
+
+		/// <summary>
+		/// Gets or sets the depth of the path (i.e. number of '/' or '\\')
+		/// </summary>
+		/// <value>The path depth.</value>
+		public int? PathDepth {
+			get
+			{
+				return Path.Count(c => c == '/' || c == '\\');
+			}
+			set
+			{
+				// ?? Haven't figured best way to approach this sort of thing
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets the deleted.
+		/// </summary>
+		public bool? Deleted {
+			get
+			{
+				return !this.Exists();
+			}
+			set
+			{
+				// ??
+			}
+		}
 
 		/// <summary>
 		/// The drive.
@@ -170,6 +199,15 @@ namespace Artefacts.FileSystem
 			Drive = Drive.All.FromPath(Path);
 			Directory = null;//(Directory)Directory.All.FromPath(Path);
 		}
+
+		/// <summary>
+		/// Convenience override of System.IO.File/Directory.Exists()
+		/// Considered making it a property but then it's messy to get the artefacts system to ignore it
+		/// Actually could also replace 'Deleted' member as it performs the same purpose ... decisions??
+		/// Actually that's what I'm gonna do, for now at least it cleans up the test client code a bit
+		/// which may be a hint that it's the way to go
+		/// </summary>
+		public abstract bool Exists();
 		#endregion
 		#endregion
 	}

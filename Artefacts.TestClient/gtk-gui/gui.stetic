@@ -66,17 +66,18 @@
         <child>
           <widget class="Gtk.HBox" id="hbox2">
             <property name="MemberName" />
-            <property name="Homogeneous">True</property>
             <property name="Spacing">6</property>
             <child>
               <widget class="Gtk.FileChooserButton" id="btnTrashDefaultChooser">
                 <property name="MemberName" />
+                <property name="WidthRequest">340</property>
                 <property name="Title" translatable="yes">Select Trash Folder</property>
                 <property name="Action">SelectFolder</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
-                <property name="AutoSize">True</property>
+                <property name="AutoSize">False</property>
+                <property name="Expand">False</property>
               </packing>
             </child>
             <child>
@@ -92,15 +93,53 @@
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
+                <property name="Padding">20</property>
               </packing>
             </child>
             <child>
-              <widget class="Gtk.Label" id="label2">
+              <widget class="Gtk.Fixed" id="fixed1">
                 <property name="MemberName" />
-                <property name="LabelProp" translatable="yes">label2</property>
+                <property name="HasWindow">False</property>
               </widget>
               <packing>
                 <property name="Position">2</property>
+                <property name="AutoSize">True</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="txtPostQueue">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Post Queue: 0</property>
+              </widget>
+              <packing>
+                <property name="Position">3</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+                <property name="Padding">20</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="txtDirectoryQueue">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Directory Queue: 0</property>
+              </widget>
+              <packing>
+                <property name="Position">4</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+                <property name="Padding">20</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="Gtk.Label" id="txtCRCQueue">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">CRC Queue: 0</property>
+              </widget>
+              <packing>
+                <property name="PackType">End</property>
+                <property name="Position">5</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -240,16 +279,52 @@
             <property name="MemberName" />
             <property name="Spacing">6</property>
             <child>
-              <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
+              <widget class="Gtk.HBox" id="hbox3">
                 <property name="MemberName" />
-                <property name="ShadowType">In</property>
+                <property name="Spacing">6</property>
                 <child>
-                  <widget class="Gtk.TreeView" id="viewDupes">
+                  <widget class="Gtk.ScrolledWindow" id="GtkScrolledWindow">
                     <property name="MemberName" />
-                    <property name="CanFocus">True</property>
-                    <property name="ShowScrollbars">True</property>
-                    <signal name="SelectCursorRow" handler="OnViewDupesSelectCursorRow" />
+                    <property name="ShadowType">In</property>
+                    <child>
+                      <widget class="Gtk.TreeView" id="viewDupes">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="ShowScrollbars">True</property>
+                        <signal name="SelectCursorRow" handler="OnViewDupesSelectCursorRow" />
+                      </widget>
+                    </child>
                   </widget>
+                  <packing>
+                    <property name="Position">0</property>
+                    <property name="AutoSize">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="Gtk.VButtonBox" id="vbuttonbox1">
+                    <property name="MemberName" />
+                    <property name="Size">1</property>
+                    <child>
+                      <widget class="Gtk.Button" id="btnDupeGroupDismiss">
+                        <property name="MemberName" />
+                        <property name="CanFocus">True</property>
+                        <property name="Type">TextOnly</property>
+                        <property name="Label" translatable="yes">Dismiss</property>
+                        <property name="UseUnderline">True</property>
+                        <signal name="Clicked" handler="OnBtnDupeGroupDismissClicked" />
+                      </widget>
+                      <packing>
+                        <property name="Expand">False</property>
+                        <property name="Fill">False</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="Position">1</property>
+                    <property name="AutoSize">True</property>
+                    <property name="Expand">False</property>
+                    <property name="Fill">False</property>
+                  </packing>
                 </child>
               </widget>
               <packing>
@@ -296,7 +371,7 @@
                     <property name="MemberName" />
                     <property name="CanFocus">True</property>
                     <property name="Type">TextOnly</property>
-                    <property name="Label" translatable="yes">GtkButton</property>
+                    <property name="Label" translatable="yes">To Trash</property>
                     <property name="UseUnderline">True</property>
                     <signal name="Clicked" handler="OnBtnMoveTrashClicked" />
                   </widget>

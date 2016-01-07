@@ -14,6 +14,9 @@ namespace Artefacts.TestClient
 	
 		private readonly TextBufferWriter _debug;
 		
+		private IList<IList<File>> _fileDupeGroups;
+		private int _fileDupeGroupIndex = 0;
+		
 		private Gtk.TreeStore _model;
 	
 		enum Column {
@@ -28,14 +31,15 @@ namespace Artefacts.TestClient
 			Modified
 		};
 		
-		public DupeProcessWindow(IEnumerable<File> dupeFiles, string trashFolder, TextBufferWriter debug) : 
+		public DupeProcessWindow(IList<IList<File>> dupeFiles, string trashFolder, TextBufferWriter debug) : 
 				base(Gtk.WindowType.Toplevel)
 		{
 			_debug = debug;
+			_fileDupeGroups = dupeFiles;
 			this.Build();
 			
 			btnChooseTrashDir.SetFilename(trashFolder ?? ConfigurationManager.AppSettings["defaultTrashPath"]);
-			PopulateModel(dupeFiles);
+			PopulateModel(dupeFiles[0]);
 			PopulateColumns();
 			
 			ShowAll();
@@ -237,6 +241,12 @@ namespace Artefacts.TestClient
 				}
 //				}
 //			}
+		}
+
+		protected void OnBtnDupeGroupDismissClicked(object sender, EventArgs e)
+		{
+			PopulateModel(_fileDupeGroups[_fileDupeGroupIndex++]);
+			ShowAll();
 		}
 
 	}

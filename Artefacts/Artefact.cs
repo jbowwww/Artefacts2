@@ -105,7 +105,7 @@ namespace Artefacts
 		/// </summary>
 		static Artefact()
 		{
-			LogFactory = new StringBuilderLogFactory();
+			LogFactory = new ConsoleLogFactory();
 			Log = Artefact.LogFactory.GetLogger(typeof(Artefact));
 		}
 		
@@ -464,7 +464,7 @@ namespace Artefacts
 			StringBuilder sb = new StringBuilder("[Artefact:");
 			IEnumerable<KeyValuePair<string, object>> combinedData = Data;
 			foreach (KeyValuePair<string, object> field in combinedData)
-				sb.AppendFormat(" {0}={1}", field.Key, field.Value);
+				sb.AppendFormat(" {0}={1}", field.Key, field.Value ?? "(null)");
 			return sb.Append("]").ToString();
 		}
 

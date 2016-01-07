@@ -5,6 +5,7 @@ using GLib;
 using Gtk.DotNet;
 //using System.Threading;
 //using System;
+using System;
 
 namespace Artefacts
 {
@@ -75,33 +76,26 @@ namespace Artefacts
 		
 		public override void Write(string value)
 		{
-			//			Thread.BeginCriticalRegion();
-//			_textBuffer.BeginUserAction();
-				Gtk.Application.Invoke(delegate {
+			string timeStamp = string.Concat(DateTime.Now.ToShortTimeString(), " ");
+			value = string.Concat(timeStamp, value.Replace("\n", string.Concat("\n", timeStamp)));
+			Gtk.Application.Invoke(delegate {
 				lock (_sync)
 				{
 					TextIter iter = _textBuffer.EndIter;
 					_textBuffer.Insert(ref iter, value);
 				}
-				});
-//			_textBuffer.EndUserAction();
-//				Thread.EndCriticalRegion();
+			});
 		}
 		
 		public override void WriteLine()
 		{
-			
-//			Thread.BeginCriticalRegion();
-//			_textBuffer.BeginUserAction();
-				Gtk.Application.Invoke(delegate {
+			Gtk.Application.Invoke(delegate {
 				lock (_sync)
 				{
 					TextIter iter = _textBuffer.EndIter;
-				_textBuffer.Insert(ref iter, "\n");
+					_textBuffer.Insert(ref iter, "\n");
 				}
-				});
-//			_textBuffer.EndUserAction();
-//				Thread.EndCriticalRegion();
+			});
 		}
 	}
 }
