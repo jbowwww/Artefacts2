@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using Artefacts;
 using ServiceStack;
 using MongoDB.Bson;
+using System.Collections.ObjectModel;
 
 namespace Artefacts.Service
 {
@@ -51,7 +52,7 @@ namespace Artefacts.Service
 		/// Gets or sets the results.
 		/// </summary>
 		public QueryResults Results {
-			get { return _results ?? (_results = Execute<QueryResults>(Expression)); }
+			get { return _results ?? (_results = (QueryResults)Execute(Expression)); }
 		}
 		
 		/// <summary>
@@ -149,10 +150,10 @@ namespace Artefacts.Service
 			Type _resultType = typeof(TResult);
 			
 			MethodCallExpression mce = expression as MethodCallExpression;
-			if (mce != null) //expression.NodeType == ExpressionType.Call)
+			if (mce != null)
 			{
-//				if (!_resultType.IsAssignableFrom(mce.Method.ReturnType))
-//					throw new ArgumentOutOfRangeException("TResult", _resultType, "TResult type \"" + _resultType.FullName + "\" for expression \"" + expression + "\" should have been assignable from \"" + mce.Method.ReturnType.FullName + "\"");
+				if (!_resultType.IsAssignableFrom(mce.Method.ReturnType))
+					throw new ArgumentOutOfRangeException("TResult", _resultType, "TResult type \"" + _resultType.FullName + "\" for expression \"" + expression + "\" should have been assignable from \"" + mce.Method.ReturnType.FullName + "\"");
 				if (mce.Method.DeclaringType == _enumerableStaticType || mce.Method.DeclaringType == _queryableStaticType)
 				{
 					if (!typeof(QueryResults).IsAssignableFrom(_resultType) &&
@@ -164,7 +165,12 @@ namespace Artefacts.Service
 						if (mce.Arguments[0].Type != _enumerableType && mce.Arguments[0].Type != _queryableType)
 							throw new ArgumentOutOfRangeException("expression", expression, "Expression too complex: Method Call \"" + mce + "\" inner object type is not \"" + _enumerableType.FullName + "\" or \"" + _queryableType.FullName + "\"");
 						QueryResults qr = (QueryResults)Execute(mce.Arguments[0]);
-						return (TResult)mce.Method.Invoke(qr, mce.Arguments.Cast<ConstantExpression>().Select(ce => ce.Value).ToArray());
+						if (mce.Method.Name == "Count" && mce.Arguments.Count == 1)
+							return (TResult)(object)qr.Count;
+						return (TResult)mce.Method.Invoke(null,
+							new[] { qr.Select(a => a.As(_resultType.GetElementType())) }.Concat(
+								mce.Arguments.Skip(1).Select(e => (e as ConstantExpression).Value)
+							).ToArray());
 					}
 				}
 				return (TResult)Execute(mce);

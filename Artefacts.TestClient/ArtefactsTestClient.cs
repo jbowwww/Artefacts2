@@ -505,8 +505,10 @@ namespace Artefacts.TestClient
 		public void GetFilesCollection()
 		{
 			ArtefactCollection<File> collection = new ArtefactCollection<File>(_client, "Artefacts_FileSystem_File");
-			foreach (File f in collection.Where(f => f.Extension.ToLower() == ".txt"))
+			IQueryable<File> q = collection.Where(f => f.Extension.ToLower() == ".txt");
+			foreach (File f in q)
 				_bufferWriter.WriteLine(f);
+			_bufferWriter.WriteLine("Count: " + q.Count());
 		}
 		
 		#region Helper functions

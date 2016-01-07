@@ -46,14 +46,18 @@ namespace Artefacts
 		{
 			public Artefact Artefact { get; internal set; }
 			
-			public T GetInstance<T>()
+			public object GetInstance(Type type)
 			{
-				Type type = typeof(T);
 				if (base.ContainsKey(type))
-					return (T)base[type];
-				T instance = (T)Activator.CreateInstance(type);
+					return base[type];
+				object instance = Activator.CreateInstance(type);
 				base[type] = instance;
 				return instance;
+			}
+			
+			public T GetInstance<T>()
+			{
+				return (T)GetInstance(typeof(T));
 			}
 			
 			internal ArtefactTypedInstanceCache(Artefact artefact) : base(4, 4)
@@ -92,9 +96,14 @@ namespace Artefacts
 			
 			public T GetInstance<T>(Artefact artefact)
 			{
-				T instance;
 				ArtefactTypedInstanceCache cache = GetTypedInstanceCache(artefact);
 				return cache.GetInstance<T>();
+			}
+
+			public object GetInstance(Artefact artefact, Type type)
+			{
+				ArtefactTypedInstanceCache cache = GetTypedInstanceCache(artefact);
+				return cache.GetInstance(type);
 			}
 		}
 		
@@ -411,10 +420,19 @@ namespace Artefacts
 		/// As this instance.
 		/// </summary>
 		/// <typeparam name="T">The 1st type parameter.</typeparam>
-		public T As<T>() //where T : new()
+		public T As<T>()
 		{
-			T instance = Artefact.Cache.GetInstance<T>(this);	//Activator.CreateInstance<T>(); //	new T();
-			MemberInfo[] typeMembers = GetDataMembers(typeof(T)).ToArray();
+			return (T)As(typeof(T));
+		}
+		
+		/// <summary>
+		/// As the specified type.
+		/// </summary>
+		/// <param name="type">Type.</param>
+		public object As(Type type)
+		{
+			object instance = Artefact.Cache.GetInstance(this, type);
+			MemberInfo[] typeMembers = GetDataMembers(type).ToArray();
 			IEnumerable<KeyValuePair<string, object>> combinedData = Data;
 			foreach (KeyValuePair<string, object> data in combinedData)
 			{
@@ -422,7 +440,7 @@ namespace Artefacts
 				{								// ^ Above lien not currently eneded if yous tay with keeping Time* properties separate from this.Data
 					MemberInfo member = typeMembers.FirstOrDefault(mi => mi.Name == data.Key);
 					if (member == null)
-						Log.DebugFormat("Member '{0}' not found in type '{1}', skipping", data.Key, typeof(T).FullName);
+						Log.DebugFormat("Member '{0}' not found in type '{1}', skipping", data.Key, type.FullName);
 						//throw new MissingMemberException("", /*typeof(T).FullName,*/ data.Key);
 					else
 					{
