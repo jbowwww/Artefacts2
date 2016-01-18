@@ -127,7 +127,7 @@ namespace Artefacts.TestClient
 					file.Name,
 					file.Path,	//file.DirectoryPath ?? "",
 					file.Size,//.ToString(),
-					file.CRC.Value,//.ToHex(),
+					file.CRC,//.Value,//.ToHex(),
 					file.CreationTime.ToString(),
 					file.LastAccessTime.ToString(),
 					file.LastWriteTime.ToString()

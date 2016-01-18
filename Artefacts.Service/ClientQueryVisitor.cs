@@ -30,6 +30,12 @@ namespace Artefacts.Service
 			BindingFlags.Instance | BindingFlags.Static |
 			BindingFlags.Public | BindingFlags.NonPublic;
 		
+		protected override Expression VisitConstant(ConstantExpression c)
+		{
+//			return Expression.Convert(c, c.Type);
+			return base.VisitConstant(c);
+		}
+		
 		protected override Expression VisitParameter(ParameterExpression p)
 		{
 			if (p.Name == "collection" && p.Type == typeof(IQueryable<T>))

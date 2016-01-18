@@ -24,7 +24,7 @@ namespace Artefacts.TestClient
 		
 		public static void Quit()
 		{
-			Artefacts.FileSystem.File.CRCAbortThread();
+//			Artefacts.FileSystem.File.CRCAbortThread();
 			Volatile.Write(ref _quit, true);
 		}
 		

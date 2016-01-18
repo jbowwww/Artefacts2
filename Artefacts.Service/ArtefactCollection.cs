@@ -149,6 +149,8 @@ namespace Artefacts.Service
 		{
 			Type _resultType = typeof(TResult);
 			
+			expression = _visitor.Visit(expression);
+			
 			MethodCallExpression mce = expression as MethodCallExpression;
 			if (mce != null)
 			{

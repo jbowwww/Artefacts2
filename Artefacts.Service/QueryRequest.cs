@@ -21,13 +21,13 @@ namespace Artefacts.Service
 		/// <summary>
 		/// Gets or sets the visitor.
 		/// </summary>
-		public static ExpressionVisitor Visitor { get; set; }
+//		public static ExpressionVisitor Visitor { get; set; }
 		
 		public static ExpressionSerializer Serializer { get; set; }
 		
 		static QueryRequest()
 		{
-			//Visitor = new ClientQueryVisitor<T>();
+//			Visitor = new ClientQueryVisitor<Type>();
 			Serializer = new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer());
 		}
 
@@ -71,7 +71,7 @@ namespace Artefacts.Service
 				return _query ??
 					(_query = new QueryDocument(
 						BsonDocument.Parse(
-							QueryData.UrlDecode())
+							QueryData/*.UrlDecode()*/)
 					));
 				
 			}
@@ -79,7 +79,7 @@ namespace Artefacts.Service
 			{
 				QueryData = (_query = value) == null ? 
 					string.Empty
-				:	_query.ToString().UrlEncode();
+				:	_query.ToString()/*.UrlEncode()*/;
 				DataFormat = "Query";
 			}
 		}
@@ -90,7 +90,7 @@ namespace Artefacts.Service
 			{
 				if (_expression != null)
 					return _expression;
-				ExpressionNode node = QueryData.UrlDecode().FromJson<ExpressionNode>();
+				ExpressionNode node = QueryData/*.UrlDecode()*/.FromJson<ExpressionNode>();
 				_expression = node.ToExpression();
 				return _expression;
 				//Serializer.DeserializeText(QueryData));
@@ -98,7 +98,7 @@ namespace Artefacts.Service
 			set
 			{
 				ExpressionNode node = (_expression = value).ToExpressionNode();
-				QueryData = ServiceStack.StringExtensions.ToJson<ExpressionNode>(node).UrlEncode();
+				QueryData = ServiceStack.StringExtensions.ToJson<ExpressionNode>(node)/*r4.UrlEncode()*/;
 				DataFormat = "Expression";
 			}
 		}

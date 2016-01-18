@@ -120,7 +120,7 @@ namespace Artefacts.TestClient
 						while (!MainClass.HasQuit() && _postQueue.TryDequeue(out fsEntry))
 						{
 							_win.PostQueueCount = _postQueue.Count;
-							_win.CRCQueueCount = File.CRCQueueCount;
+//							_win.CRCQueueCount = File.CRCQueueCount;
 							for (int i = 0; !MainClass.HasQuit() && (i < maxPostRetries); i++)
 							{
 								try 
@@ -210,7 +210,7 @@ namespace Artefacts.TestClient
 								while (!MainClass.HasQuit() && _directoryQueue.TryDequeue(out threadDir))
 								{
 									_win.DirectoryQueueCount = _directoryQueue.Count;
-									_win.CRCQueueCount = File.CRCQueueCount;
+//									_win.CRCQueueCount = File.CRCQueueCount;
 									
 									// Records number of active threads so even if dir queue is empty temporarily all
 									// threads won't exit straight away and leave one to do all the work
@@ -263,8 +263,8 @@ namespace Artefacts.TestClient
 												// Process files
 												foreach (File file in threadDir.Files)
 												{
-													if (!file.Exists())
-														file.QueueCalculateCRC();
+//													if (!file.Exists())
+//														file.QueueCalculateCRC();
 													_postQueue.Enqueue(file);
 													_win.PostQueueCount = _postQueue.Count;
 												}
@@ -308,7 +308,7 @@ namespace Artefacts.TestClient
 			threads.Each(thread => thread.Join());
 			_win.PostQueueCount = 0;
 			_win.DirectoryQueueCount = 0;
-			_win.CRCQueueCount = File.CRCQueueCount;
+//			_win.CRCQueueCount = File.CRCQueueCount;
 			_bufferWriter.WriteLine("Joined POST thread and scanning threads");
 			//File.CRCWaitThreadFinish();
 			_bufferWriter.WriteLine("File CRC thread finished");
@@ -358,7 +358,7 @@ namespace Artefacts.TestClient
 				long groupSize = 0;
 				File file = artefact.As<File>();
 				
-				_win.CRCQueueCount = File.CRCQueueCount;
+//				_win.CRCQueueCount = File.CRCQueueCount;
 				
 				if (!MainClass.HasQuit() && !sizeGroups.ContainsKey(file.Size))
 				{
@@ -382,22 +382,22 @@ namespace Artefacts.TestClient
 						_bufferWriter.WriteLine(
 							"result #{0}: f.Size = {1} ({2} file results with matching size)",
 							i++, File.FormatSize(file.Size), results2.Count);
-						files.Each(f => {
-							if (!MainClass.HasQuit() && !f.HasCRC)
-								f.QueueCalculateCRC(true);
-						});
+//						files.Each(f => {
+//							if (!MainClass.HasQuit() && !f.HasCRC)
+//								f.QueueCalculateCRC(true);
+//						});
 						foreach (File file2 in files)
 						{
 							if (MainClass.HasQuit())
 								return;
 							
-							_win.CRCQueueCount = File.CRCQueueCount;
+//							_win.CRCQueueCount = File.CRCQueueCount;
 							
 							bool calculatedCRC = !file2.HasCRC;
 							if (!file2.HasCRC)
-								file2.QueueWaitCalculateCRC();
+//								file2.QueueWaitCalculateCRC();
 							
-							_win.CRCQueueCount = File.CRCQueueCount;
+//							_win.CRCQueueCount = File.CRCQueueCount;
 
 							if (!file2.HasCRC)
 								_bufferWriter.WriteLine("    " + "ERROR!!".PadLeft(26) + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
@@ -406,7 +406,8 @@ namespace Artefacts.TestClient
 							{
 								using (new CriticalRegion())
 								{
-									long crc = file2.CRC.Value;
+//									long crc = file2.CRC.Value;
+								long crc = file2.CRC;
 									if (!dupeGroups.ContainsKey(crc))
 										dupeGroups.Add(crc, new QueryResults(new Artefact[] { Artefact.Cache.GetArtefact(file2) }));	//new Artefact[] { artefact2 }));
 									else
@@ -432,14 +433,14 @@ namespace Artefacts.TestClient
 										}
 									}
 								}
-								_bufferWriter.WriteLine("    " + file2.CRC.Value.ToHex().PadLeft(26) + (calculatedCRC ? "*" : " ") + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
+								_bufferWriter.WriteLine("    " + file2.CRC.ToHex().PadLeft(26) + (calculatedCRC ? "*" : " ") + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
 								groupSize += file2.Size;
-								_win.CRCQueueCount = File.CRCQueueCount;
+//								_win.CRCQueueCount = File.CRCQueueCount;
 							}
 						}
 						_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group\n");	// results2.Artefacts.Sum(a => a.As<File>().Size)
 						totalSize += groupSize;
-						_win.CRCQueueCount = File.CRCQueueCount;
+//						_win.CRCQueueCount = File.CRCQueueCount;
 					}
 				}
 			}//);
@@ -456,7 +457,7 @@ namespace Artefacts.TestClient
 			
 			_win.PostQueueCount = 0;
 			_win.DirectoryQueueCount = 0;
-			_win.CRCQueueCount = File.CRCQueueCount;
+//			_win.CRCQueueCount = File.CRCQueueCount;
 			
 			totalSize = 0;
 			IList<IList<File>> _fileListList = new List<IList<File>>();
@@ -501,11 +502,25 @@ namespace Artefacts.TestClient
 			_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in " + totalUsedGroups + "/" + dupeGroups.Count + " groups");
 		}
 		
-		[Test]
+//		[Test]
 		public void GetFilesCollection()
 		{
 			ArtefactCollection<File> collection = new ArtefactCollection<File>(_client, "Artefacts_FileSystem_File");
 			IQueryable<File> q = collection.Where(f => f.Extension.ToLower() == ".txt");
+			foreach (File f in q)
+				_bufferWriter.WriteLine(f);
+			_bufferWriter.WriteLine("Count: " + q.Count());
+		}
+		
+		/// <summary>
+		/// Gets the dupes files collection.
+		/// </summary>
+		/// <remarks>TODO: Get queries like below working - that reference the same collection, possibly other collections etc...</remarks>
+		[Test]
+		public void GetDupesFilesCollection()
+		{
+			ArtefactCollection<File> collection = new ArtefactCollection<File>(_client, "Artefacts_FileSystem_File");
+			IQueryable<File> q = collection.Where(f => f.Size > (16*1024*1024) && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
 			foreach (File f in q)
 				_bufferWriter.WriteLine(f);
 			_bufferWriter.WriteLine("Count: " + q.Count());
