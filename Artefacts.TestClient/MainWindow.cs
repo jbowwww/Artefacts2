@@ -25,9 +25,11 @@ public partial class MainWindow: Gtk.Window
 	private DateTime _autoScrollMarkHost = DateTime.Now;	
 	private DateTime _autoScrollMarkClient = DateTime.Now;	
 	private Timer _autoScrollTimer = null;
-	public Gtk.TextBuffer HostTextBuffer { get { return tvHost.Buffer; } }
 	
+	public Gtk.TextBuffer HostTextBuffer { get { return tvHost.Buffer; } }
 	public Gtk.TextBuffer ClientTextBuffer { get { return tvClient.Buffer; } }
+	TextIter posHost;
+	TextIter posClient;
 	
 	public event EventHandler OnBtnStartClicked {
 		add { btnStartMain.Clicked += value; }
@@ -38,11 +40,15 @@ public partial class MainWindow: Gtk.Window
 		get { return btnTrashDefaultChooser.Filename; }
 	}
 	
-	public int PostQueueCount { get; set; }
+	public delegate int GetIntDelegate();
 
-	public int DirectoryQueueCount { get; set; }
-
-	public int CRCQueueCount { get; set; }
+		public GetIntDelegate GetPostQueueCount;
+		public GetIntDelegate GetDirQueueCount;
+		public GetIntDelegate GetCRCQueueCount;
+	
+//	public int PostQueueCount { get; set; }
+//	public int DirectoryQueueCount { get; set; }
+//	public int CRCQueueCount { get; set; }
 	#endregion
 	
 	#region Construction & Disposal
@@ -54,21 +60,29 @@ public partial class MainWindow: Gtk.Window
 		tvClient.Buffer.InsertText += (object o, InsertTextArgs args) => _autoScrollClientUpdated = true;
 		_autoScrollTimer = new Timer((o) => {
 			Application.Invoke((sender, e) => {
-				txtPostQueue.Text = "Post Queue: " + PostQueueCount;
-				txtDirectoryQueue.Text = "Directory Queue: " + DirectoryQueueCount;
-				txtCRCQueue.Text = "CRC Queue: " + CRCQueueCount;
+				txtPostQueue.Text = "Post Queue: " + (GetPostQueueCount == null ? 0 : GetPostQueueCount.Invoke());
+				txtDirectoryQueue.Text = "Directory Queue: " + (GetDirQueueCount == null ? 0 : GetDirQueueCount.Invoke());
+				txtCRCQueue.Text = "CRC Queue: " + (GetCRCQueueCount == null ? 0 : GetCRCQueueCount.Invoke());;
 			});
 			if (_autoScrollHost && _autoScrollHostUpdated)
 			{
 				TextIter pos = tvHost.Buffer.EndIter;
-				pos.LineOffset = 0;
-				Application.Invoke((sender, e) => tvHost.ScrollToIter(pos, 0, false, 0, 0));
+				if (posHost.Equal(default(TextIter)) || pos.Equal(posHost))	//.Offset != posHost.Offset)
+				{
+					posHost = pos;
+					pos.LineOffset = 0;
+					Application.Invoke((sender, e) => tvHost.ScrollToIter(pos, 0, false, 0, 0));
+				}
 			}
 			if (_autoScrollClient && _autoScrollClientUpdated)
 			{
 				TextIter pos = tvClient.Buffer.EndIter;
-				pos.LineOffset = 0;
-				Application.Invoke((sender, e) => tvClient.ScrollToIter(pos, 0, false, 0, 0));
+				if (posClient.Equal(default(TextIter)) || pos.Equal(posClient))
+				{
+					posClient = pos;
+					pos.LineOffset = 0;
+					Application.Invoke((sender, e) => tvClient.ScrollToIter(pos, 0, false, 0, 0));
+				}
 			}
 		}, null, 500, 500);
 		Maximize();

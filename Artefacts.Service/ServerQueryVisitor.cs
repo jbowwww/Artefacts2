@@ -4,6 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using MongoDB.Bson;
+using System.Collections.Generic;
 
 namespace Artefacts.Service
 {
@@ -28,28 +29,28 @@ namespace Artefacts.Service
 		/// will need to find some way of detecting that return value, and running the method call expression's argument[0] expression as a query, to
 		/// get artefact id, then retrieve artefact using repository getbyid() ??
 		/// </remarks>
-		protected override Expression VisitMethodCall(MethodCallExpression m)
-		{
-			Expression mObject = Visit(m.Object);
-			ReadOnlyCollection<Expression> mArguments = VisitExpressionList(m.Arguments);			
-			MethodInfo mi = m.Method;
-			ParameterInfo[] pi = mi.GetParameters();
-
-			// If method call is on a constant instance and all arguments are constants too,
-			// invoke method and replace with constant expression of method's return value
-			if (mObject != null && mObject.Type != typeof(BsonDocument) && mArguments.Count == 1)
-				return Expression.MakeIndex(
-					Expression.Parameter(typeof(BsonDocument), ((ParameterExpression)mObject).Name),
-					typeof(BsonDocument).GetProperty("Item", new Type[] { typeof(string) }),
-					mArguments);
-			
-			// default
-			return base.VisitMethodCall(m);
-		}
-		
+//		protected override Expression VisitMethodCall(MethodCallExpression m)
+//		{
+//			Expression mObject = Visit(m.Object);
+//			ReadOnlyCollection<Expression> mArguments = VisitExpressionList(m.Arguments);			
+//			MethodInfo mi = m.Method;
+//			ParameterInfo[] pi = mi.GetParameters();
+//
+//			// If method call is on a constant instance and all arguments are constants too,
+//			// invoke method and replace with constant expression of method's return value
+//			if (mObject != null && mObject.Type != typeof(BsonDocument) && mArguments.Count == 1)
+//				return Expression.MakeIndex(
+//					Expression.Parameter(typeof(BsonDocument), ((ParameterExpression)mObject).Name),
+//					typeof(BsonDocument).GetProperty("Item", new Type[] { typeof(string) }),
+//					mArguments);
+//			
+//			// default
+//			return base.VisitMethodCall(m);
+//		}
+//		
 		protected override Expression VisitParameter(ParameterExpression p)
 		{
-			if (p.Name == "collection" && p.Type.GetGenericTypeDefinition() == typeof(IQueryable<>))
+			if (p.Name == "collection" && typeof(IQueryable<Artefact>).IsAssignableFrom(p.Type))	// p.Type.GetGenericTypeDefinition() == typeof(IQueryable<>))
 				return Expression.Constant(Collection);
 			return base.VisitParameter(p);
 		}

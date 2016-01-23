@@ -9,6 +9,8 @@ namespace Artefacts.FileSystem
 {
 	public class FileCRC
 	{
+		public static int QueueCount = 0;
+
 		public class Region
 		{
 			/// <summary>Gets the size of the component</summary>
@@ -100,6 +102,12 @@ namespace Artefacts.FileSystem
 
 		public bool HasCRC { get { return _crc.HasValue; } }
 
+		public FileCRC()
+		{
+			FileInfo = null;
+			Regions = new Region[0];
+		}
+
 		public FileCRC(Int64 crc)
 		{
 			FileInfo = null;
@@ -113,12 +121,13 @@ namespace Artefacts.FileSystem
 			CRC = crc;
 		}
 
-		public FileCRC(FileInfo fileInfo, IEnumerable<Region> regions)
+		public FileCRC(FileInfo fileInfo, IEnumerable<Region> regions, Action onComplete = null)
 		{
 			Init(fileInfo, regions);
 			TaskCreationOptions taskOptions = TaskCreationOptions.LongRunning;
 			_crcTask = new Task(() =>
 			{
+				FileCRC.QueueCount++;
 				byte[] data;
 				using (FileStream fs = FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
@@ -159,9 +168,12 @@ namespace Artefacts.FileSystem
 					calcCrcTask.Start();
 				}
 //				);
-			}, taskOptions)
-			.ContinueWith((task) => {
+				FileCRC.QueueCount--;
+			}, taskOptions);
+			_crcTask.ContinueWith((task) => {
 				CRC = Int64.MaxValue - Regions.Sum(r => r.CRC);
+				if (onComplete != null)
+					onComplete();
 			});
 			_crcTask.Start();
 		}

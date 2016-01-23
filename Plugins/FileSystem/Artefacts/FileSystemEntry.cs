@@ -24,8 +24,8 @@ namespace Artefacts.FileSystem
 		protected System.IO.FileSystemInfo Info {
 			get
 			{
-				if (_fileSystemInfo == null)
-					throw new NullReferenceException("this._fileSystemInfo == null");
+//				if (_fileSystemInfo == null)
+//					throw new NullReferenceException("this._fileSystemInfo == null");
 				return _fileSystemInfo;
 			}
 			set

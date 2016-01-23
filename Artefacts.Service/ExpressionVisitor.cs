@@ -62,8 +62,8 @@ namespace Artefacts
 //				return exp;
 			switch (exp.NodeType)
 			{
-				case ExpressionType.Quote:
-				return this.Visit(StripQuotes(exp));
+			case ExpressionType.Quote:
+				return this.Visit(StripQuotes(exp));	// return this.Visit(StripQuotes(exp));
 			case ExpressionType.Negate:
 			case ExpressionType.NegateChecked:
 			case ExpressionType.Not:
@@ -146,15 +146,15 @@ namespace Artefacts
 //			using (IDisposable vmsu = new VisitationMethodStackUpdater(VisitStack, b))
 //			{
 //				_sb.Append(b.ToString());
-				Expression left = this.Visit(b.Left);
-				Expression right = this.Visit(b.Right);
-				Expression conversion = this.Visit(b.Conversion);
+			Expression left = /*Expression.Convert(*/this.Visit(b.Left);//, b.Left.Type);
+			Expression right = /*Expression.Convert(*/this.Visit(b.Right);//, b.Right.Type);
+			Expression conversion = this.Visit(b.Conversion);
 				if (left != b.Left || right != b.Right || conversion != b.Conversion)
 				{
 					if (b.NodeType == ExpressionType.Coalesce && b.Conversion != null)
 						return Expression.Coalesce(left, right, conversion as LambdaExpression);
 					else
-						return Expression.MakeBinary(b.NodeType, left, right, b.IsLiftedToNull, b.Method, b.Conversion);
+						return Expression.MakeBinary(b.NodeType, left, right, b.IsLiftedToNull, b.Method, conversion as LambdaExpression);
 				}
 				return b;
 //			}
@@ -177,8 +177,13 @@ namespace Artefacts
 			// Returning a conversion wrapped around the original constant seemed necessary for certain queries,
 			// like a.TimeCreated > new DateTime(15, 3, 12) needed the integers converted. Related to MongoDB storing
 			// all fields as strings I think? Currently don't seem to need it but leaving here commented incase issue arises again
+			// ^ That comment's been there for ages... somehow I'm back to having trouble with that again,this time with the initial
+			// implementation of an ArtefactCollection class exposing an IQueryable and IQueryPRovider interfaces for neat
+			// succint, intuitive queries using LINQ. Possibly also complicated by it being an IEnumerable<Artefact> and not typed..
+			// although it could be, on the client side anyway (so server can be dependency free, as much as possible)
 //			if (Visited(c))
-				return c;
+			return c;
+//				return this.Visit(c);
 //			return Expression.Convert(Expression.Constant(c.Value, c.Value == null ? typeof(object) : c.Value.GetType()), c.Type);
 		}
  
@@ -204,17 +209,23 @@ namespace Artefacts
 		protected virtual Expression VisitMemberAccess(MemberExpression m)
 		{
 			Expression exp = this.Visit(m.Expression);
-				if (exp == null || (exp.NodeType == ExpressionType.Constant))
-					return /*this.Visit*/(Expression.Constant(
-						m.Member.DeclaringType.InvokeMember(
-						m.Member.Name,
-						BindingFlags.Public | BindingFlags.NonPublic
-						| BindingFlags.GetField | BindingFlags.GetProperty
-						| (exp == null ? BindingFlags.Static : BindingFlags.Instance),
-						null,
-						exp == null ? null : ((ConstantExpression)exp).Value,
-						new object[] { }),
-						m.Type));
+			if (exp == null || (exp.NodeType == ExpressionType.Constant))
+				return /*this.Visit*/
+//					Expression.Call(
+//						m.Type.GetMethod("Parse", BindingFlags.Static | BindingFlags.Public, null, new Type[] { typeof(string) }, null),
+//						
+//					Expression.Convert(
+						Expression.Constant(
+					m.Member.DeclaringType.InvokeMember(
+					m.Member.Name,
+					BindingFlags.Public | BindingFlags.NonPublic
+					| BindingFlags.GetField | BindingFlags.GetProperty
+					| (exp == null ? BindingFlags.Static : BindingFlags.Instance),
+					null,
+					exp == null ? null : ((ConstantExpression)exp).Value,
+					new object[] { }), m.Type);// );
+//							typeof(string));// );
+//						m.Type);
 			if (exp != m.Expression)
 				return Expression.MakeMemberAccess(exp, m.Member);
 			return m;
@@ -234,20 +245,7 @@ namespace Artefacts
 			ReadOnlyCollection<Expression> args = this.VisitExpressionList(m.Arguments);
 			Expression obj = this.Visit(m.Object);
 			if (args != m.Arguments || obj != m.Object)
-			{
-//				if (obj == null || (obj.NodeType == ExpressionType.Constant && obj.Type.IsSpecialName))
-//					return /*this.Visit*/(Expression.Constant(
-//						m.Method.DeclaringType.InvokeMember(
-//						m.Method.Name,
-//						BindingFlags.Public | BindingFlags.NonPublic
-//						| BindingFlags.InvokeMethod
-//						| (obj == null ? BindingFlags.Static : BindingFlags.Instance),
-//						null,
-//						obj == null ? null : ((ConstantExpression)obj).Value,
-//						new object[] { }),
-//						m.Type));
 				return Expression.Call(obj, m.Method, args);
-			}
 			return m;
 		}
  

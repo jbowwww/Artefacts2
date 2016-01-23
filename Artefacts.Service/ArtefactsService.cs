@@ -176,7 +176,7 @@ namespace Artefacts.Service
 			Log.Debug("HTTP GET: " + query);
 			_output.WriteLine("HTTP GET: " + query);
 			
-			MongoCursor<Artefact> mongoQueryResult = null;
+			MongoCursor<BsonDocument> mongoQueryResult = null;
 			object result = null;
 			IMongoQuery mq = null;
 			MongoCollection<Artefact> _mcQueryCollection = _mDb.GetCollection<Artefact>(query.CollectionName);
@@ -185,11 +185,12 @@ namespace Artefacts.Service
 			if (query.DataFormat == "Query")
 			{
 				mq = query.Query;
-				mongoQueryResult = _mcQueryCollection.FindAs<Artefact>(mq);
-				Log.Debug("_mcArtefacts.FindAs<Artefact>(query): " + mongoQueryResult);
-				_output.WriteLine("_mcArtefacts.FindAs<Artefact>(query): " + mongoQueryResult);
-				foreach (Artefact artefact in mongoQueryResult)
+				mongoQueryResult = _mcQueryCollection.FindAs<BsonDocument>(mq);
+				Log.Debug("_mcArtefacts.FindAs<BsonDocument>(query): " + mongoQueryResult);
+				_output.WriteLine("_mcArtefacts.FindAs<BsonDocument>(query): " + mongoQueryResult);
+				foreach (BsonDocument bsonDoc in mongoQueryResult)
 				{
+					Artefact artefact = new Artefact(bsonDoc);
 					ArtefactCache[artefact.Id] = artefact;
 					queryResult.Artefacts.Add(artefact);
 				}
@@ -202,9 +203,12 @@ namespace Artefacts.Service
 				Expression visitedExpression = Visitor.Visit(query.Expression);
 				Log.Debug("Translated expression: " + visitedExpression);
 				_output.WriteLine("Translated expression: " + visitedExpression);
-				result = provider.Execute(visitedExpression);
-				foreach (Artefact artefact in (IEnumerable<Artefact>)result)
+				
+				result = _mcQueryCollection.FindAs<Artefact>(provider.BuildMongoQuery((MongoQueryable<Artefact>)provider.CreateQuery<Artefact>(visitedExpression)));
+//				result = provider.Execute(visitedExpression);
+				foreach (Artefact artefact/* bsonDoc*/ in (IEnumerable<Artefact>)result)
 				{
+//					Artefact artefact = new Artefact(bsonDoc);
 					ArtefactCache[artefact.Id] = artefact;
 					queryResult.Artefacts.Add(artefact);
 				}

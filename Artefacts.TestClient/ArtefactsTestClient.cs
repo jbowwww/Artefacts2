@@ -18,6 +18,7 @@ using ServiceStack.Text;
 using MongoDB.Bson;
 using System.Dynamic.Utils;
 using MongoDB.Bson.Serialization;
+using System.Reflection;
 
 namespace Artefacts.TestClient
 {
@@ -40,6 +41,10 @@ namespace Artefacts.TestClient
 		private string _winBaseTitle;
 		#endregion
 		
+		public ConcurrentQueue<FileSystemEntry> DelQueue = new ConcurrentQueue<FileSystemEntry>();
+		public ConcurrentQueue<FileSystemEntry> PostQueue = new ConcurrentQueue<FileSystemEntry>();
+		public ConcurrentQueue<Directory> DirectoryQueue = new ConcurrentQueue<Directory>();
+
 		//[TestFixtureSetUp]
 		public ArtefactsTestClient(string serviceBaseUrl, TextBufferWriter bufferWriter, MainWindow win) : base(bufferWriter)
 		{
@@ -47,7 +52,10 @@ namespace Artefacts.TestClient
 			_serviceBaseUrl = serviceBaseUrl;
 			_win = win;
 			_winBaseTitle = _win.Title;
-			
+			win.GetPostQueueCount += () => PostQueue.Count;
+			win.GetDirQueueCount += () => DirectoryQueue.Count;
+			win.GetPostQueueCount += () => Artefacts.FileSystem.FileCRC.QueueCount;
+
 			_bufferWriter.WriteLine(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_client = new JsonServiceClient(_serviceBaseUrl) {
 //				RequestFilter = (HttpWebRequest request) => bufferWriter.WriteLine(
@@ -78,6 +86,10 @@ namespace Artefacts.TestClient
 		public override void Dispose()
 		{
 			_client.Dispose();
+			_win.GetPostQueueCount = () => 0;
+			_win.GetDirQueueCount = () => 0;
+			_win.GetPostQueueCount = () => 0;
+
 		}
 		
 //		[Test]
@@ -94,12 +106,9 @@ namespace Artefacts.TestClient
 			int scanThreadSleepTime = 132;
 			int scanThreadActiveCount = 0;
 			int maxPostRetries = 3;
-			ConcurrentQueue<FileSystemEntry> _delQueue = new ConcurrentQueue<FileSystemEntry>();
-			ConcurrentQueue<FileSystemEntry> _postQueue = new ConcurrentQueue<FileSystemEntry>();
-			ConcurrentQueue<Directory> _directoryQueue = new ConcurrentQueue<Directory>();
 			
 			Directory topDir = new Directory("/mnt/Trapdoor/media/");
-			_directoryQueue.Enqueue(topDir);
+			DirectoryQueue.Enqueue(topDir);
 			
 			_bufferWriter.WriteLine("RecurseDirectory() starting at " + mainStart.ToShortTimeString());
 			_bufferWriter.WriteLine("Main thread starting directory " + topDir.Path);
@@ -111,15 +120,15 @@ namespace Artefacts.TestClient
 				DateTime threadStart = DateTime.Now;
 				_bufferWriter.WriteLine("POST Thread starting at " + threadStart.ToShortTimeString());
 				Thread.Sleep(postThreadSleepTime);
-				while (!MainClass.HasQuit() && (_postQueue.Count > 0 || Volatile.Read(ref scanThreadActiveCount) > 0))
+				while (!MainClass.HasQuit() && (PostQueue.Count > 0 || Volatile.Read(ref scanThreadActiveCount) > 0))
 				{
-					if (_postQueue.Count == 0)
+					if (PostQueue.Count == 0)
 						Thread.Sleep(postThreadSleepTime);
 					else
 					{
-						while (!MainClass.HasQuit() && _postQueue.TryDequeue(out fsEntry))
+						while (!MainClass.HasQuit() && PostQueue.TryDequeue(out fsEntry))
 						{
-							_win.PostQueueCount = _postQueue.Count;
+//							_win.PostQueueCount = _postQueue.Count;
 //							_win.CRCQueueCount = File.CRCQueueCount;
 							for (int i = 0; !MainClass.HasQuit() && (i < maxPostRetries); i++)
 							{
@@ -132,10 +141,10 @@ namespace Artefacts.TestClient
 										if (!file.HasCRC && file.IsCRCQueued)
 										{
 											_bufferWriter.WriteLine("Still waiting for CRC for \"{0}\", requeueing for POST", file.Path);
-											_postQueue.Enqueue(file);
-											_win.PostQueueCount = _postQueue.Count;
-											if (_postQueue.Count <= 32)
-												Thread.Sleep(1600 / _postQueue.Count);	// give it a chance to calc, don't just thrash this thread
+											PostQueue.Enqueue(file);
+//											_win.PostQueueCount = _postQueue.Count;
+											if (PostQueue.Count <= 32)
+												Thread.Sleep(1600 / PostQueue.Count);	// give it a chance to calc, don't just thrash this thread
 										}
 										else
 										{
@@ -173,7 +182,9 @@ namespace Artefacts.TestClient
 			{
 				
 				// Directory scanning thread takes directories from a queue, processes sub dirs and files in that dir
-				threads[tn] = new Thread((param) =>
+				threads[tn] = new Thread(
+					new ParameterizedThreadStart(
+						(param) =>
 				{
 					int scanThreadSleepCount = 0;
 					int num = (int)param;
@@ -188,16 +199,16 @@ namespace Artefacts.TestClient
 						// Exit if main app quitting, OR if the directory queue has been empty and this thread has slept for
 						// the preset number of loops AND the directory queue is empty AND there are no more of this
 						// directory scanning threads actively running
-						while (	!MainClass.HasQuit() &&
+						while (!MainClass.HasQuit() &&
 							(	scanThreadSleepCount++ < scanThreadSleepCountLimit
-						 	 ||	_directoryQueue.Count > 0
-						 	 || Volatile.Read(ref scanThreadActiveCount) > 0) )
+						 	 ||	DirectoryQueue.Count > 0
+						 	 || Volatile.Read(ref scanThreadActiveCount) > 0))
 						{
 							
 							// If no directories to dequeue, snooze for a bit. If this happens a preset
 							// number of times, the above while loop will exit (Should it only exit if
 							// the dir queue is empty and all threads have stopped?? ..)
-							if (_directoryQueue.Count == 0)
+							if (DirectoryQueue.Count == 0)
 								Thread.Sleep(scanThreadSleepTime);
 							
 							// Get a directory to scan
@@ -207,9 +218,9 @@ namespace Artefacts.TestClient
 								
 								// Check again the app hasn't (since last check) decided to quit and that one of the
 								// other dir scanning threads hasn't emptied the queue
-								while (!MainClass.HasQuit() && _directoryQueue.TryDequeue(out threadDir))
+								while (!MainClass.HasQuit() && DirectoryQueue.TryDequeue(out threadDir))
 								{
-									_win.DirectoryQueueCount = _directoryQueue.Count;
+//									_win.DirectoryQueueCount = _directoryQueue.Count;
 //									_win.CRCQueueCount = File.CRCQueueCount;
 									
 									// Records number of active threads so even if dir queue is empty temporarily all
@@ -237,14 +248,14 @@ namespace Artefacts.TestClient
 										// saved in DB to dir modification time to decide if dir needs scanning
 										Artefact dbaDirectory = _client.Get<QueryResults>(
 											QueryRequest.Make<Directory>(
-												directory => directory.Path == threadDir.Path
-											)).FirstOrDefault();
+											directory => directory.Path == threadDir.Path
+										)).FirstOrDefault();
 										bool isCurrent = dbaDirectory != null && dbaDirectory.TimeSaved > threadDir.LastWriteTime;
 
 										// Delaying this output until dir currency is checked means one output can be used and include current status
 										// (if separate outputs were used they would be on separate lines or would run the risk of being interrupted by other threads)
 										_bufferWriter.WriteLine("Thread #{0} running on dir #{1} \"{2}\"",
-											num, count, threadDir.Path, isCurrent ? "Current" : "Expired");
+										                        num, count, threadDir.Path, isCurrent ? "Current" : "Expired");
 										
 										if (!isCurrent && threadDir.Exists())
 										{
@@ -254,10 +265,10 @@ namespace Artefacts.TestClient
 												// Process dirs
 												foreach (Directory sd in threadDir.Directories)
 												{
-													_directoryQueue.Enqueue(sd);
-													_postQueue.Enqueue(sd);
-													_win.DirectoryQueueCount = _directoryQueue.Count;
-													_win.PostQueueCount = _postQueue.Count;
+													DirectoryQueue.Enqueue(sd);
+													PostQueue.Enqueue(sd);
+//													_win.DirectoryQueueCount = _directoryQueue.Count;
+//													_win.PostQueueCount = _postQueue.Count;
 												}
 												
 												// Process files
@@ -265,8 +276,8 @@ namespace Artefacts.TestClient
 												{
 //													if (!file.Exists())
 //														file.QueueCalculateCRC();
-													_postQueue.Enqueue(file);
-													_win.PostQueueCount = _postQueue.Count;
+													PostQueue.Enqueue(file);
+//													_win.PostQueueCount = _postQueue.Count;
 												}
 											}
 										}
@@ -293,7 +304,7 @@ namespace Artefacts.TestClient
 					_bufferWriter.WriteLine("Thread #" + num + " finished at " + threadFinish.ToShortTimeString() + " : Total time " + threadDuration + ", totalled " + count + " directories");
 					mainCount += count;
 					totalTime += threadDuration;
-				});
+				}));
 				threads[tn].Start(tn);
 			}
 //			int t = 0;
@@ -306,8 +317,8 @@ namespace Artefacts.TestClient
 			_bufferWriter.WriteLine("Main thread finished at " + mainFinish.ToShortTimeString() + " : Time " + mainDuration);
 			_postThread.Join();
 			threads.Each(thread => thread.Join());
-			_win.PostQueueCount = 0;
-			_win.DirectoryQueueCount = 0;
+//			_win.PostQueueCount = 0;
+//			_win.DirectoryQueueCount = 0;
 //			_win.CRCQueueCount = File.CRCQueueCount;
 			_bufferWriter.WriteLine("Joined POST thread and scanning threads");
 			//File.CRCWaitThreadFinish();
@@ -329,7 +340,7 @@ namespace Artefacts.TestClient
 			}
 		}
 		
-//		[Test]
+		[Test]
 		public void GetLargeFilesWithDupeSize()
 		{
 			int maxPostRetries = 3;
@@ -394,20 +405,20 @@ namespace Artefacts.TestClient
 //							_win.CRCQueueCount = File.CRCQueueCount;
 							
 							bool calculatedCRC = !file2.HasCRC;
-							if (!file2.HasCRC)
+//							if (!file2.HasCRC)
 //								file2.QueueWaitCalculateCRC();
 							
 //							_win.CRCQueueCount = File.CRCQueueCount;
 
-							if (!file2.HasCRC)
-								_bufferWriter.WriteLine("    " + "ERROR!!".PadLeft(26) + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
+//							if (!file2.HasCRC)
+//								_bufferWriter.WriteLine("    " + "ERROR!!".PadLeft(26) + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
 								//_bufferWriter.WriteLine("ERROR! Calculating CRC for \"{0}\"", file2.Path);
-							else
-							{
+//							else
+//							{
 								using (new CriticalRegion())
 								{
 //									long crc = file2.CRC.Value;
-								long crc = file2.CRC;
+								long crc = file2.GetCRC();
 									if (!dupeGroups.ContainsKey(crc))
 										dupeGroups.Add(crc, new QueryResults(new Artefact[] { Artefact.Cache.GetArtefact(file2) }));	//new Artefact[] { artefact2 }));
 									else
@@ -433,10 +444,10 @@ namespace Artefacts.TestClient
 										}
 									}
 								}
-								_bufferWriter.WriteLine("    " + file2.CRC.ToHex().PadLeft(26) + (calculatedCRC ? "*" : " ") + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
+								_bufferWriter.WriteLine("    " + file2.GetCRC().ToHex().PadLeft(26) + (calculatedCRC ? "*" : " ") + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
 								groupSize += file2.Size;
 //								_win.CRCQueueCount = File.CRCQueueCount;
-							}
+//							}
 						}
 						_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group\n");	// results2.Artefacts.Sum(a => a.As<File>().Size)
 						totalSize += groupSize;
@@ -455,8 +466,8 @@ namespace Artefacts.TestClient
 //				Thread.Sleep(threadWaitTime);
 			_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in all groups\n");
 			
-			_win.PostQueueCount = 0;
-			_win.DirectoryQueueCount = 0;
+//			_win.PostQueueCount = 0;
+//			_win.DirectoryQueueCount = 0;
 //			_win.CRCQueueCount = File.CRCQueueCount;
 			
 			totalSize = 0;
@@ -520,7 +531,11 @@ namespace Artefacts.TestClient
 		public void GetDupesFilesCollection()
 		{
 			ArtefactCollection<File> collection = new ArtefactCollection<File>(_client, "Artefacts_FileSystem_File");
-			IQueryable<File> q = collection.Where(f => f.Size > (16*1024*1024) && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+			long s = 16 * 1024 * 1024;
+			IQueryable<File> q = collection.Where(f => f.Size > s);// && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+			foreach (File f in q)
+				_bufferWriter.WriteLine(f);
+			q = collection.Where(f => f.Size > ((long)(16*1024*1024)) && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
 			foreach (File f in q)
 				_bufferWriter.WriteLine(f);
 			_bufferWriter.WriteLine("Count: " + q.Count());

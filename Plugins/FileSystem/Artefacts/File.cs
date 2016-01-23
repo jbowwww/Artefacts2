@@ -105,16 +105,18 @@ namespace Artefacts.FileSystem
 
 
 		private FileCRC _crc;
-		public Int64 CRC {
+		public Int64? CRC {
 			get
 			{
 				if (!HasCRC)
-					throw new InvalidOperationException("Couldn't return CRC because _crc.HasValue = false");
+					return null;
+//					throw new InvalidOperationException("Couldn't return CRC because _crc.HasValue = false");
 				return _crc.CRC;
 			}
 			set
 			{
-				_crc.CRC = value;
+				_crc = (value != null && value.Value != 0) ? new FileCRC(value.Value) : new FileCRC();//value.Value);
+//				_crc.CRC = value;
 			}
 		}
 
@@ -221,6 +223,19 @@ namespace Artefacts.FileSystem
 		#endregion
 
 		#region CRC
+
+		public long GetCRC()
+		{
+			if (HasCRC)
+				return CRC.Value;
+			EventWaitHandle waitCRC = new EventWaitHandle(false, EventResetMode.ManualReset);
+			_crc = new FileCRC(
+				FileInfo ?? (FileInfo = new FileInfo(Path)),
+				new FileCRC.Region[] { new FileCRC.Region(0, FileInfo.Length - 1) },
+				() => waitCRC.Set());
+			waitCRC.WaitOne();
+			return CRC.Value;
+		}
 
 		// TODO: Multisection CRC?
 
@@ -350,7 +365,7 @@ namespace Artefacts.FileSystem
 		public override string ToString()
 		{
 			return string.Format(
-				"[File: Path={8}, Size={0}, CRC={2}, HasCRC={3}, Name={5}, NameWithoutExtension={6}, Extension={7}]",
+				"[File: Path={6}, Size={0}, CRC={1}, HasCRC={2}, Name={3}, NameWithoutExtension={4}, Extension={5}]",
 				Size, CRC, HasCRC, Name, NameWithoutExtension, Extension, Path);
 		}
 		#endregion

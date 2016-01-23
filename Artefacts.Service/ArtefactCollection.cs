@@ -7,137 +7,81 @@ using Artefacts;
 using ServiceStack;
 using MongoDB.Bson;
 using System.Collections.ObjectModel;
+using MongoDB.Driver.Linq;
+using Serialize.Linq.Serializers;
+using MongoDB.Driver;
 
 namespace Artefacts.Service
-{
-	public class ArtefactCollection : ArtefactCollection<Artefact>
+{	
+	public class ArtefactCollection
 	{
-		public ArtefactCollection(IServiceClient serviceClient, string collectionName)
-			: base(serviceClient, collectionName) { }
+		public readonly static Dictionary<Type, IArtefactCollection> CollectionsByType = new Dictionary<Type, IArtefactCollection>();
+
 	}
 	
-	public class ArtefactCollection<T> : IQueryProvider, IQueryable<T>
+	public class ArtefactCollection<T> : ArtefactQueryable<T>, IArtefactCollection, IQueryProvider, IQueryable<T>, IDisposable
 	{
-		#region Private fields
-		static readonly Type _enumerableStaticType = typeof(System.Linq.Enumerable);
-		static readonly Type _queryableStaticType = typeof(System.Linq.Queryable);
-		static readonly Type _queryResultType = typeof(QueryResults);
-		static readonly Type _artefactType = typeof(Artefact);
-		readonly Type _elementType;
-		readonly Type _enumerableType;
-		readonly Type _queryableType;
 		
-		private ClientQueryVisitor<T> _visitor = new ClientQueryVisitor<T>();
-		private QueryResults _results;
+		#region Private fields
+		protected readonly ClientQueryVisitor<T> _visitor = new ClientQueryVisitor<T>();
+		protected readonly ArtefactQueryTranslator<T> _translator = new ArtefactQueryTranslator<T>();
 		#endregion
 		
 		#region Properties
-		/// <summary>
-		/// Gets or sets the client.
-		/// </summary>
 		public IServiceClient Client {
 			get;
 			protected set;
 		}
-		
-		/// <summary>
-		/// Gets or sets the name of the collection.
-		/// </summary>
-		public string CollectionName {
+		public string Name {
 			get;
 			protected set;
-		}
-		
-		/// <summary>
-		/// Gets or sets the results.
-		/// </summary>
-		public QueryResults Results {
-			get { return _results ?? (_results = (QueryResults)Execute(Expression)); }
-		}
-		
-		/// <summary>
-		/// Gets or sets the type of the element.
-		/// </summary>
-		/// <remarks>IQueryable implementation</remarks>
-		public Type ElementType {
-			get { return _elementType; }
-		}
-		
-		/// <summary>
-		/// Gets or sets the expression.
-		/// </summary>
-		/// <remarks>IQueryable implementation</remarks>
-		public Expression Expression {
-			get;
-			protected set;
-		}
-		
-		/// <summary>
-		/// Gets or sets the provider.
-		/// </summary>
-		/// <remarks>IQueryable implementation</remarks>
-		public IQueryProvider Provider {
-			get { return this; }
 		}
 		#endregion
-		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Artefacts.Service.ArtefactsCollection`1"/> class.
-		/// </summary>
-		/// <param name="client">Client.</param>
-		/// <param name="collectionName">Collection name.</param>
-		/// <param name="expression">Expression.</param>
-		public ArtefactCollection(IServiceClient client, string collectionName, Expression expression = null)
+
+		#region Construction & disposal
+//		public ArtefactCollection() : base() { }
+		public ArtefactCollection(IServiceClient client, string name, Expression expression = null)
 		{
 			if (client == null)
 				throw new ArgumentNullException("serviceClient");
-			if (collectionName.IsNullOrSpace())
+			if (name.IsNullOrSpace())
 				throw new ArgumentNullException("collectionName");
 			
-			_elementType = typeof(T);
-			_enumerableType = typeof(IEnumerable<T>);
-			_queryableType = typeof(IQueryable<T>);
+			if (ArtefactCollection.CollectionsByType.ContainsKey(typeof(T)))
+				throw new InvalidOperationException(string.Format("An instance of type ArtefactCollection<{0}> already exists", typeof(T).FullName));
+			ArtefactCollection.CollectionsByType.Add(typeof(T), this);
 			
 			Client = client;
-			CollectionName = collectionName;
-			Expression = expression ?? Expression.Parameter(typeof(IQueryable<T>), "collection");
+			Name = name;
+			Collection = this;
+			Expression = expression ?? Expression.Constant(this);		//Expression.Parameter(typeof(ArtefactCollection<T>), "collection"))
 		}
+		public void Dispose()
+		{
+			if (!ArtefactCollection.CollectionsByType.ContainsKey(ElementType))
+				throw new InvalidOperationException("ArtefactCollection.CollectionsByType does not have an entry with key type \"" + ElementType.FullName + "\"");
+			ArtefactCollection.CollectionsByType.Remove(ElementType);
+		}
+		#endregion
 
 		#region IQueryProvider implementation
-		/// <Docs>To be added.</Docs>
-		/// <returns>To be added.</returns>
-		/// <summary>
-		/// Creates the query.
-		/// </summary>
-		/// <param name="expression">Expression.</param>
 		public IQueryable CreateQuery(Expression expression)
 		{
-			return (IQueryable)CreateQuery<T>(expression);
+			return new ArtefactQueryable<T>(this, expression);
 		}
-
-		/// <Docs>To be added.</Docs>
-		/// <returns>To be added.</returns>
-		/// <summary>
-		/// Creates the query.
-		/// </summary>
-		/// <param name="expression">Expression.</param>
-		/// <typeparam name="TElement">The 1st type parameter.</typeparam>
 		public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
 		{
-			return new ArtefactCollection<TElement>(Client, CollectionName, expression);
+			return new ArtefactQueryable<TElement>(
+				(ArtefactCollection<TElement>)ArtefactCollection.CollectionsByType[typeof(TElement)],
+				expression);
 		}
-
-		/// <Docs>To be added.</Docs>
-		/// <returns>To be added.</returns>
-		/// <summary>
-		/// Execute the specified expression.
-		/// </summary>
-		/// <param name="expression">Expression.</param>
 		public object Execute(Expression expression)
 		{
-			return Client.Get<QueryResults>(new QueryRequest(CollectionName, _visitor.Visit(expression)));
+			Expression visitedExpression = _visitor.Visit(expression);
+			IMongoQuery translatedQuery = _translator.Translate(visitedExpression);
+//			QueryDocument queryDoc;
+			return Client.Get<QueryResults>(new QueryRequest(Name, translatedQuery));
 		}
-
 		/// <Docs>To be added.</Docs>
 		/// <returns>To be added.</returns>
 		/// <summary>
@@ -145,32 +89,40 @@ namespace Artefacts.Service
 		/// </summary>
 		/// <param name="expression">Expression.</param>
 		/// <typeparam name="TResult">The 1st type parameter.</typeparam>
+		/// <remarks>
+		/// Going to have to think carefully now about how things need to be done. How to handle other LINQ extensions methods
+		/// You will prob need to extract from the expressions the queryable "entities" that are needed for either results,
+		/// or functions that return scalars (and they will need to be handled specially if you want things handled server side
+		/// wherever possible).
+		/// Might need to write some example test queries to use as unit tests. It will take a while to get all (or most) of
+		/// the LINQ methods working
+		/// </remarks>
 		public TResult Execute<TResult>(Expression expression)
 		{
-			Type _resultType = typeof(TResult);
+			Type resultType = typeof(TResult);
 			
 			expression = _visitor.Visit(expression);
 			
 			MethodCallExpression mce = expression as MethodCallExpression;
 			if (mce != null)
 			{
-				if (!_resultType.IsAssignableFrom(mce.Method.ReturnType))
-					throw new ArgumentOutOfRangeException("TResult", _resultType, "TResult type \"" + _resultType.FullName + "\" for expression \"" + expression + "\" should have been assignable from \"" + mce.Method.ReturnType.FullName + "\"");
-				if (mce.Method.DeclaringType == _enumerableStaticType || mce.Method.DeclaringType == _queryableStaticType)
+				if (!resultType.IsAssignableFrom(mce.Method.ReturnType))
+					throw new ArgumentOutOfRangeException("TResult", resultType, "TResult type \"" + resultType.FullName + "\" for expression \"" + expression + "\" should have been assignable from \"" + mce.Method.ReturnType.FullName + "\"");
+				if (mce.Method.DeclaringType == EnumerableStaticType || mce.Method.DeclaringType == QueryableStaticType)
 				{
-					if (!typeof(QueryResults).IsAssignableFrom(_resultType) &&
-					    !_enumerableType.IsAssignableFrom(_resultType) &&
-					    !_queryableType.IsAssignableFrom(_resultType))
+					if (!typeof(QueryResults).IsAssignableFrom(resultType) &&
+					    !EnumerableType.IsAssignableFrom(resultType) &&
+					    !QueryableType.IsAssignableFrom(resultType))
 					{
 						if (mce.Arguments[0] == null)
 							throw new NullReferenceException("Method Call \"" + mce + "\" inner object is null");
-						if (mce.Arguments[0].Type != _enumerableType && mce.Arguments[0].Type != _queryableType)
-							throw new ArgumentOutOfRangeException("expression", expression, "Expression too complex: Method Call \"" + mce + "\" inner object type is not \"" + _enumerableType.FullName + "\" or \"" + _queryableType.FullName + "\"");
+						if (mce.Arguments[0].Type != EnumerableType && mce.Arguments[0].Type != QueryableType)
+							throw new ArgumentOutOfRangeException("expression", expression, "Expression too complex: Method Call \"" + mce + "\" inner object type is not \"" + EnumerableType.FullName + "\" or \"" + QueryableType.FullName + "\"");
 						QueryResults qr = (QueryResults)Execute(mce.Arguments[0]);
 						if (mce.Method.Name == "Count" && mce.Arguments.Count == 1)
 							return (TResult)(object)qr.Count;
 						return (TResult)mce.Method.Invoke(null,
-							new[] { qr.Select(a => a.As(_resultType.GetElementType())) }.Concat(
+							new[] { qr.Select(a => a.As(resultType.GetElementType())) }.Concat(
 								mce.Arguments.Skip(1).Select(e => (e as ConstantExpression).Value)
 							).ToArray());
 					}
@@ -178,33 +130,11 @@ namespace Artefacts.Service
 				return (TResult)Execute(mce);
 			}
 			
-			if (_resultType != _queryResultType)
-				throw new ArgumentOutOfRangeException("TResult", _resultType, "TResult type \"" + _resultType.FullName + "\" for expression \"" + expression + "\" should have been \"" + _queryResultType.FullName + "\"");
+			if (resultType != QueryResultType)
+				throw new ArgumentOutOfRangeException("TResult", resultType, "TResult type \"" + resultType.FullName + "\" for expression \"" + expression + "\" should have been \"" + QueryResultType.FullName + "\"");
 			
 			return (TResult)Execute(expression);
 		}
-		#endregion
-		
-		#region IEnumerable implementations
-		/// <summary>
-		/// Gets the enumerator.
-		/// </summary>
-		public IEnumerator<T> GetEnumerator()
-		{
-			if (_elementType == _artefactType)
-				return (IEnumerator<T>)Results.Artefacts;
-			return Results.Artefacts.Select(a => a.As<T>()).GetEnumerator();
-		}
-
-		/// <summary>
-		/// Gets the enumerator.
-		/// </summary>
-		/// <returns>The enumerator.</returns>
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return (IEnumerator)GetEnumerator();
-		}
-
 		#endregion
 	}
 }

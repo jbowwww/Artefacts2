@@ -91,7 +91,6 @@ namespace Artefacts.TestClient
 										using (ArtefactsTestClient Client = new ArtefactsTestClient(serviceBaseUrl, ClientWriter, win))
 										{
 											Client.Run();
-											
 										}
 									}
 									catch (Exception ex)

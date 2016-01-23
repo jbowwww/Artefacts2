@@ -30,29 +30,98 @@ namespace Artefacts.Service
 			BindingFlags.Instance | BindingFlags.Static |
 			BindingFlags.Public | BindingFlags.NonPublic;
 		
-		protected override Expression VisitConstant(ConstantExpression c)
-		{
+//		protected override Expression VisitConstant(ConstantExpression c)
+//		{
 //			return Expression.Convert(c, c.Type);
-			return base.VisitConstant(c);
-		}
+//			return base.VisitConstant(c);
+//		}
 		
-		protected override Expression VisitParameter(ParameterExpression p)
-		{
-			if (p.Name == "collection" && p.Type == typeof(IQueryable<T>))
-				return Expression.Parameter(typeof(IQueryable<Artefact>), "collection");
-			else if (p.Type == typeof(T))
-				return Expression.Parameter(typeof(Artefact), p.Name);
-			return p;
-		}
+//		protected override Expression VisitBinary(BinaryExpression b)
+//		{
+//			return Expression.MakeBinary(b.NodeType, Expression.TypeAs(b.Left, b.Left.Type), Expression.TypeAs(b.Right, b.Right.Type));
+//		}
+		
+//		protected override Expression VisitParameter(ParameterExpression p)
+//		{
+//			if (p.Name == "collection" &&
+//			 (	p.Type.GetInterfaces().Contains(typeof(IQueryable))
+//			 || p.Type.GetInterfaces().Contains(typeof(IEnumerable<T>)) ) )
+//				return Expression.Parameter(typeof(IQueryable<Artefact>), "collection");
+//			else
+//			if (p.Type == typeof(T))
+//				return Expression.Parameter(typeof(Artefact), p.Name);
+//			return p;
+//		}
 		
 		protected override Expression VisitMemberAccess(MemberExpression m)
 		{
+//			if (m.Expression.NodeType == ExpressionType.Parameter)
+//			{
+//				ParameterExpression pe = m.Expression as ParameterExpression;
+//			}
+//			
+//			if (m.Expression.NodeType == ExpressionType.RuntimeVariables)
+//			{
+//				RuntimeVariablesExpression rve = m.Expression as RuntimeVariablesExpression;
+//				;
+//			}
+			
 			Expression mExpression = Visit(m.Expression);
 			if (mExpression != null)
 			{
+				if (mExpression.NodeType == ExpressionType.Parameter)
+				{
+					ParameterExpression pe = mExpression as ParameterExpression;
+					if (pe.Type == typeof(Artefact))
+					{
+//						return Expression.Convert(
+//							Expression.Property(pe,
+//			                     typeof(BsonDocument).GetProperty("Item", typeof(BsonValue), new Type[] { typeof(string) }),
+//			                     Expression.Constant(m.Member.Name)), m.Member.GetMemberReturnType());
+						string bsonValueMemberName =
+							m.Type == typeof(string) ? "AsString" :
+							m.Type == typeof(Int64) ? "AsInt64" :
+							m.Type == typeof(UInt64) ? "AsUInt64" :
+							m.Type == typeof(Int32) ? "AsInt32" :
+							m.Type == typeof(UInt32) ? "AsUInt32" :
+							m.Type == typeof(bool) ? "AsBool" :
+							m.Type == typeof(int) ? "AsInt64" :
+							m.Type == typeof(DateTime) ? "AsDateTime" :
+							m.Type == typeof(double) ? "AsDouble" :
+								"RawValue";
+						
+//						return
+//							Expression.Convert(
+//								Expression.Property(
+//									Expression.Parameter(typeof(DynamicObject), pe.Name),
+//								m.Member.Name),
+//								m.Type);
+//							Expression.Convert(
+//								Expression.Property(pe, "Item", new Expression[] { Expression.Constant(m.Member.Name) }),
+//							m.Type);
+						return Expression.Convert(
+							Expression.Call(pe, typeof(Artefact).GetMethod("GetDataMember", new Type[] { typeof(string) }),
+								new Expression[] { Expression.Constant(m.Member.Name) }),
+							m.Type);
+//							typeof(BsonValue).GetProperty(bsonValueMemberName, m.Type));
+						
+//						return Expression.Property(
+//							Expression.Call(pe, typeof(BsonDocument).GetMethod("GetValue", new Type[] { typeof(string) }),
+//								new Expression[] { Expression.Constant(m.Member.Name) }),
+//							typeof(BsonValue).GetProperty(bsonValueMemberName, m.Type));
+//						//, m.Member.GetMemberReturnType());
+					}
+				}
+				
+				if (mExpression.NodeType == ExpressionType.RuntimeVariables)
+				{
+					RuntimeVariablesExpression rve = mExpression as RuntimeVariablesExpression;
+					;
+				}
+				
 				// If is a member of a constant whose type is autoclass, invoke the member and return as a cosntant
 				// (I *think* this replaces local variables references)
-				if (mExpression.Type.IsAutoClass || (mExpression.NodeType == ExpressionType.Constant && ((ConstantExpression)mExpression).Value != null))
+				if (mExpression.Type.IsAutoLayout && (mExpression.NodeType == ExpressionType.Constant))// && ((ConstantExpression)mExpression).Value != null))
 				{
 					return Expression.Constant(
 						m.Member.DeclaringType.InvokeMember(
@@ -63,12 +132,12 @@ namespace Artefacts.Service
 				
 				// If is a member of Artefact which doesn't actually exist in type, it must be a dynamic property. Convert
 				// the member expression to a indexer expression to return the dynamic property (ie artefact[m.Member.Name])
-				else if (mExpression.Type == typeof(Artefact) && !typeof(Artefact).GetMembers(bf).Select(mi => mi.Name).Contains(m.Member.Name))
-				{
-					return Expression.Convert(
-						Expression.Call(mExpression, "GetDataMember", new Type[] {}, Expression.Constant(m.Member.Name)),
-						m.Member.GetMemberReturnType());
-				}
+//				else if (mExpression.Type == typeof(Artefact) && !typeof(Artefact).GetMembers(bf).Select(mi => mi.Name).Contains(m.Member.Name))
+//				{
+//					return Expression.Convert(
+//						Expression.Call(mExpression, "GetDataMember", new Type[] {}, Expression.Constant(m.Member.Name)),
+//						m.Member.GetMemberReturnType());
+//				}
 			}
 			
 			// default
@@ -94,38 +163,55 @@ namespace Artefacts.Service
 			MethodInfo mi = m.Method;
 			ParameterInfo[] pi = mi.GetParameters();
 			
-			// If method call is on a constant instance and all arguments are constants too,
-			// invoke method and replace with constant expression of method's return value
-			if (mObject != null && mObject.NodeType == ExpressionType.Constant
-			 && mArguments.All<Expression>((arg) => arg.NodeType == ExpressionType.Constant))
-				return Expression.Constant(m.Method.Invoke((mObject as ConstantExpression).Value,
-					mArguments.Cast<ConstantExpression>().Select<ConstantExpression, object>((ce) => ce.Value).ToArray()));
-
-			// If is a member of Artefact which doesn't actually exist in type, it must be a dynamic property. Convert
-			// the member expression to a indexer expression to return the dynamic property (ie artefact[m.Member.Name])
-			else if (//mObject.Type == typeof(IEnumerable<Artefact>)
-			         mArguments.Count() > 0 && typeof(IEnumerable<Artefact>).IsAssignableFrom(mArguments.ElementAt(0).Type)
-			 && 	(m.Method.DeclaringType == _enumerableStaticType
-			      || m.Method.DeclaringType == _queryableStaticType))
+			if (mArguments != m.Arguments || mObject != m.Object)
 			{
-				if (m.Method.IsGenericMethod)
-				{
-					Type[] genericArgs = m.Method.GetGenericArguments();
-					for (int i = 0; i < genericArgs.Length; i++)
-						if (genericArgs[i] == _elementType)
-							genericArgs[i] = _artefactType;
-					return Expression.Call(
-						mObject,
-						m.Method.GetGenericMethodDefinition().MakeGenericMethod(genericArgs),
-						mArguments);
-				}
+
+				// If method call is on a constant instance and all arguments are constants too,
+				// invoke method and replace with constant expression of method's return value
+				if (mObject != null && mObject.NodeType == ExpressionType.Constant
+				 && mArguments.All<Expression>((arg) => arg.NodeType == ExpressionType.Constant))
+					return Expression.Constant(m.Method.Invoke((mObject as ConstantExpression).Value,
+						mArguments.Cast<ConstantExpression>().Select<ConstantExpression, object>((ce) => ce.Value).ToArray()));
+	
+				// If is a member of Artefact which doesn't actually exist in type, it must be a dynamic property. Convert
+				// the member expression to a indexer expression to return the dynamic property (ie artefact[m.Member.Name])
+//				else if (//mObject.Type == typeof(IEnumerable<Artefact>)
+//				         mArguments.Count() > 0 && typeof(IQueryable<Artefact>).IsAssignableFrom(mArguments.ElementAt(0).Type)
+//				 && 	(m.Method.DeclaringType == _enumerableStaticType
+//				      || m.Method.DeclaringType == _queryableStaticType))
+//				{
+//					if (m.Method.IsGenericMethod)
+//					{
+//						Type[] genericArgs = m.Method.GetGenericArguments();
+//						for (int i = 0; i < genericArgs.Length; i++)
+//							if (genericArgs[i] == _elementType)
+//								genericArgs[i] = typeof(Artefact);	//_artefactType;
+//						MethodInfo mInfo = m.Method.GetGenericMethodDefinition().MakeGenericMethod(genericArgs);
+//						return Expression.Call( mObject, mInfo, mArguments);
+//					}
+//					return Expression.Call(mObject, m.Method, mArguments);
+//				}
+//			
+//				if (mObject == null || (mObject.NodeType == ExpressionType.Constant && mObject.Type.IsSpecialName))
+//				{
+//					return Expression.Convert(Expression.Constant(
+//						m.Method.DeclaringType.InvokeMember(
+//						m.Method.Name,
+//						BindingFlags.Public | BindingFlags.NonPublic
+//						| BindingFlags.InvokeMethod
+//						| (mObject == null ? BindingFlags.Static : BindingFlags.Instance),
+//						null,
+//						mObject == null ? null : ((ConstantExpression)mObject).Value,
+//						new object[] { }),
+//						m.Type), m.Type);
+//				}
+				
 				return Expression.Call(mObject, m.Method, mArguments);
 			}
 			
 			// default
 			return base.VisitMethodCall(m);
 		}
-		
 		
 		
 		protected override Expression VisitNewArray(NewArrayExpression na)
@@ -150,7 +236,7 @@ namespace Artefacts.Service
 //		}
 		protected override Expression VisitLambda(LambdaExpression lambda)
 		{
-			return Expression.Lambda(lambda.Body, VisitExpressionList(lambda.Parameters));
+			return Expression.Lambda(Visit(lambda.Body), VisitExpressionList(lambda.Parameters));
 		}
 	}
 }

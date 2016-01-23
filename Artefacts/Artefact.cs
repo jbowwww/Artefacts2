@@ -14,6 +14,8 @@ using System.Linq;
 using System.Collections.Concurrent;
 using ServiceStack.Text;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Options;
+using MongoDB.Bson.Serialization.Serializers;
 
 namespace Artefacts
 {
@@ -35,7 +37,7 @@ namespace Artefacts
 	/// </remarks>
 	[Route("/Artefacts/{Collection}/{Id}/", "POST,PUT")]
 //	[DataContract]
-	public class Artefact : DynamicObject, IReturn	//, IConvertibleToBsonDocument	//, IDictionary<string, object>
+	public class Artefact : DynamicObject, IReturn, IBsonDocumentSerializer
 	{
 		#region Static members
 		public static readonly ILogFactory LogFactory;
@@ -339,6 +341,12 @@ namespace Artefacts
 			_artefactData = data;
 //			_instanceCache = new ArtefactTypedInstanceCache(Id);
 		}
+		
+		public Artefact(BsonDocument bsonDoc)
+		{
+			Dictionary<string, object> _dict = bsonDoc.ToDictionary();
+			_artefactData = new DataDictionary(_dict);
+		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Artefact"/> class.
@@ -486,6 +494,48 @@ namespace Artefacts
 				sb.AppendFormat(" {0}={1}", field.Key, field.Value ?? "(null)");
 			return sb.Append("]").ToString();
 		}
+
+		#region IBsonDocumentSerializer implementation
+
+		public BsonSerializationInfo GetMemberSerializationInfo(string memberName)
+		{
+			if (Data.ContainsKey(memberName))
+			{
+				object v = Data[memberName];
+				Type type = v == null ? typeof(System.Object) : v.GetType();
+				IBsonSerializer serializer = BsonSerializer.LookupSerializer(type);
+				IBsonSerializationOptions options = DocumentSerializationOptions.Defaults;
+				BsonSerializationInfo memberInfo = new BsonSerializationInfo(memberName, serializer, type, options);
+				return memberInfo;
+			}
+			throw new MissingMemberException("Artefact", memberName);
+		}
+
+		#endregion
+
+		#region IBsonSerializer implementation
+
+		public object Deserialize(MongoDB.Bson.IO.BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
+		{
+			return BsonDocumentSerializer.Instance.Deserialize(bsonReader, nominalType, options);
+		}
+
+		public object Deserialize(MongoDB.Bson.IO.BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
+		{
+			return BsonDocumentSerializer.Instance.Deserialize(bsonReader, nominalType, actualType, options);
+		}
+
+		public IBsonSerializationOptions GetDefaultSerializationOptions()
+		{
+			return DocumentSerializationOptions.SerializeIdFirstInstance;
+		}
+
+		public void Serialize(MongoDB.Bson.IO.BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
+		{
+			BsonDocumentSerializer.Instance.Serialize(bsonWriter, nominalType, value, options);
+		}
+
+		#endregion
 
 		/// <summary>
 		/// Converts this object to a BsonDocument.

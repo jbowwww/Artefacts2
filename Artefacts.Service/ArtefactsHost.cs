@@ -63,7 +63,11 @@ namespace Artefacts.Service
 		public ArtefactsHost(string serviceBaseUrl, TextWriter output)
 			: base("Artefacts", typeof(Artefact).Assembly,
 				typeof(Artefacts.Service.ArtefactsService).Assembly,
-				typeof(Artefacts.FileSystem.Disk).Assembly)
+				typeof(Artefacts.FileSystem.Disk).Assembly,
+			    typeof(System.Linq.Expressions.Expression).Assembly,
+			       typeof(MongoDB.Bson.BsonDocument).Assembly,
+			       typeof(MongoDB.Driver.MongoCollection).Assembly,
+				typeof(Serialize.Linq.ExpressionContext).Assembly)
 		{
 			if (Singleton != null)
 				throw new InvalidOperationException("Singleton instance already exists");

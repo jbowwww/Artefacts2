@@ -10,6 +10,7 @@ using Serialize.Linq.Nodes;
 using Serialize.Linq;
 using Serialize.Linq.Extensions;
 using Serialize.Linq.Serializers;
+using MongoDB.Driver.Linq;
 
 namespace Artefacts.Service
 {
@@ -28,7 +29,7 @@ namespace Artefacts.Service
 		static QueryRequest()
 		{
 //			Visitor = new ClientQueryVisitor<Type>();
-			Serializer = new ExpressionSerializer(new Serialize.Linq.Serializers.JsonSerializer());
+			Serializer = new ExpressionSerializer(new JsonSerializer());
 		}
 
 		public static QueryRequest Make<T>(Expression<Func<T, bool>> predicate)
@@ -92,13 +93,16 @@ namespace Artefacts.Service
 					return _expression;
 				ExpressionNode node = QueryData/*.UrlDecode()*/.FromJson<ExpressionNode>();
 				_expression = node.ToExpression();
+//				_expression = Serializer.DeserializeText(QueryData.UrlDecode());
 				return _expression;
 				//Serializer.DeserializeText(QueryData));
 			}
 			set
 			{
+//				QueryData = ExpressionFormatter.ToString(value);
 				ExpressionNode node = (_expression = value).ToExpressionNode();
 				QueryData = ServiceStack.StringExtensions.ToJson<ExpressionNode>(node)/*r4.UrlEncode()*/;
+//				QueryData = Serializer.SerializeText(_expression = value).UrlEncode();
 				DataFormat = "Expression";
 			}
 		}

@@ -49,7 +49,7 @@ namespace Artefacts
 				{
 					foreach (ResponseError error in we.ResponseStatus.Errors)
 						sb.Append("Error[]: " + error.FieldName + ": " + error.Message);
-					sb.AppendFormat("{0}StackTrace:{0}{1}{2}",
+					sb.AppendFormat("{0}StackTrace:{0}{1}\n{2}\n",
 						string.Concat("\n", indentString.Repeat(indentLevel)),
 						indentString.Repeat(indentLevel + 1),
 						we.ResponseStatus.StackTrace);
@@ -58,7 +58,7 @@ namespace Artefacts
 			else if (ex is TargetInvocationException)
 			{
 				TargetInvocationException te = ex as TargetInvocationException;
-				sb.AppendFormat("{0}Message: {1}\n{0}Source: {2}\n{0}TargetSite: {5}\n{0}Data: {3}\n{0}StackTrace: {4}\n{0}InnerException: {6}",
+				sb.AppendFormat("{0}Message: {1}\n{0}Source: {2}\n{0}TargetSite: {5}\n{0}Data: {3}\n{0}StackTrace: {4}\n{0}InnerException: {6}\n",
                 indentString.Repeat(indentLevel), te.Message, te.Source, te.Data.Count,	//FormatString(indentLevel, indentString),
                 te.StackTrace == null ? "(null)" : string.Concat("\n", indentString.Repeat(indentLevel + 1),
                                                  te.StackTrace.Trim().Replace("\n", string.Concat("\n", indentString.Repeat(indentLevel)))),
@@ -69,7 +69,7 @@ namespace Artefacts
 			}
 			else
 			{
-				sb.AppendFormat("{0}Message: {1}\n{0}Source: {2}\n{0}TargetSite: {5}\n{0}Data: {3}\n{0}StackTrace: {4}\n{0}InnerException: {6}",
+				sb.AppendFormat("{0}Message: {1}\n{0}Source: {2}\n{0}TargetSite: {5}\n{0}Data: {3}\n{0}StackTrace: {4}\n{0}InnerException: {6}\n",
 					indentString.Repeat(indentLevel), ex.Message, ex.Source, ex.Data.Count,	//FormatString(indentLevel, indentString),
 					ex.StackTrace == null ? "(null)" : string.Concat("\n", indentString.Repeat(indentLevel + 1),
 						ex.StackTrace.Trim().Replace("\n", string.Concat("\n", indentString.Repeat(indentLevel)))),
