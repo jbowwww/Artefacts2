@@ -55,7 +55,9 @@ namespace Artefacts.TestClient
 			win.GetPostQueueCount += () => PostQueue.Count;
 			win.GetDirQueueCount += () => DirectoryQueue.Count;
 			win.GetPostQueueCount += () => Artefacts.FileSystem.FileCRC.QueueCount;
-
+			win.GetCurrentTestName += () => CurrentTest == null ? "" : CurrentTest.Name;
+			win.GetCurrentTestTime += () => CurrentTestStartTime;
+			
 			_bufferWriter.WriteLine(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_client = new JsonServiceClient(_serviceBaseUrl) {
 //				RequestFilter = (HttpWebRequest request) => bufferWriter.WriteLine(
@@ -340,7 +342,7 @@ namespace Artefacts.TestClient
 			}
 		}
 		
-		[Test]
+//		[Test]
 		public void GetLargeFilesWithDupeSize()
 		{
 			int maxPostRetries = 3;
@@ -356,20 +358,18 @@ namespace Artefacts.TestClient
 			long i = 0;
 			long totalSize = 0;
 		
-			//IEnumerable<File> fileResults = results.Select(a => a.As<File>());
-			
+//IEnumerable<File> fileResults = results.Select(a => a.As<File>());
 //			ParallelLoopResult result = Parallel.ForEach(
 //				results.Artefacts,
 //				new ParallelOptions() {
 //					MaxDegreeOfParallelism = 4
 //				},
 //				(artefact) => {
+			
 			foreach (Artefact artefact in results.Artefacts)
 			{
 				long groupSize = 0;
 				File file = artefact.As<File>();
-				
-//				_win.CRCQueueCount = File.CRCQueueCount;
 				
 				if (!MainClass.HasQuit() && !sizeGroups.ContainsKey(file.Size))
 				{
@@ -402,28 +402,15 @@ namespace Artefacts.TestClient
 							if (MainClass.HasQuit())
 								return;
 							
-//							_win.CRCQueueCount = File.CRCQueueCount;
-							
 							bool calculatedCRC = !file2.HasCRC;
-//							if (!file2.HasCRC)
-//								file2.QueueWaitCalculateCRC();
-							
-//							_win.CRCQueueCount = File.CRCQueueCount;
-
-//							if (!file2.HasCRC)
-//								_bufferWriter.WriteLine("    " + "ERROR!!".PadLeft(26) + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
-								//_bufferWriter.WriteLine("ERROR! Calculating CRC for \"{0}\"", file2.Path);
-//							else
-//							{
-								using (new CriticalRegion())
-								{
-//									long crc = file2.CRC.Value;
-								long crc = file2.GetCRC();
-									if (!dupeGroups.ContainsKey(crc))
-										dupeGroups.Add(crc, new QueryResults(new Artefact[] { Artefact.Cache.GetArtefact(file2) }));	//new Artefact[] { artefact2 }));
-									else
-										dupeGroups[crc].Add(Artefact.Cache.GetArtefact(file2));
-								}
+							file2.DoCRC(false, true, f2 => {
+								if (!f2.HasCRC)
+									throw new InvalidOperationException("continueWith() call from File.DoCRC found no CRC set");
+								if (!dupeGroups.ContainsKey(f2.CRC.Value))
+									dupeGroups.Add(f2.CRC.Value, new QueryResults(new Artefact[] { Artefact.Cache.GetArtefact(file2) }));	//new Artefact[] { artefact2 }));
+								else
+									dupeGroups[f2.CRC.Value].Add(Artefact.Cache.GetArtefact(file2));
+								
 								if (calculatedCRC)
 								{
 									for (int j = 0; !MainClass.HasQuit() && (j < maxPostRetries); j++)
@@ -445,30 +432,31 @@ namespace Artefacts.TestClient
 									}
 								}
 								_bufferWriter.WriteLine("    " + file2.GetCRC().ToHex().PadLeft(26) + (calculatedCRC ? "*" : " ") + "    " + File.FormatSize(file2.Size).PadLeft(12) + "    " + file2.Path);
-								groupSize += file2.Size;
-//								_win.CRCQueueCount = File.CRCQueueCount;
-//							}
+							});
+							groupSize += file2.Size;
 						}
-						_bufferWriter.WriteLine("Total " + File.FormatSize(groupSize) + " in group\n");	// results2.Artefacts.Sum(a => a.As<File>().Size)
+						
 						totalSize += groupSize;
-//						_win.CRCQueueCount = File.CRCQueueCount;
 					}
 				}
-			}//);
+			}
 			
 //			if (!result.IsCompleted)
 //			{
 //				_bufferWriter.WriteLine("Parallel.Foreach() not complete... waiting");
 //				result.AsTaskResult().Wait();
 //			}
+			
 			// Should implicitly wait for all tasks
 //			while (!result.IsCompleted)
 //				Thread.Sleep(threadWaitTime);
-			_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in all groups\n");
 			
-//			_win.PostQueueCount = 0;
-//			_win.DirectoryQueueCount = 0;
-//			_win.CRCQueueCount = File.CRCQueueCount;
+//			foreach (KeyValuePair<long, QueryResults> qrp in sizeGroups)
+//			{
+//				_bufferWriter.WriteLine("Total " + File.FormatSize(qrp.Key * qrp.Value.Count) + " in group\n");	// results2.Artefacts.Sum(a => a.As<File>().Size)
+//
+//			}
+			_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in all groups\n");
 			
 			totalSize = 0;
 			IList<IList<File>> _fileListList = new List<IList<File>>();
@@ -531,14 +519,19 @@ namespace Artefacts.TestClient
 		public void GetDupesFilesCollection()
 		{
 			ArtefactCollection<File> collection = new ArtefactCollection<File>(_client, "Artefacts_FileSystem_File");
-			long s = 16 * 1024 * 1024;
-			IQueryable<File> q = collection.Where(f => f.Size > s);// && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
-			foreach (File f in q)
-				_bufferWriter.WriteLine(f);
-			q = collection.Where(f => f.Size > ((long)(16*1024*1024)) && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
-			foreach (File f in q)
-				_bufferWriter.WriteLine(f);
-			_bufferWriter.WriteLine("Count: " + q.Count());
+			IQueryable<File> q = collection.Where(f => f.Size > 16 * 1024 * 1024);// && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+			IQueryable<File> q2 = collection.Where(f => (!f.HasCRC /* f.CRC == null */ || !f.CRC.HasValue) || f.CRC.Value == 0);// ==  0));
+				// ^^ TODO: Can't get the nullable field thing to work and all my mongo DB has CRC: null on lots of files
+//			foreach (File f in q)
+//				_bufferWriter.WriteLine(f);
+			_bufferWriter.WriteLine("Collection has {0} files\nFound {1} files with Size > 16MB\nFound {2} files with null CRC\n",
+			                        0/*collection.Count()*/, 
+			                        q.Count(),
+			                        0);//q2.Count());
+//			IQueryable<File> q3 = collection.Where(f => f.Size > ((long)(16*1024*1024)) && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+//			foreach (File f in q3)
+//				_bufferWriter.WriteLine(f);
+//			_bufferWriter.WriteLine("Count: " + q3.Count());
 		}
 		
 		#region Helper functions

@@ -115,7 +115,7 @@ namespace Artefacts.FileSystem
 			}
 			set
 			{
-				_crc = (value != null && value.Value != 0) ? new FileCRC(value.Value) : new FileCRC();//value.Value);
+				_crc = (value != null && value.Value != 0) ? new FileCRC(value.Value) : new FileCRC();//new FileInfo(Path));//value.Value);
 //				_crc.CRC = value;
 			}
 		}
@@ -133,7 +133,7 @@ namespace Artefacts.FileSystem
 
 		public bool HasCRC { get { return _crc.HasCRC; } }// CRC != 0 && CRC.HasValue && CRC.Value != 0; } }
 
-		public bool IsCRCQueued { get { return !HasCRC /* && _crcReady*/; } }
+		public bool IsCRCQueued { get { return _crc.IsCRCQueued; } }	///*!HasCRC*/ /* && _crcReady*/; } }
 
 		/// <summary>
 		/// Gets the name.
@@ -224,17 +224,29 @@ namespace Artefacts.FileSystem
 
 		#region CRC
 
-		public long GetCRC()
+		public long GetCRC(bool force = false)
 		{
-			if (HasCRC)
-				return CRC.Value;
-			EventWaitHandle waitCRC = new EventWaitHandle(false, EventResetMode.ManualReset);
-			_crc = new FileCRC(
-				FileInfo ?? (FileInfo = new FileInfo(Path)),
-				new FileCRC.Region[] { new FileCRC.Region(0, FileInfo.Length - 1) },
-				() => waitCRC.Set());
-			waitCRC.WaitOne();
+			DoCRC(force, true);
+			if (!HasCRC)
+				throw new InvalidOperationException("GetCRC(force=" + force + ") waited and then CRC failed");
 			return CRC.Value;
+		}
+
+
+		public void DoCRC(bool force = false, bool wait = false, Action<File> continueWith = null)
+		{
+			EventWaitHandle waitCRC = new EventWaitHandle(false, EventResetMode.ManualReset);
+			if (force || (!HasCRC && !IsCRCQueued))
+			{
+				_crc = new FileCRC(
+					FileInfo ?? (FileInfo = new FileInfo(Path)),
+					new FileCRC.Region[] { new FileCRC.Region(0, FileInfo.Length - 1) },
+					() => waitCRC.Set());
+				if (wait && IsCRCQueued)
+					waitCRC.WaitOne();
+				if (continueWith != null)
+					continueWith(this);
+			}
 		}
 
 		// TODO: Multisection CRC?

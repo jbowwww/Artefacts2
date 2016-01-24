@@ -41,11 +41,15 @@ public partial class MainWindow: Gtk.Window
 	}
 	
 	public delegate int GetIntDelegate();
+	public delegate string GetStringDelegate();
+	public delegate TimeSpan GetTimeSpanDelegate();
+	public delegate DateTime GetDateTimeDelegate();
+	public GetIntDelegate GetPostQueueCount;
+	public GetIntDelegate GetDirQueueCount;
+	public GetIntDelegate GetCRCQueueCount;
+	public GetStringDelegate GetCurrentTestName;
+	public GetDateTimeDelegate GetCurrentTestTime;
 
-		public GetIntDelegate GetPostQueueCount;
-		public GetIntDelegate GetDirQueueCount;
-		public GetIntDelegate GetCRCQueueCount;
-	
 //	public int PostQueueCount { get; set; }
 //	public int DirectoryQueueCount { get; set; }
 //	public int CRCQueueCount { get; set; }
@@ -62,12 +66,14 @@ public partial class MainWindow: Gtk.Window
 			Application.Invoke((sender, e) => {
 				txtPostQueue.Text = "Post Queue: " + (GetPostQueueCount == null ? 0 : GetPostQueueCount.Invoke());
 				txtDirectoryQueue.Text = "Directory Queue: " + (GetDirQueueCount == null ? 0 : GetDirQueueCount.Invoke());
-				txtCRCQueue.Text = "CRC Queue: " + (GetCRCQueueCount == null ? 0 : GetCRCQueueCount.Invoke());;
+				txtCRCQueue.Text = "CRC Queue: " + (GetCRCQueueCount == null ? 0 : GetCRCQueueCount.Invoke());
+				txtTestName.Text = GetCurrentTestName == null ? "No test running" : "Current Test: " + GetCurrentTestName.Invoke();
+				txtTestTime.Text = GetCurrentTestTime == null ? "" : (DateTime.Now - GetCurrentTestTime.Invoke()).ToString();
 			});
 			if (_autoScrollHost && _autoScrollHostUpdated)
 			{
 				TextIter pos = tvHost.Buffer.EndIter;
-				if (posHost.Equal(default(TextIter)) || pos.Equal(posHost))	//.Offset != posHost.Offset)
+				if (posHost.Equal(default(TextIter)) || !pos.Equal(posHost))	//.Offset != posHost.Offset)
 				{
 					posHost = pos;
 					pos.LineOffset = 0;
@@ -77,7 +83,7 @@ public partial class MainWindow: Gtk.Window
 			if (_autoScrollClient && _autoScrollClientUpdated)
 			{
 				TextIter pos = tvClient.Buffer.EndIter;
-				if (posClient.Equal(default(TextIter)) || pos.Equal(posClient))
+				if (posClient.Equal(default(TextIter)) || !pos.Equal(posClient))
 				{
 					posClient = pos;
 					pos.LineOffset = 0;

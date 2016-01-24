@@ -116,15 +116,16 @@ namespace Artefacts.Service
 					{
 						if (mce.Arguments[0] == null)
 							throw new NullReferenceException("Method Call \"" + mce + "\" inner object is null");
-						if (mce.Arguments[0].Type != EnumerableType && mce.Arguments[0].Type != QueryableType)
-							throw new ArgumentOutOfRangeException("expression", expression, "Expression too complex: Method Call \"" + mce + "\" inner object type is not \"" + EnumerableType.FullName + "\" or \"" + QueryableType.FullName + "\"");
+						if (!EnumerableType.IsAssignableFrom(mce.Arguments[0].Type))	// (mce.Arguments[0].Type != EnumerableType && mce.Arguments[0].Type != QueryableType)
+							throw new ArgumentOutOfRangeException("expression", expression, "Expression too complex: Method Call \"" + mce + "\" inner object type does not implement \"" + EnumerableType.FullName + "\"");
 						QueryResults qr = (QueryResults)Execute(mce.Arguments[0]);
 						if (mce.Method.Name == "Count" && mce.Arguments.Count == 1)
 							return (TResult)(object)qr.Count;
 						return (TResult)mce.Method.Invoke(null,
-							new[] { qr.Select(a => a.As(resultType.GetElementType())) }.Concat(
-								mce.Arguments.Skip(1).Select(e => (e as ConstantExpression).Value)
-							).ToArray());
+						                                 // new[] { QueryableType },
+						                                  new [] { qr });// qr.Select(a => a.As(resultType.GetElementType())) }.Concat(
+//								mce.Arguments.Skip(1).Select(e => (e as ConstantExpression).Value)
+//							).ToArray());
 					}
 				}
 				return (TResult)Execute(mce);

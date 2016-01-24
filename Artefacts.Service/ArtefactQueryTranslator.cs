@@ -53,8 +53,20 @@ namespace Artefacts.Service
 								return q2;
 
 							case "Select":
+								if (mce.Arguments.Count != 2 ||
+									!typeof(System.Func<,>).MakeGenericType(
+									ElementType,
+									mce.Method.ReturnType.GetGenericArguments()[0])
+								   	.IsAssignableFrom(mce.Arguments[1].Type))
+									throw new ArgumentOutOfRangeException("mce.Arguments", mce.Arguments, "Select method has incorrect number or type of arguments");
+//								IMongoQuery q0 = Translate(mce.Arguments[0]);
+//								IMongoQuery q1 = new SelectQuery()
+							
+//								new List<object>().AsQueryable().Select(o => o.GetType());
 								throw new NotImplementedException();
+								break;
 								
+									
 							// 2 versions of count, one with a predicate one without
 //							case "Count":
 //								if (mce.Arguments.Count == 1)

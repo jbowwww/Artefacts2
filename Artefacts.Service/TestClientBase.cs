@@ -14,6 +14,12 @@ namespace Artefacts.Service
 		
 		private TextWriter _writer;
 		
+		public static MethodInfo CurrentTest { get; protected set; }
+		public static DateTime CurrentTestStartTime { get; protected set; }
+		
+		public static readonly List<TimeSpan> TestTimes = new List<TimeSpan>();
+		public static readonly List<MethodInfo> Tests = new List<MethodInfo>();
+		
 		static TestClientBase()
 		{
 			Log = Artefact.LogFactory.GetLogger(typeof(TestClientBase));
@@ -47,6 +53,8 @@ namespace Artefacts.Service
 				.Where(mi => mi.GetCustomAttribute<TestAttribute>() != null && EnableTest(mi));
 			foreach (MethodInfo mi in testMethods)
 			{
+				CurrentTestStartTime = DateTime.Now;
+				Tests.Add(CurrentTest = mi);
 				DateTime T1 = DateTime.Now;
 				string testName = string.Concat(mi.DeclaringType.FullName, ".", mi.Name);
 				try
@@ -65,6 +73,9 @@ namespace Artefacts.Service
 				}
 				finally
 				{
+					TestTimes.Add(DateTime.Now - CurrentTestStartTime);
+					CurrentTestStartTime = default(DateTime);
+					CurrentTest = null;
 					DateTime T2 = DateTime.Now;
 					TimeSpan Td = T2 - T1;
 					Log.InfoFormat("\\n--------Finished: {0}-------- {1} Td={2}", testName, T2, Td);

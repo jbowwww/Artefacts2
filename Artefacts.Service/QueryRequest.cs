@@ -70,16 +70,18 @@ namespace Artefacts.Service
 			get
 			{
 				return _query ??
-					(_query = new QueryDocument(
-						BsonDocument.Parse(
-							QueryData/*.UrlDecode()*/)
-					));
+					(_query =
+					 QueryData == "(null)" ? null:
+						 new QueryDocument(
+							BsonDocument.Parse(
+								QueryData/*.UrlDecode()*/)
+						));
 				
 			}
 			set
 			{
 				QueryData = (_query = value) == null ? 
-					string.Empty
+					"(null)"	//string.Empty
 				:	_query.ToString()/*.UrlEncode()*/;
 				DataFormat = "Query";
 			}
@@ -113,8 +115,8 @@ namespace Artefacts.Service
 		{
 			if (collectionName.IsNullOrSpace())
 				throw new ArgumentOutOfRangeException("collectionName", collectionName, "collectionName is NULL or whitespace");
-			if (query == null)
-				throw new ArgumentNullException("query");
+//			if (query == null)
+//				throw new ArgumentNullException("query");
 			CollectionName = collectionName;
 			Query = (QueryDocument)query;
 		}

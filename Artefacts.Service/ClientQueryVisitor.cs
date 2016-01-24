@@ -173,6 +173,34 @@ namespace Artefacts.Service
 					return Expression.Constant(m.Method.Invoke((mObject as ConstantExpression).Value,
 						mArguments.Cast<ConstantExpression>().Select<ConstantExpression, object>((ce) => ce.Value).ToArray()));
 	
+				// LINQ queries are always extension methods so are in fact static
+				if (mObject == null && mArguments.Count() > 0 && _enumerableType.IsAssignableFrom(mArguments.ElementAt(0).Type))
+				{
+					// Replace the predicate version of count() with a Where(predicate).Count
+					if (mArguments.Count() == 2 && m.Method.Name == "Count" &&
+						(m.Method.DeclaringType == _enumerableStaticType ||
+					 	m.Method.DeclaringType == _queryableStaticType))
+					{
+						Expression innerWhere = Expression.Call(
+							_enumerableStaticType, "Where",
+							new Type[] {
+								_enumerableType,//mArguments.ElementAt(0).Type,
+								mArguments.ElementAt(1).Type 
+							},
+							mArguments.ElementAt(0), mArguments.ElementAt(1)
+						);
+						
+						Expression outerCount = Expression.Call(
+							_enumerableStaticType, "Count",
+							new Type[] { 
+								_enumerableType,//mArguments.ElementAt(0).Type },
+							},
+							innerWhere
+						);
+//							_enumerableType.GetMethod("Count", new Type[] { _enumerableType, typeof(Func<T,bool>) }),
+					}
+				}
+				
 				// If is a member of Artefact which doesn't actually exist in type, it must be a dynamic property. Convert
 				// the member expression to a indexer expression to return the dynamic property (ie artefact[m.Member.Name])
 //				else if (//mObject.Type == typeof(IEnumerable<Artefact>)

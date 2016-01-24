@@ -9,6 +9,8 @@ public partial class MainWindow
 	private global::Gtk.VBox vbox1;
 	private global::Gtk.MenuBar menubar1;
 	private global::Gtk.HBox hbox2;
+	private global::Gtk.Label txtTestName;
+	private global::Gtk.Label txtTestTime;
 	private global::Gtk.FileChooserButton btnTrashDefaultChooser;
 	private global::Gtk.Button btnStartMain;
 	private global::Gtk.Fixed fixed1;
@@ -63,13 +65,28 @@ public partial class MainWindow
 		this.hbox2.Name = "hbox2";
 		this.hbox2.Spacing = 6;
 		// Container child hbox2.Gtk.Box+BoxChild
+		this.txtTestName = new global::Gtk.Label ();
+		this.txtTestName.Name = "txtTestName";
+		this.hbox2.Add (this.txtTestName);
+		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtTestName]));
+		w3.Position = 0;
+		w3.Fill = false;
+		// Container child hbox2.Gtk.Box+BoxChild
+		this.txtTestTime = new global::Gtk.Label ();
+		this.txtTestTime.Name = "txtTestTime";
+		this.hbox2.Add (this.txtTestTime);
+		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtTestTime]));
+		w4.Position = 1;
+		w4.Expand = false;
+		w4.Fill = false;
+		// Container child hbox2.Gtk.Box+BoxChild
 		this.btnTrashDefaultChooser = new global::Gtk.FileChooserButton (global::Mono.Unix.Catalog.GetString ("Select Trash Folder"), ((global::Gtk.FileChooserAction)(2)));
 		this.btnTrashDefaultChooser.WidthRequest = 340;
 		this.btnTrashDefaultChooser.Name = "btnTrashDefaultChooser";
 		this.hbox2.Add (this.btnTrashDefaultChooser);
-		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.btnTrashDefaultChooser]));
-		w3.Position = 0;
-		w3.Expand = false;
+		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.btnTrashDefaultChooser]));
+		w5.Position = 2;
+		w5.Expand = false;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.btnStartMain = new global::Gtk.Button ();
 		this.btnStartMain.CanFocus = true;
@@ -77,60 +94,60 @@ public partial class MainWindow
 		this.btnStartMain.UseUnderline = true;
 		this.btnStartMain.Label = global::Mono.Unix.Catalog.GetString ("Start");
 		this.hbox2.Add (this.btnStartMain);
-		global::Gtk.Box.BoxChild w4 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.btnStartMain]));
-		w4.Position = 1;
-		w4.Expand = false;
-		w4.Fill = false;
-		w4.Padding = ((uint)(20));
-		// Container child hbox2.Gtk.Box+BoxChild
-		this.fixed1 = new global::Gtk.Fixed ();
-		this.fixed1.Name = "fixed1";
-		this.fixed1.HasWindow = false;
-		this.hbox2.Add (this.fixed1);
-		global::Gtk.Box.BoxChild w5 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.fixed1]));
-		w5.Position = 2;
-		// Container child hbox2.Gtk.Box+BoxChild
-		this.txtPostQueue = new global::Gtk.Label ();
-		this.txtPostQueue.Name = "txtPostQueue";
-		this.txtPostQueue.LabelProp = global::Mono.Unix.Catalog.GetString ("Post Queue: 0");
-		this.hbox2.Add (this.txtPostQueue);
-		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtPostQueue]));
+		global::Gtk.Box.BoxChild w6 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.btnStartMain]));
 		w6.Position = 3;
 		w6.Expand = false;
 		w6.Fill = false;
 		w6.Padding = ((uint)(20));
 		// Container child hbox2.Gtk.Box+BoxChild
+		this.fixed1 = new global::Gtk.Fixed ();
+		this.fixed1.Name = "fixed1";
+		this.fixed1.HasWindow = false;
+		this.hbox2.Add (this.fixed1);
+		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.fixed1]));
+		w7.Position = 4;
+		// Container child hbox2.Gtk.Box+BoxChild
+		this.txtPostQueue = new global::Gtk.Label ();
+		this.txtPostQueue.Name = "txtPostQueue";
+		this.txtPostQueue.LabelProp = global::Mono.Unix.Catalog.GetString ("Post Queue: 0");
+		this.hbox2.Add (this.txtPostQueue);
+		global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtPostQueue]));
+		w8.Position = 5;
+		w8.Expand = false;
+		w8.Fill = false;
+		w8.Padding = ((uint)(20));
+		// Container child hbox2.Gtk.Box+BoxChild
 		this.txtDirectoryQueue = new global::Gtk.Label ();
 		this.txtDirectoryQueue.Name = "txtDirectoryQueue";
 		this.txtDirectoryQueue.LabelProp = global::Mono.Unix.Catalog.GetString ("Directory Queue: 0");
 		this.hbox2.Add (this.txtDirectoryQueue);
-		global::Gtk.Box.BoxChild w7 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtDirectoryQueue]));
-		w7.Position = 4;
-		w7.Expand = false;
-		w7.Fill = false;
-		w7.Padding = ((uint)(20));
+		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtDirectoryQueue]));
+		w9.Position = 6;
+		w9.Expand = false;
+		w9.Fill = false;
+		w9.Padding = ((uint)(20));
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.txtCRCQueue = new global::Gtk.Label ();
 		this.txtCRCQueue.Name = "txtCRCQueue";
 		this.txtCRCQueue.LabelProp = global::Mono.Unix.Catalog.GetString ("CRC Queue: 0");
 		this.hbox2.Add (this.txtCRCQueue);
-		global::Gtk.Box.BoxChild w8 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtCRCQueue]));
-		w8.PackType = ((global::Gtk.PackType)(1));
-		w8.Position = 5;
-		w8.Expand = false;
-		w8.Fill = false;
+		global::Gtk.Box.BoxChild w10 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtCRCQueue]));
+		w10.PackType = ((global::Gtk.PackType)(1));
+		w10.Position = 7;
+		w10.Expand = false;
+		w10.Fill = false;
 		this.vbox1.Add (this.hbox2);
-		global::Gtk.Box.BoxChild w9 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
-		w9.Position = 1;
-		w9.Expand = false;
-		w9.Fill = false;
+		global::Gtk.Box.BoxChild w11 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.hbox2]));
+		w11.Position = 1;
+		w11.Expand = false;
+		w11.Fill = false;
 		// Container child vbox1.Gtk.Box+BoxChild
 		this.GtkScrolledWindow = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindow.Name = "GtkScrolledWindow";
 		this.GtkScrolledWindow.ShadowType = ((global::Gtk.ShadowType)(1));
 		// Container child GtkScrolledWindow.Gtk.Container+ContainerChild
-		global::Gtk.Viewport w10 = new global::Gtk.Viewport ();
-		w10.ShadowType = ((global::Gtk.ShadowType)(0));
+		global::Gtk.Viewport w12 = new global::Gtk.Viewport ();
+		w12.ShadowType = ((global::Gtk.ShadowType)(0));
 		// Container child GtkViewport.Gtk.Container+ContainerChild
 		this.vpaned1 = new global::Gtk.VPaned ();
 		this.vpaned1.CanFocus = true;
@@ -146,8 +163,8 @@ public partial class MainWindow
 		this.tvClient.Name = "tvClient";
 		this.GtkScrolledWindow1.Add (this.tvClient);
 		this.vpaned1.Add (this.GtkScrolledWindow1);
-		global::Gtk.Paned.PanedChild w12 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.GtkScrolledWindow1]));
-		w12.Resize = false;
+		global::Gtk.Paned.PanedChild w14 = ((global::Gtk.Paned.PanedChild)(this.vpaned1 [this.GtkScrolledWindow1]));
+		w14.Resize = false;
 		// Container child vpaned1.Gtk.Paned+PanedChild
 		this.GtkScrolledWindow2 = new global::Gtk.ScrolledWindow ();
 		this.GtkScrolledWindow2.Name = "GtkScrolledWindow2";
@@ -159,11 +176,11 @@ public partial class MainWindow
 		this.tvHost.Name = "tvHost";
 		this.GtkScrolledWindow2.Add (this.tvHost);
 		this.vpaned1.Add (this.GtkScrolledWindow2);
-		w10.Add (this.vpaned1);
-		this.GtkScrolledWindow.Add (w10);
+		w12.Add (this.vpaned1);
+		this.GtkScrolledWindow.Add (w12);
 		this.vbox1.Add (this.GtkScrolledWindow);
-		global::Gtk.Box.BoxChild w17 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
-		w17.Position = 2;
+		global::Gtk.Box.BoxChild w19 = ((global::Gtk.Box.BoxChild)(this.vbox1 [this.GtkScrolledWindow]));
+		w19.Position = 2;
 		this.Add (this.vbox1);
 		if ((this.Child != null)) {
 			this.Child.ShowAll ();

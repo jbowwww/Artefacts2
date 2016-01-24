@@ -10,6 +10,18 @@ namespace Artefacts.FileSystem
 	public class FileCRC
 	{
 		public static int QueueCount = 0;
+		public static object QueueMonitorLock = new object();
+
+		public static void WaitForEmptyQueue()
+		{
+			Monitor.Enter(QueueMonitorLock);
+			while (QueueCount > 0)
+			{
+				Monitor.Exit(QueueMonitorLock);
+				Monitor.Enter(QueueMonitorLock);
+			}
+			Monitor.Exit(QueueMonitorLock);
+		}
 
 		public class Region
 		{
@@ -99,8 +111,11 @@ namespace Artefacts.FileSystem
 		private Int64? _crc;
 		private Task _crcTask;
 		private EventWaitHandle _crcReady = new EventWaitHandle(false, EventResetMode.ManualReset);
+		private bool _isQueued = false;
 
 		public bool HasCRC { get { return _crc.HasValue; } }
+
+		public bool IsCRCQueued { get { return _isQueued; } }
 
 		public FileCRC()
 		{
@@ -115,19 +130,19 @@ namespace Artefacts.FileSystem
 			CRC = crc;
 		}
 
-		public FileCRC(FileInfo fileInfo, IEnumerable<Region> regions, Int64 crc)
+		public FileCRC(FileInfo fileInfo, IEnumerable<Region> regions = null)
 		{
 			Init(fileInfo, regions);
-			CRC = crc;
 		}
 
 		public FileCRC(FileInfo fileInfo, IEnumerable<Region> regions, Action onComplete = null)
 		{
+			Interlocked.Increment(ref FileCRC.QueueCount);
+			_isQueued = true;
 			Init(fileInfo, regions);
-			TaskCreationOptions taskOptions = TaskCreationOptions.LongRunning;
+			TaskCreationOptions taskOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness;
 			_crcTask = new Task(() =>
 			{
-				FileCRC.QueueCount++;
 				byte[] data;
 				using (FileStream fs = FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
 				{
@@ -167,13 +182,14 @@ namespace Artefacts.FileSystem
 					}, subTaskOptions);
 					calcCrcTask.Start();
 				}
-//				);
-				FileCRC.QueueCount--;
 			}, taskOptions);
 			_crcTask.ContinueWith((task) => {
 				CRC = Int64.MaxValue - Regions.Sum(r => r.CRC);
+				Interlocked.Decrement(ref FileCRC.QueueCount);
 				if (onComplete != null)
 					onComplete();
+				_crcReady.Set();
+				_isQueued = false;
 			});
 			_crcTask.Start();
 		}
@@ -181,7 +197,8 @@ namespace Artefacts.FileSystem
 		private void Init(FileInfo fileInfo, IEnumerable<Region> regions)
 		{
 			FileInfo = fileInfo;
-			Regions = regions.ToArray();
+			Regions = (regions != null && regions.Count() > 0) ? regions.ToArray()
+				: new FileCRC.Region[] { new FileCRC.Region(0, FileInfo.Length - 1) };
 		}
 
 		public static implicit operator Int64(FileCRC crc)
