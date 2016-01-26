@@ -154,7 +154,6 @@ namespace Artefacts
 			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJson<DataDictionary>(_serializationOptions, _jsonSettings);
 			JsConfig<Artefact>.DeSerializeFn = a => new Artefact(BsonSerializer.Deserialize<DataDictionary>(a));
 			
-			
 //			JsConfig<DataDictionary>.SerializeFn = a => a.ToJson<DataDictionary>(_serializationOptions, _jsonSettings);
 //			JsConfig<DataDictionary>.DeSerializeFn = a => BsonSerializer.Deserialize<DataDictionary>(a);
 			//			

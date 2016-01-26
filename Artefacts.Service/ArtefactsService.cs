@@ -105,6 +105,7 @@ namespace Artefacts.Service
 			_mcArtefacts = _mDb.GetCollection<Artefact>("Artefacts");
 			Log.Debug(_mcArtefacts);
 			Artefact.ConfigureServiceStack();
+//			ServiceStackHost.Instance.RequestBinders.Add(typeof(QueryRequest), (request) => Get((QueryRequest)request.Dto));
 		}
 
 		/// <summary>
@@ -167,12 +168,18 @@ namespace Artefacts.Service
 //			}
 		}
 		
+//		public QueryResults Get(QueryRequest query)
+//		{
+//			return (QueryResults)Get(query);
+//		}
+		
 		/// <summary>
 		/// Get the specified query.
 		/// </summary>
 		/// <param name="query">Query.</param>
-		public QueryResults Get(QueryRequest query)
+		public /* object */ QueryResults Get(QueryRequest query) 	//object queryObject)
 		{
+//			QueryRequest query = (QueryRequest)queryObject;
 			Log.Debug("HTTP GET: " + query);
 			_output.WriteLine("HTTP GET: " + query);
 			
@@ -185,33 +192,47 @@ namespace Artefacts.Service
 			if (query.DataFormat == "Query")
 			{
 				mq = query.Query;
-				mongoQueryResult = _mcQueryCollection.FindAs<BsonDocument>(mq);
-				Log.Debug("_mcArtefacts.FindAs<BsonDocument>(query): " + mongoQueryResult);
-				_output.WriteLine("_mcArtefacts.FindAs<BsonDocument>(query): " + mongoQueryResult);
-				foreach (BsonDocument bsonDoc in mongoQueryResult)
+				if (query.QueryType == "Count")
 				{
-					Artefact artefact = new Artefact(bsonDoc);
-					ArtefactCache[artefact.Id] = artefact;
-					queryResult.Artefacts.Add(artefact);
+					long resultCount = mq == null ? _mcQueryCollection.Count() : _mcQueryCollection.Count(mq);
+					Log.DebugFormat("_mcQueryCollection.Count({0}): {1}", mq == null ? "" : mq.ToString(), result);
+					_output.WriteLine("_mcQueryCollection.Count({0}): {1}", mq == null ? "" : mq.ToString(), result);
+					queryResult.ScalarResult = (int) resultCount;
+					return queryResult;
+//					return resultCount;
+				}
+				else
+				{
+					mongoQueryResult = _mcQueryCollection.FindAs<BsonDocument>(mq);
+					Log.DebugFormat("_mcQueryCollection.FindAs<BsonDocument>({0}): {1}", mq.ToString(), mongoQueryResult);
+					_output.WriteLine("_mcQueryCollection.FindAs<BsonDocument>({0}): {1}", mq.ToString(), mongoQueryResult);
+					foreach (BsonDocument bsonDoc in mongoQueryResult)
+					{
+						Artefact artefact = new Artefact(bsonDoc);
+						ArtefactCache[artefact.Id] = artefact;
+						queryResult.Artefacts.Add(artefact);
+					}
+					return queryResult;
 				}
 			}
 			
 			else if (query.DataFormat == "Expression")
 			{
-				MongoQueryProvider provider = new MongoQueryProvider(_mcQueryCollection);
-				Visitor.Collection = _mcQueryCollection.AsQueryable();
-				Expression visitedExpression = Visitor.Visit(query.Expression);
-				Log.Debug("Translated expression: " + visitedExpression);
-				_output.WriteLine("Translated expression: " + visitedExpression);
-				
-				result = _mcQueryCollection.FindAs<Artefact>(provider.BuildMongoQuery((MongoQueryable<Artefact>)provider.CreateQuery<Artefact>(visitedExpression)));
-//				result = provider.Execute(visitedExpression);
-				foreach (Artefact artefact/* bsonDoc*/ in (IEnumerable<Artefact>)result)
-				{
-//					Artefact artefact = new Artefact(bsonDoc);
-					ArtefactCache[artefact.Id] = artefact;
-					queryResult.Artefacts.Add(artefact);
-				}
+					throw new NotSupportedException("Expression serializer not supported");
+//				MongoQueryProvider provider = new MongoQueryProvider(_mcQueryCollection);
+//				Visitor.Collection = _mcQueryCollection.AsQueryable();
+//				Expression visitedExpression = Visitor.Visit(query.Expression);
+//				Log.Debug("Translated expression: " + visitedExpression);
+//				_output.WriteLine("Translated expression: " + visitedExpression);
+//				
+//				result = _mcQueryCollection.FindAs<Artefact>(provider.BuildMongoQuery((MongoQueryable<Artefact>)provider.CreateQuery<Artefact>(visitedExpression)));
+////				result = provider.Execute(visitedExpression);
+//				foreach (Artefact artefact/* bsonDoc*/ in (IEnumerable<Artefact>)result)
+//				{
+////					Artefact artefact = new Artefact(bsonDoc);
+//					ArtefactCache[artefact.Id] = artefact;
+//					queryResult.Artefacts.Add(artefact);
+//				}
 			}
 			
 			Log.Debug("new QueryResults(): " + queryResult);

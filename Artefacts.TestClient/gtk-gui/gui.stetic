@@ -70,11 +70,11 @@
             <child>
               <widget class="Gtk.Label" id="txtTestName">
                 <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Current Test: (not running)</property>
               </widget>
               <packing>
                 <property name="Position">0</property>
                 <property name="AutoSize">False</property>
-                <property name="Fill">False</property>
               </packing>
             </child>
             <child>

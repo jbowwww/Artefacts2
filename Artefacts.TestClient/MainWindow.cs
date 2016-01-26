@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Net;
 //using ServiceStack.Text;
 using System.Configuration;
+using System.Reflection;
 
 /// <summary>
 /// Main window.
@@ -42,14 +43,41 @@ public partial class MainWindow: Gtk.Window
 	
 	public delegate int GetIntDelegate();
 	public delegate string GetStringDelegate();
+	public delegate MethodInfo GetMethodDelegate();
 	public delegate TimeSpan GetTimeSpanDelegate();
 	public delegate DateTime GetDateTimeDelegate();
 	public GetIntDelegate GetPostQueueCount;
 	public GetIntDelegate GetDirQueueCount;
 	public GetIntDelegate GetCRCQueueCount;
-	public GetStringDelegate GetCurrentTestName;
+	public GetMethodDelegate GetCurrentTest;
 	public GetDateTimeDelegate GetCurrentTestTime;
-
+	public bool EnableStatusGetters {
+		get { return _autoScrollTimer != null; }
+		set
+		{
+			if (value)
+				_autoScrollTimer = new Timer(OnUpdateStatuses, null, 500, 500);
+			else
+			{
+				if (_autoScrollTimer != null)
+				{
+					using (WaitHandle waitTimerStop = new EventWaitHandle(false, EventResetMode.ManualReset))
+					{
+						_autoScrollTimer.Dispose(waitTimerStop);
+						waitTimerStop.WaitOne();
+					}	
+					_autoScrollTimer = null;
+				}
+				OnUpdateStatuses(null);
+				txtPostQueue.Text = "Post Queue: 0";
+				txtDirectoryQueue.Text = "Directory Queue: 0";
+				txtCRCQueue.Text = "CRC Queue: 0";
+				txtTestName.Text = "Current Test: (not running)";
+				//txtTestTime.Text = GetCurrentTestTime == null ? "" : (DateTime.Now - GetCurrentTestTime.Invoke()).ToString();
+			}
+		}
+	}
+	
 //	public int PostQueueCount { get; set; }
 //	public int DirectoryQueueCount { get; set; }
 //	public int CRCQueueCount { get; set; }
@@ -62,35 +90,7 @@ public partial class MainWindow: Gtk.Window
 		btnTrashDefaultChooser.SetFilename(ConfigurationManager.AppSettings["defaultTrashPath"]);
 		tvHost.Buffer.InsertText += (object o, InsertTextArgs args) => _autoScrollHostUpdated = true;
 		tvClient.Buffer.InsertText += (object o, InsertTextArgs args) => _autoScrollClientUpdated = true;
-		_autoScrollTimer = new Timer((o) => {
-			Application.Invoke((sender, e) => {
-				txtPostQueue.Text = "Post Queue: " + (GetPostQueueCount == null ? 0 : GetPostQueueCount.Invoke());
-				txtDirectoryQueue.Text = "Directory Queue: " + (GetDirQueueCount == null ? 0 : GetDirQueueCount.Invoke());
-				txtCRCQueue.Text = "CRC Queue: " + (GetCRCQueueCount == null ? 0 : GetCRCQueueCount.Invoke());
-				txtTestName.Text = GetCurrentTestName == null ? "No test running" : "Current Test: " + GetCurrentTestName.Invoke();
-				txtTestTime.Text = GetCurrentTestTime == null ? "" : (DateTime.Now - GetCurrentTestTime.Invoke()).ToString();
-			});
-			if (_autoScrollHost && _autoScrollHostUpdated)
-			{
-				TextIter pos = tvHost.Buffer.EndIter;
-				if (posHost.Equal(default(TextIter)) || !pos.Equal(posHost))	//.Offset != posHost.Offset)
-				{
-					posHost = pos;
-					pos.LineOffset = 0;
-					Application.Invoke((sender, e) => tvHost.ScrollToIter(pos, 0, false, 0, 0));
-				}
-			}
-			if (_autoScrollClient && _autoScrollClientUpdated)
-			{
-				TextIter pos = tvClient.Buffer.EndIter;
-				if (posClient.Equal(default(TextIter)) || !pos.Equal(posClient))
-				{
-					posClient = pos;
-					pos.LineOffset = 0;
-					Application.Invoke((sender, e) => tvClient.ScrollToIter(pos, 0, false, 0, 0));
-				}
-			}
-		}, null, 500, 500);
+		EnableStatusGetters = true;
 		Maximize();
 	}
 
@@ -99,7 +99,7 @@ public partial class MainWindow: Gtk.Window
 		base.Dispose();
 	}
 	#endregion
-	
+
 	#region Event Handlers
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
 	{
@@ -121,9 +121,6 @@ public partial class MainWindow: Gtk.Window
 		GetSize(out width, out height);
 		vpaned1.Position = height - 256;	// = vpaned1.MinPosition
 //		vpaned1.MaxPosition = height - vpaned1.MinPosition;
-		
-		
-		
 	}
 
 	protected void OnAutoScrollClient(object sender, EventArgs e)
@@ -134,6 +131,40 @@ public partial class MainWindow: Gtk.Window
 	protected void OnAutoScrollHost(object sender, EventArgs e)
 	{
 		_autoScrollHost = !_autoScrollHost;
+	}
+		
+	protected void OnUpdateStatuses(object state)
+	{
+		Application.Invoke((sender, e) => {
+			txtPostQueue.Text = "Post Queue: " + (GetPostQueueCount == null ? 0 : GetPostQueueCount.Invoke());
+			txtDirectoryQueue.Text = "Directory Queue: " + (GetDirQueueCount == null ? 0 : GetDirQueueCount.Invoke());
+			txtCRCQueue.Text = "CRC Queue: " + (GetCRCQueueCount == null ? 0 : GetCRCQueueCount.Invoke());
+			MethodInfo currentTest = GetCurrentTest == null ? null : GetCurrentTest.Invoke();
+			txtTestName.Text = currentTest == null ? "No test running" :
+				"Current Test: " + currentTest.DeclaringType.FullName + "." + currentTest.Name;
+			txtTestTime.Text = GetCurrentTestTime == null ? "" :
+				(DateTime.Now - GetCurrentTestTime.Invoke()).ToString();
+		});
+		if (_autoScrollHost && _autoScrollHostUpdated)
+		{
+			TextIter pos = tvHost.Buffer.EndIter;
+			if (posHost.Equal(default(TextIter)) || !pos.Equal(posHost))	//.Offset != posHost.Offset)
+			{
+				posHost = pos;
+				pos.LineOffset = 0;
+				Application.Invoke((sender, e) => tvHost.ScrollToIter(pos, 0, false, 0, 0));
+			}
+		}
+		if (_autoScrollClient && _autoScrollClientUpdated)
+		{
+			TextIter pos = tvClient.Buffer.EndIter;
+			if (posClient.Equal(default(TextIter)) || !pos.Equal(posClient))
+			{
+				posClient = pos;
+				pos.LineOffset = 0;
+				Application.Invoke((sender, e) => tvClient.ScrollToIter(pos, 0, false, 0, 0));
+			}
+		}
 	}
 	#endregion
 

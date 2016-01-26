@@ -182,22 +182,15 @@ namespace Artefacts.Service
 					 	m.Method.DeclaringType == _queryableStaticType))
 					{
 						Expression innerWhere = Expression.Call(
-							_enumerableStaticType, "Where",
-							new Type[] {
-								_enumerableType,//mArguments.ElementAt(0).Type,
-								mArguments.ElementAt(1).Type 
-							},
-							mArguments.ElementAt(0), mArguments.ElementAt(1)
-						);
-						
+							_queryableStaticType, "Where",
+							new Type[] { _elementType },
+							mArguments.ElementAt(0),
+							mArguments.ElementAt(1));
 						Expression outerCount = Expression.Call(
-							_enumerableStaticType, "Count",
-							new Type[] { 
-								_enumerableType,//mArguments.ElementAt(0).Type },
-							},
-							innerWhere
-						);
-//							_enumerableType.GetMethod("Count", new Type[] { _enumerableType, typeof(Func<T,bool>) }),
+							_queryableStaticType, "Count",
+							new Type[] { _elementType },
+							innerWhere);
+						return outerCount;
 					}
 				}
 				

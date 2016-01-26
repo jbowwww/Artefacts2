@@ -15,22 +15,31 @@ using MongoDB.Driver.Linq;
 namespace Artefacts.Service
 {
 	[DataContract]
+//	[Route("/Artefacts/{CollectionName}/{DataFormat}/{QueryType}/{QueryData}/", "GET")]
 	[Route("/Artefacts/{CollectionName}/{DataFormat}/{QueryData}/", "GET")]
-	public class QueryRequest : IReturn<QueryResults>
+public class QueryRequest<T> : QueryRequest, IReturn<object>
 	{
 		#region Static members
-		/// <summary>
-		/// Gets or sets the visitor.
-		/// </summary>
-//		public static ExpressionVisitor Visitor { get; set; }
+		public static readonly ClientQueryVisitor<T> Visitor = new ClientQueryVisitor<T>();
+		public static readonly ArtefactQueryTranslator<T> Translator = new ArtefactQueryTranslator<T>();
+		#endregion
 		
-		public static ExpressionSerializer Serializer { get; set; }
-		
-		static QueryRequest()
+		public QueryRequest(string collectionName, Expression expression) : base(collectionName)
 		{
-//			Visitor = new ClientQueryVisitor<Type>();
-			Serializer = new ExpressionSerializer(new JsonSerializer());
+			
 		}
+	}
+	
+	[DataContract]
+	[Route("/Artefacts/{CollectionName}/{DataFormat}/{QueryType}/{QueryData}/", "GET")]
+public class QueryRequest : IReturn<QueryResults>//<object>
+	{
+//		public static ExpressionSerializer Serializer { get; set; }	
+//		static QueryRequest()
+//		{
+//			Visitor = new ClientQueryVisitor<Type>();
+//			Serializer = new ExpressionSerializer(new JsonSerializer());
+//		}
 
 		public static QueryRequest Make<T>(Expression<Func<T, bool>> predicate)
 		{
@@ -39,13 +48,25 @@ namespace Artefacts.Service
 				Query<T>.Where((Expression<Func<T, bool>>) new ClientQueryVisitor<T>().Visit(predicate)));
 		}
 
-		public static QueryRequest Make<T>(string collectionName, Expression<Func<T, bool>> predicate)
+//		public static QueryRequest Make<T>(string collectionName, Expression<Func<T, bool>> predicate)
+//		{
+//			return new QueryRequest(
+//				Artefact.MakeSafeCollectionName(collectionName),
+//				Query<T>.Where((Expression<Func<T, bool>>) new ClientQueryVisitor<T>().Visit(predicate)));
+//		}
+		
+		public static QueryRequest Make<T>(string collectionName, Expression expression)
 		{
-			return new QueryRequest(
-				Artefact.MakeSafeCollectionName(collectionName),
-				Query<T>.Where((Expression<Func<T, bool>>) new ClientQueryVisitor<T>().Visit(predicate)));
+			ClientQueryVisitor<T> Visitor = new ClientQueryVisitor<T>();
+			ArtefactQueryTranslator<T> Translator = new ArtefactQueryTranslator<T>();
+			Expression visitedExpression = Visitor.Visit(expression);
+			QueryDocument query = (QueryDocument)Translator.Translate(visitedExpression);
+			string queryType = "std";
+			MethodCallExpression mce = visitedExpression as MethodCallExpression;
+			if (mce != null && mce.Method.DeclaringType == typeof(System.Linq.Queryable))	// && typeof enumerable??
+				queryType = mce.Method.Name;
+			return new QueryRequest(Artefact.MakeSafeCollectionName(collectionName), query, queryType);
 		}
-		#endregion
 
 		#region Properties
 		[DataMember(Order = 1)]
@@ -61,11 +82,18 @@ namespace Artefacts.Service
 		}
 		
 		[DataMember(Order = 3)]
+		public string QueryType {
+			get;
+			protected set;
+		}
+		
+		[DataMember(Order = 4)]
 		public string DataFormat {
 			get;
 			set;
 		}
 		
+		[IgnoreDataMember]
 		public QueryDocument Query {
 			get
 			{
@@ -88,6 +116,7 @@ namespace Artefacts.Service
 		}
 		private QueryDocument _query;
 		
+		[IgnoreDataMember]
 		public Expression Expression {
 			get
 			{
@@ -111,23 +140,27 @@ namespace Artefacts.Service
 		private Expression _expression;
 		#endregion
 
-		public QueryRequest(string collectionName, IMongoQuery query)
+		protected QueryRequest(string collectionName)
 		{
 			if (collectionName.IsNullOrSpace())
 				throw new ArgumentOutOfRangeException("collectionName", collectionName, "collectionName is NULL or whitespace");
-//			if (query == null)
-//				throw new ArgumentNullException("query");
 			CollectionName = collectionName;
+		}
+		public QueryRequest(string collectionName, IMongoQuery query, string queryType = "") : this(collectionName)
+		{
+			if (query == null)
+				throw new ArgumentNullException("query");
 			Query = (QueryDocument)query;
+			QueryType = queryType;
 		}
 		
-		public QueryRequest(string collectionName, Expression expression)
+		public QueryRequest(string collectionName, Expression expression) : this(collectionName)
 		{
-			if (collectionName.IsNullOrSpace())
-				throw new ArgumentOutOfRangeException("collectionName", collectionName, "collectionName is NULL or whitespace");
+//			if (collectionName.IsNullOrSpace())
+//				throw new ArgumentOutOfRangeException("collectionName", collectionName, "collectionName is NULL or whitespace");
 			if (expression == null)
 				throw new ArgumentNullException("expression");
-			CollectionName = collectionName;
+//			CollectionName = collectionName;
 			Expression = expression;
 		}
 		

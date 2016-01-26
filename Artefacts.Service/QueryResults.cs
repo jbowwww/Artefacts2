@@ -9,15 +9,18 @@ using ServiceStack;
 namespace Artefacts.Service
 {
 //	[Route("/{CollectionName}/Query/", "GET")]
-	[CollectionDataContract]
+//	[CollectionDataContract]
+	[DataContract]
 	public class QueryResults : ICollection<Artefact>
 	{
-//		[DataMember(Order=1)]
+		[DataMember(Order=2)]
 		public List<Artefact> /*Artefact[]*/ Artefacts {
 			get;
 			set;
 		}
 		
+		[DataMember(Order=1)]
+		public int /* long */ ScalarResult { get; set; }
 //		[DataMember(Order = 2)]
 //		public ResponseStatus ResponseStatus { get; set; }
 		

@@ -41,30 +41,33 @@ namespace Artefacts.Service
 					// Looks like a LINQ or LINQ-style method
 					if (mce.Arguments.Count > 0 && EnumerableType.IsAssignableFrom(mce.Arguments[0].Type))
 					{
-						switch (mce.Method.Name)
-						{
-							case "Where":
-								if (mce.Arguments.Count != 2 || typeof(System.Func<T, bool>).IsAssignableFrom(mce.Arguments[1].Type))
+//						switch (mce.Method.Name)
+//						{
+//							case "Where":
+//							
+						IMongoQuery q = Translate(mce.Arguments[0]);
+						if (mce.Arguments.Count == 1)
+							return q;
+if (/*mce.Arguments.Count != 2 ||*/ typeof(System.Func<T, bool>).IsAssignableFrom(mce.Arguments[1].Type))
 									throw new ArgumentOutOfRangeException("mce.Arguments", mce.Arguments, "Where method has incorrect number or type of arguments");
-								IMongoQuery q = Translate(mce.Arguments[0]);
 								IMongoQuery q2 = Query<T>.Where((Expression<Func<T, bool>>)StripQuotes(mce.Arguments[1]));
 								if (q != null)
 									return Query.And(q, q2);
 								return q2;
 
-							case "Select":
-								if (mce.Arguments.Count != 2 ||
-									!typeof(System.Func<,>).MakeGenericType(
-									ElementType,
-									mce.Method.ReturnType.GetGenericArguments()[0])
-								   	.IsAssignableFrom(mce.Arguments[1].Type))
-									throw new ArgumentOutOfRangeException("mce.Arguments", mce.Arguments, "Select method has incorrect number or type of arguments");
+//							case "Select":
+//								if (mce.Arguments.Count != 2 ||
+//									!typeof(System.Func<,>).MakeGenericType(
+//									ElementType,
+//									mce.Method.ReturnType.GetGenericArguments()[0])
+//								   	.IsAssignableFrom(mce.Arguments[1].Type))
+//									throw new ArgumentOutOfRangeException("mce.Arguments", mce.Arguments, "Select method has incorrect number or type of arguments");
 //								IMongoQuery q0 = Translate(mce.Arguments[0]);
 //								IMongoQuery q1 = new SelectQuery()
 							
 //								new List<object>().AsQueryable().Select(o => o.GetType());
-								throw new NotImplementedException();
-								break;
+//								throw new NotImplementedException();
+//								break;
 								
 									
 							// 2 versions of count, one with a predicate one without
@@ -76,9 +79,14 @@ namespace Artefacts.Service
 								
 							// TODO: Support for a fuckload of these functions. Cunty fuckin MOngo has all this translation implemented but only
 							// if it is an expression for specifically a MongoQueryable<> rather than IQueryable<>
-							default:
-								throw new NotSupportedException();
-						}
+//							default:
+//								string args = "";
+//								foreach (Expression arg in mce.Arguments)
+//									args += "" + (args.Length > 0 ? "," : "") + args.ToString();
+//								throw new NotSupportedException(
+//									string.Format("Unknown method call {0}.{1}({2})",
+//									mce.Method.DeclaringType.FullName, mce.Method.Name, args));
+//						}
 					}
 				}
 			}

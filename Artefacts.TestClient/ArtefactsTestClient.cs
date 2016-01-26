@@ -52,27 +52,28 @@ namespace Artefacts.TestClient
 			_serviceBaseUrl = serviceBaseUrl;
 			_win = win;
 			_winBaseTitle = _win.Title;
-			win.GetPostQueueCount += () => PostQueue.Count;
-			win.GetDirQueueCount += () => DirectoryQueue.Count;
-			win.GetPostQueueCount += () => Artefacts.FileSystem.FileCRC.QueueCount;
-			win.GetCurrentTestName += () => CurrentTest == null ? "" : CurrentTest.Name;
-			win.GetCurrentTestTime += () => CurrentTestStartTime;
 			
 			_bufferWriter.WriteLine(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_client = new JsonServiceClient(_serviceBaseUrl) {
-//				RequestFilter = (HttpWebRequest request) => bufferWriter.WriteLine(
-//					string.Format("Client.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}",
-//				              request.Method, request.ContentType,  request.ContentLength,
-//				              request.UserAgent, request.MediaType, request.RequestUri,
-//				              request.ProtocolVersion, request.Expect, request.Accept)),
-//				ResponseFilter = (HttpWebResponse response) => bufferWriter.WriteLine(
-//					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}",
-//				              response.StatusCode, response.StatusDescription, response.CharacterSet,
-//				              response.ContentEncoding, response.ContentType, response.ContentLength))
+				//				RequestFilter = (HttpWebRequest request) => bufferWriter.WriteLine(
+				//					string.Format("Client.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}",
+				//				              request.Method, request.ContentType,  request.ContentLength,
+				//				              request.UserAgent, request.MediaType, request.RequestUri,
+				//				              request.ProtocolVersion, request.Expect, request.Accept)),
+				//				ResponseFilter = (HttpWebResponse response) => bufferWriter.WriteLine(
+				//					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}",
+				//				              response.StatusCode, response.StatusDescription, response.CharacterSet,
+				//				              response.ContentEncoding, response.ContentType, response.ContentLength))
 			};
-			
+
 			Artefact.ConfigureServiceStack();
 
+			win.GetPostQueueCount += () => PostQueue.Count;
+			win.GetDirQueueCount += () => DirectoryQueue.Count;
+			win.GetPostQueueCount += () => Artefacts.FileSystem.FileCRC.QueueCount;
+			win.GetCurrentTest += () => CurrentTest;// == null ? "" : CurrentTest.Name;
+			win.GetCurrentTestTime += () => CurrentTestStartTime;
+			
 			bufferWriter.WriteLine(_client.ToString());
 			bufferWriter.WriteLine("Creating test Artefact ... ");
 			_artefact = new Artefact(new {
@@ -88,10 +89,19 @@ namespace Artefacts.TestClient
 		public override void Dispose()
 		{
 			_client.Dispose();
-			_win.GetPostQueueCount = () => 0;
-			_win.GetDirQueueCount = () => 0;
-			_win.GetPostQueueCount = () => 0;
-
+		}
+		
+		public override bool OnStartingTests()
+		{
+			_win.EnableStatusGetters = true;
+			return base.OnStartingTests();
+		}
+		
+		public override void OnFinishedTests(IEnumerable<MethodInfo> tests, IEnumerable<DateTime> startTimes, IEnumerable<DateTime> finishTimes, IEnumerable<TimeSpan> durations, TimeSpan totalDuration, int totalFailed, IEnumerable<Exception> exceptions)
+		{
+			_bufferWriter.WriteLine("\nTotal Tests: {0}\nTotal Failed: {1}\nTotal Exceptions: {2}\n", tests.Count(), totalFailed, exceptions.Count());
+			_win.EnableStatusGetters = false;
+			base.OnFinishedTests(tests, startTimes, finishTimes, durations, totalDuration, totalFailed, exceptions);
 		}
 		
 //		[Test]
@@ -327,8 +337,7 @@ namespace Artefacts.TestClient
 			_bufferWriter.WriteLine("File CRC thread finished");
 			_bufferWriter.WriteLine("All threads finished at " + DateTime.Now + ", total time " + totalTime + ", " + mainCount + " directories traversed");
 		}
-		
-		
+				
 //		[Test]
 		public void GetParticularFiles()
 		{
@@ -379,7 +388,7 @@ namespace Artefacts.TestClient
 					{
 						if (sizeGroups.ContainsKey(file.Size))
 							continue;
-						results2 = _client.Get(QueryRequest.Make<File>(f => f.Size == file.Size));
+						results2 = (QueryResults)_client.Get<object>(QueryRequest.Make<File>(f => f.Size == file.Size));
 //						results2 = new List<File>(
 //							results.Artefacts
 //								.Select(a => a.As<File>())
@@ -519,19 +528,19 @@ namespace Artefacts.TestClient
 		public void GetDupesFilesCollection()
 		{
 			ArtefactCollection<File> collection = new ArtefactCollection<File>(_client, "Artefacts_FileSystem_File");
-			IQueryable<File> q = collection.Where(f => f.Size > 16 * 1024 * 1024);// && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
-			IQueryable<File> q2 = collection.Where(f => (!f.HasCRC /* f.CRC == null */ || !f.CRC.HasValue) || f.CRC.Value == 0);// ==  0));
+			IQueryable<File> q = collection.Where(f => f.Size > 1 * 1024 * 1024 * 1024);// && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+			IQueryable<File> q2 = collection.Where(f => /* (!f.HasCRC  !f.CRC.HasValue || */ f.CRC == null || f.CRC/*.Value*/ == 0);// ==  0));
 				// ^^ TODO: Can't get the nullable field thing to work and all my mongo DB has CRC: null on lots of files
-//			foreach (File f in q)
-//				_bufferWriter.WriteLine(f);
+			foreach (File f in q)
+				_bufferWriter.WriteLine(f);
 			_bufferWriter.WriteLine("Collection has {0} files\nFound {1} files with Size > 16MB\nFound {2} files with null CRC\n",
-			                        0/*collection.Count()*/, 
+			                       0,// collection.Count(),
 			                        q.Count(),
-			                        0);//q2.Count());
-//			IQueryable<File> q3 = collection.Where(f => f.Size > ((long)(16*1024*1024)) && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
-//			foreach (File f in q3)
-//				_bufferWriter.WriteLine(f);
-//			_bufferWriter.WriteLine("Count: " + q3.Count());
+			                        q2.Count());
+			IQueryable<File> q3 = collection.Where(f => f.Size > ((long)(16*1024*1024)) && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+			foreach (File f in q3)
+				_bufferWriter.WriteLine(f);
+			_bufferWriter.WriteLine("Count: " + q3.Count());
 		}
 		
 		#region Helper functions

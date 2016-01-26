@@ -23,8 +23,6 @@ namespace Artefacts.Service
 	{
 		
 		#region Private fields
-		protected readonly ClientQueryVisitor<T> _visitor = new ClientQueryVisitor<T>();
-		protected readonly ArtefactQueryTranslator<T> _translator = new ArtefactQueryTranslator<T>();
 		#endregion
 		
 		#region Properties
@@ -77,11 +75,16 @@ namespace Artefacts.Service
 		}
 		public object Execute(Expression expression)
 		{
-			Expression visitedExpression = _visitor.Visit(expression);
-			IMongoQuery translatedQuery = _translator.Translate(visitedExpression);
-//			QueryDocument queryDoc;
-			return Client.Get<QueryResults>(new QueryRequest(Name, translatedQuery));
+//			QueryRequest request = new QueryRequest<T>(Name, expression);
+			QueryRequest request = QueryRequest.Make<T>(Name, expression);
+//			return Client.Get<QueryResults>(request);
+			return Client.Get<QueryResults>(request);
+//			Expression visitedExpression = _visitor.Visit(expression);
+//			IMongoQuery translatedQuery = _translator.Translate(visitedExpression);
+////			QueryDocument queryDoc;
+//			return Client.Get<QueryResults>(new QueryRequest(Name, translatedQuery));
 		}
+		
 		/// <Docs>To be added.</Docs>
 		/// <returns>To be added.</returns>
 		/// <summary>
@@ -99,41 +102,43 @@ namespace Artefacts.Service
 		/// </remarks>
 		public TResult Execute<TResult>(Expression expression)
 		{
-			Type resultType = typeof(TResult);
+//			Type resultType = typeof(TResult);
+//			
+//			expression = _visitor.Visit(expression);
+//			
+//			MethodCallExpression mce = expression as MethodCallExpression;
+//			if (mce != null)
+//			{
+//				if (!resultType.IsAssignableFrom(mce.Method.ReturnType))
+//					throw new ArgumentOutOfRangeException("TResult", resultType, "TResult type \"" + resultType.FullName + "\" for expression \"" + expression + "\" should have been assignable from \"" + mce.Method.ReturnType.FullName + "\"");
+//				if (mce.Method.DeclaringType == EnumerableStaticType || mce.Method.DeclaringType == QueryableStaticType)
+//				{
+//					if (!typeof(QueryResults).IsAssignableFrom(resultType) &&
+//					    !EnumerableType.IsAssignableFrom(resultType) &&
+//					    !QueryableType.IsAssignableFrom(resultType))
+//					{
+//						if (mce.Arguments[0] == null)
+//							throw new NullReferenceException("Method Call \"" + mce + "\" inner object is null");
+//						if (!EnumerableType.IsAssignableFrom(mce.Arguments[0].Type))	// (mce.Arguments[0].Type != EnumerableType && mce.Arguments[0].Type != QueryableType)
+//							throw new ArgumentOutOfRangeException("expression", expression, "Expression too complex: Method Call \"" + mce + "\" inner object type does not implement \"" + EnumerableType.FullName + "\"");
+//						QueryResults qr = (QueryResults)Execute(mce.Arguments[0]);
+//						if (mce.Method.Name == "Count" && mce.Arguments.Count == 1)
+//							return (TResult)(object)qr.Count;
+//						return (TResult)mce.Method.Invoke(null,
+//						                                 // new[] { QueryableType },
+//						                                  new [] { qr });// qr.Select(a => a.As(resultType.GetElementType())) }.Concat(
+////								mce.Arguments.Skip(1).Select(e => (e as ConstantExpression).Value)
+////							).ToArray());
+//					}
+//				}
+//				return (TResult)Execute(mce);
+//			}
+//			
+//			if (resultType != QueryResultType)
+//				throw new ArgumentOutOfRangeException("TResult", resultType, "TResult type \"" + resultType.FullName + "\" for expression \"" + expression + "\" should have been \"" + QueryResultType.FullName + "\"");
 			
-			expression = _visitor.Visit(expression);
-			
-			MethodCallExpression mce = expression as MethodCallExpression;
-			if (mce != null)
-			{
-				if (!resultType.IsAssignableFrom(mce.Method.ReturnType))
-					throw new ArgumentOutOfRangeException("TResult", resultType, "TResult type \"" + resultType.FullName + "\" for expression \"" + expression + "\" should have been assignable from \"" + mce.Method.ReturnType.FullName + "\"");
-				if (mce.Method.DeclaringType == EnumerableStaticType || mce.Method.DeclaringType == QueryableStaticType)
-				{
-					if (!typeof(QueryResults).IsAssignableFrom(resultType) &&
-					    !EnumerableType.IsAssignableFrom(resultType) &&
-					    !QueryableType.IsAssignableFrom(resultType))
-					{
-						if (mce.Arguments[0] == null)
-							throw new NullReferenceException("Method Call \"" + mce + "\" inner object is null");
-						if (!EnumerableType.IsAssignableFrom(mce.Arguments[0].Type))	// (mce.Arguments[0].Type != EnumerableType && mce.Arguments[0].Type != QueryableType)
-							throw new ArgumentOutOfRangeException("expression", expression, "Expression too complex: Method Call \"" + mce + "\" inner object type does not implement \"" + EnumerableType.FullName + "\"");
-						QueryResults qr = (QueryResults)Execute(mce.Arguments[0]);
-						if (mce.Method.Name == "Count" && mce.Arguments.Count == 1)
-							return (TResult)(object)qr.Count;
-						return (TResult)mce.Method.Invoke(null,
-						                                 // new[] { QueryableType },
-						                                  new [] { qr });// qr.Select(a => a.As(resultType.GetElementType())) }.Concat(
-//								mce.Arguments.Skip(1).Select(e => (e as ConstantExpression).Value)
-//							).ToArray());
-					}
-				}
-				return (TResult)Execute(mce);
-			}
-			
-			if (resultType != QueryResultType)
-				throw new ArgumentOutOfRangeException("TResult", resultType, "TResult type \"" + resultType.FullName + "\" for expression \"" + expression + "\" should have been \"" + QueryResultType.FullName + "\"");
-			
+			if (typeof(TResult).IsIntegerType())
+				return (TResult)(object)((QueryResults)Execute(expression)).ScalarResult;
 			return (TResult)Execute(expression);
 		}
 		#endregion

@@ -67,10 +67,10 @@ public partial class MainWindow
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.txtTestName = new global::Gtk.Label ();
 		this.txtTestName.Name = "txtTestName";
+		this.txtTestName.LabelProp = global::Mono.Unix.Catalog.GetString ("Current Test: (not running)");
 		this.hbox2.Add (this.txtTestName);
 		global::Gtk.Box.BoxChild w3 = ((global::Gtk.Box.BoxChild)(this.hbox2 [this.txtTestName]));
 		w3.Position = 0;
-		w3.Fill = false;
 		// Container child hbox2.Gtk.Box+BoxChild
 		this.txtTestTime = new global::Gtk.Label ();
 		this.txtTestTime.Name = "txtTestTime";
