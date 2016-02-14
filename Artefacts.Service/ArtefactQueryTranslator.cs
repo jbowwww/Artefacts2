@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using MongoDB.Driver.Linq;
 using MongoDB.Driver;
 using System.Linq.Expressions;
@@ -13,22 +14,122 @@ namespace Artefacts.Service
 		#region Constants
 		public readonly Type ElementType = typeof(T);
 		public readonly Type EnumerableType = typeof(IEnumerable<T>);
+		public readonly Type EnumerableStaticType = typeof(System.Linq.Enumerable);
+		public readonly Type QueryableStaticType = typeof(System.Linq.Queryable);
 		#endregion
 		
-		public IMongoQuery Translate(Expression expression)
+		private StringBuilder _serializedData = new StringBuilder(32);
+		public readonly ClientQueryVisitor<T> Visitor = new ClientQueryVisitor<T>();
+		
+		public string SerializedData {
+			get { return _serializedData.ToString(); }
+		}
+
+		public string LastOperation { get; protected set; }
+		
+		protected Expression StripQuotes(UnaryExpression e)
 		{
-			if (expression.NodeType == ExpressionType.Constant && typeof(ArtefactQueryable<T>).IsAssignableFrom(expression.Type))
+			while (e != null && e.NodeType == ExpressionType.Quote)
+				return Visitor.Visit(e.Operand);
+			return e;
+		}
+
+		public Expression Visit(Expression expression)
+		{
+			Expression visitedExpression = Visitor.Visit(expression);
+			return visitedExpression;
+		}
+		
+		public IMongoQuery Translate(Expression e)
+		{
+			Expression ve = Visit(e);
+//			if (typeof(ArtefactQueryable<T>).IsAssignableFrom(ve.Type))
+//			{
+				if (ve.NodeType == ExpressionType.Constant)
+				{
+					return Query.Null;
+				}
+				ParameterExpression pe = ve as ParameterExpression;
+				if (pe != null)
+				{
+				LastOperation = "Where";
+					_serializedData.Append(pe.Name);
+					return Query.Null;
+				}
+//			}
+			
+//			if (ve.NodeType == ExpressionType.Quote)
+//				return Translate(StripQuotes(ve));
+			else if (ve.NodeType == ExpressionType.UnaryPlus)
+				return TranslateUnary((UnaryExpression)ve);
+			else if (ve.NodeType == ExpressionType.Convert)
+				return TranslateConvert((UnaryExpression)ve);
+			BinaryExpression be = ve as BinaryExpression;
+			if (be != null)
+				return TranslateBinary((BinaryExpression)ve);
+			
+			
+			MemberExpression me = ve as MemberExpression;
+			if (me != null)
+				return TranslateMember(me);
+			
+			if (ve.NodeType == ExpressionType.Call)
+				return TranslateMethodCall((MethodCallExpression)ve);
+			else if (ve.NodeType == ExpressionType.Lambda)
+				return TranslateLambda((LambdaExpression)ve);
+			throw new ArgumentOutOfRangeException("visitedExpression", ve, "Expression of type \"" + ve.NodeType + "\" not supported");
+		}
+		
+		protected IMongoQuery TranslateConvert(UnaryExpression ue)
+		{
+			_serializedData.AppendFormat("({0})(", ue.Type.FullName);
+			Translate(ue.Operand);
+			_serializedData.Append(")");
+			return null;
+		}
+		
+		protected IMongoQuery TranslateUnary(UnaryExpression ue)
+		{
+			if (ue.Method != null)
+				_serializedData.Append(ue.Method.Name + "(");
+			Translate(ue.Operand);
+			if (ue.Method != null)
+				_serializedData.Append(")");
+			return null;
+		}
+		
+		protected IMongoQuery TranslateBinary(BinaryExpression be)
+		{
+			Translate(be.Left);
+			if (be.Method != null)
+				_serializedData.Append(be.Method.Name);
+			switch (be.NodeType)
 			{
-				return Query.Null;
+				case ExpressionType.Equal: _serializedData.Append("=="); break;
+				case ExpressionType.NotEqual: _serializedData.Append("!="); break;
+				case ExpressionType.LessThan: _serializedData.Append("<"); break;
+				case ExpressionType.LessThanOrEqual: _serializedData.Append("<="); break;
+				case ExpressionType.GreaterThan: _serializedData.Append(">"); break;
+				case ExpressionType.GreaterThanOrEqual: _serializedData.Append(">="); break;
+				case ExpressionType.Add: _serializedData.Append("+"); break;
+				case ExpressionType.Subtract: _serializedData.Append("-"); break;
+				case ExpressionType.Multiply: _serializedData.Append("*"); break;
+				case ExpressionType.Divide: _serializedData.Append("/"); break;
+				case ExpressionType.Or: _serializedData.Append("|"); break;
+				case ExpressionType.OrElse: _serializedData.Append("||"); break;
+				case ExpressionType.And: _serializedData.Append("&"); break;
+				case ExpressionType.AndAlso: _serializedData.Append("&&"); break;
+				default: throw new InvalidOperationException("Unknown BinaryExpression NodeType: " + be.NodeType);
 			}
-			else if (expression.NodeType == ExpressionType.Call)
-			{
-				return TranslateMethodCall((MethodCallExpression)expression);
-			}
-			else
-			{
-				throw new ArgumentOutOfRangeException("expression", expression, "Expression of type \"" + expression.NodeType + "\" not supported");
-			}
+			Translate(be.Right);
+			return null;
+		}
+		
+		protected IMongoQuery TranslateMember(MemberExpression me)
+		{
+			Translate(me.Expression);
+			_serializedData.AppendFormat(".{0}", me.Member.Name);
+			return null;
 		}
 		
 		protected IMongoQuery TranslateMethodCall(MethodCallExpression mce)
@@ -39,65 +140,60 @@ namespace Artefacts.Service
 				if (mceObj == null)
 				{
 					// Looks like a LINQ or LINQ-style method
-					if (mce.Arguments.Count > 0 && EnumerableType.IsAssignableFrom(mce.Arguments[0].Type))
+					if ( mce.Arguments.Count > 0 && EnumerableType.IsAssignableFrom(mce.Arguments[0].Type) &&
+					    (QueryableStaticType.Equals(mce.Method.DeclaringType) || EnumerableStaticType.Equals(mce.Method.DeclaringType)))
 					{
-//						switch (mce.Method.Name)
-//						{
-//							case "Where":
-//							
 						IMongoQuery q = Translate(mce.Arguments[0]);
+						_serializedData.Append('.');
+						_serializedData.Append(mce.Method.Name);
+						LastOperation = mce.Method.Name;
 						if (mce.Arguments.Count == 1)
-							return q;
-if (/*mce.Arguments.Count != 2 ||*/ typeof(System.Func<T, bool>).IsAssignableFrom(mce.Arguments[1].Type))
-									throw new ArgumentOutOfRangeException("mce.Arguments", mce.Arguments, "Where method has incorrect number or type of arguments");
-								IMongoQuery q2 = Query<T>.Where((Expression<Func<T, bool>>)StripQuotes(mce.Arguments[1]));
-								if (q != null)
-									return Query.And(q, q2);
+						{
+							_serializedData.Append("()");
+//							if (mce.Method.Name == "Count")
+//								;
+						}	
+						else if (mce.Arguments.Count >= 2)		// ||*/ typeof(System.Func<T, bool>).IsAssignableFrom(mce.Arguments[1].Type))
+						{
+							_serializedData.Append('(');
+							for (int i = 1; i < mce.Arguments.Count; i++)
+							{
+								if (i > 1)
+									_serializedData.Append(", ");
+								Translate(mce.Arguments[i]);
+//								Expression ve = Visit(StripQuotes(mce.Arguments[i]));
+//								qp = Query<T>.Where((Expression<Func<T, bool>>)ve);		//Translate();
+//								qp = Query.And(qp);
+							}
+							_serializedData.Append(')');							
+							IMongoQuery q2 = Query.Null;
+							if (mce.Method.Name == "Where")
+								q2 = Query<T>.Where((Expression<Func<T, bool>>)StripQuotes((UnaryExpression)mce.Arguments[1]));
+							if (q == null)
 								return q2;
-
-//							case "Select":
-//								if (mce.Arguments.Count != 2 ||
-//									!typeof(System.Func<,>).MakeGenericType(
-//									ElementType,
-//									mce.Method.ReturnType.GetGenericArguments()[0])
-//								   	.IsAssignableFrom(mce.Arguments[1].Type))
-//									throw new ArgumentOutOfRangeException("mce.Arguments", mce.Arguments, "Select method has incorrect number or type of arguments");
-//								IMongoQuery q0 = Translate(mce.Arguments[0]);
-//								IMongoQuery q1 = new SelectQuery()
-							
-//								new List<object>().AsQueryable().Select(o => o.GetType());
-//								throw new NotImplementedException();
-//								break;
-								
-									
-							// 2 versions of count, one with a predicate one without
-//							case "Count":
-//								if (mce.Arguments.Count == 1)
-//								{
-//									IMongoQuery qInner = Translate(mce.Arguments[0]);
-//								}
-								
-							// TODO: Support for a fuckload of these functions. Cunty fuckin MOngo has all this translation implemented but only
-							// if it is an expression for specifically a MongoQueryable<> rather than IQueryable<>
-//							default:
-//								string args = "";
-//								foreach (Expression arg in mce.Arguments)
-//									args += "" + (args.Length > 0 ? "," : "") + args.ToString();
-//								throw new NotSupportedException(
-//									string.Format("Unknown method call {0}.{1}({2})",
-//									mce.Method.DeclaringType.FullName, mce.Method.Name, args));
-//						}
+							else if (q2 != null)
+								return Query.And(q, q2);
+							return q;
+						}
+						return q;
 					}
 				}
 			}
 			return Query.Null;
 		}
 		
-		protected static Expression StripQuotes(Expression e)
+		protected IMongoQuery TranslateLambda(LambdaExpression lambda)
 		{
-			while (e != null && e.NodeType == ExpressionType.Quote)
-				e = ((UnaryExpression)e).Operand;
-			return e;
+			_serializedData.Append("(");
+			for (int i = 0; i < lambda.Parameters.Count; i++)
+			{
+				if (i > 0)
+					_serializedData.Append(", ");
+				Translate(lambda.Parameters[i]);
+			}
+			_serializedData.Append(") => ");
+			Translate(lambda.Body);
+			return null;
 		}
 	}
 }

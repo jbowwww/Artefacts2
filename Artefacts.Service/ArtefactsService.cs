@@ -168,75 +168,59 @@ namespace Artefacts.Service
 //			}
 		}
 		
-//		public QueryResults Get(QueryRequest query)
-//		{
-//			return (QueryResults)Get(query);
-//		}
-		
 		/// <summary>
 		/// Get the specified query.
 		/// </summary>
 		/// <param name="query">Query.</param>
 		public /* object */ QueryResults Get(QueryRequest query) 	//object queryObject)
 		{
-//			QueryRequest query = (QueryRequest)queryObject;
 			Log.Debug("HTTP GET: " + query);
 			_output.WriteLine("HTTP GET: " + query);
 			
-			MongoCursor<BsonDocument> mongoQueryResult = null;
-			object result = null;
-			IMongoQuery mq = null;
 			MongoCollection<Artefact> _mcQueryCollection = _mDb.GetCollection<Artefact>(query.CollectionName);
-			QueryResults queryResult = new QueryResults();
-			
-			if (query.DataFormat == "Query")
-			{
-				mq = query.Query;
-				if (query.QueryType == "Count")
-				{
-					long resultCount = mq == null ? _mcQueryCollection.Count() : _mcQueryCollection.Count(mq);
-					Log.DebugFormat("_mcQueryCollection.Count({0}): {1}", mq == null ? "" : mq.ToString(), result);
-					_output.WriteLine("_mcQueryCollection.Count({0}): {1}", mq == null ? "" : mq.ToString(), result);
-					queryResult.ScalarResult = (int) resultCount;
-					return queryResult;
-//					return resultCount;
-				}
-				else
-				{
-					mongoQueryResult = _mcQueryCollection.FindAs<BsonDocument>(mq);
-					Log.DebugFormat("_mcQueryCollection.FindAs<BsonDocument>({0}): {1}", mq.ToString(), mongoQueryResult);
-					_output.WriteLine("_mcQueryCollection.FindAs<BsonDocument>({0}): {1}", mq.ToString(), mongoQueryResult);
-					foreach (BsonDocument bsonDoc in mongoQueryResult)
-					{
-						Artefact artefact = new Artefact(bsonDoc);
-						ArtefactCache[artefact.Id] = artefact;
-						queryResult.Artefacts.Add(artefact);
-					}
-					return queryResult;
-				}
-			}
-			
-			else if (query.DataFormat == "Expression")
-			{
-					throw new NotSupportedException("Expression serializer not supported");
-//				MongoQueryProvider provider = new MongoQueryProvider(_mcQueryCollection);
-//				Visitor.Collection = _mcQueryCollection.AsQueryable();
-//				Expression visitedExpression = Visitor.Visit(query.Expression);
-//				Log.Debug("Translated expression: " + visitedExpression);
-//				_output.WriteLine("Translated expression: " + visitedExpression);
-//				
-//				result = _mcQueryCollection.FindAs<Artefact>(provider.BuildMongoQuery((MongoQueryable<Artefact>)provider.CreateQuery<Artefact>(visitedExpression)));
-////				result = provider.Execute(visitedExpression);
-//				foreach (Artefact artefact/* bsonDoc*/ in (IEnumerable<Artefact>)result)
+			QueryResults queryResult;
+//			if (query.Operation == "Count")
+//			{
+//				long resultCount = (query.Query == Query.Null) ? _mcQueryCollection.Count() : _mcQueryCollection.Count(query.Query);
+//				queryResult = new QueryResults((int)resultCount);
+//				Log.DebugFormat("{0}.Count({1}): {2}", query.CollectionName, query.Query == null ? "" : query.Query.ToString(), queryResult);
+//				_output.WriteLine("{0}.Count({1}): {2}", query.CollectionName, query.Query == null ? "" : query.Query.ToString(), queryResult);
+//			}
+//			else if (query.Operation == "Where")
 //				{
-////					Artefact artefact = new Artefact(bsonDoc);
-//					ArtefactCache[artefact.Id] = artefact;
-//					queryResult.Artefacts.Add(artefact);
+					MongoCursor<Artefact> _mcQueryResults = _mcQueryCollection.Find(query.Query);
+					queryResult = new QueryResults(_mcQueryResults.ToList());
+					Log.DebugFormat("{0}.Find({1}): {2}", query.CollectionName, query.Query == null ? "" : query.Query.ToString(), queryResult);
+					_output.WriteLine("{0}.Find({1}): {2}", query.CollectionName, query.Query == null ? "" : query.Query.ToString(), queryResult);
 //				}
-			}
-			
-			Log.Debug("new QueryResults(): " + queryResult);
-			_output.WriteLine("new QueryResults(): " + queryResult);
+//				else
+//					throw new InvalidOperationException(string.Format("Invalid operation \"{0}\" for request {1}", query.Operation, query));
+			return queryResult;
+		}
+		
+		public CountResults Get(CountRequest query)
+		{
+			Log.Debug("HTTP GET: " + query);
+			_output.WriteLine("HTTP GET: " + query);
+
+			MongoCollection<Artefact> _mcQueryCollection = _mDb.GetCollection<Artefact>(query.CollectionName);
+			CountResults queryResult;
+			//			if (query.Operation == "Count")
+			//			{
+			//				long resultCount = (query.Query == Query.Null) ? _mcQueryCollection.Count() : _mcQueryCollection.Count(query.Query);
+			//				queryResult = new QueryResults((int)resultCount);
+			//				Log.DebugFormat("{0}.Count({1}): {2}", query.CollectionName, query.Query == null ? "" : query.Query.ToString(), queryResult);
+			//				_output.WriteLine("{0}.Count({1}): {2}", query.CollectionName, query.Query == null ? "" : query.Query.ToString(), queryResult);
+			//			}
+			//			else if (query.Operation == "Where")
+			//				{
+			long count = _mcQueryCollection.Count(query.Query);
+			queryResult = new CountResults() { Count = (int)count };
+			Log.DebugFormat("{0}.Find({1}): {2}", query.CollectionName, query.Query == null ? "" : query.Query.ToString(), queryResult);
+			_output.WriteLine("{0}.Find({1}): {2}", query.CollectionName, query.Query == null ? "" : query.Query.ToString(), queryResult);
+			//				}
+			//				else
+			//					throw new InvalidOperationException(string.Format("Invalid operation \"{0}\" for request {1}", query.Operation, query));
 			return queryResult;
 		}
 		

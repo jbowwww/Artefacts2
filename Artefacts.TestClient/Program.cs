@@ -50,8 +50,24 @@ namespace Artefacts.TestClient
 		{
 			try
 			{
+				Thread clientThread = null;
+				
 				Log.Debug("Application.Init()");
 				Application.Init();
+
+				GLib.ExceptionManager.UnhandledException += (GLib.UnhandledExceptionArgs exArgs) => {
+					Exception /*object GLib.GException*/ ge = exArgs.ExceptionObject as Exception;// as GLib.GException;
+					if (ge != null)
+						Log.ErrorFormat("GLib unhandled {0}:\n\tExitApplication={1}, IsTerminating={2}\n{3}",
+							ge.GetType().FullName, exArgs.ExitApplication, exArgs.IsTerminating, ge.Format());
+					else if (exArgs.ExceptionObject != null)
+						Log.ErrorFormat("GLib unhandled {0}:\n\tExitApplication={1}, IsTerminating={2}\n{3}",
+							exArgs.ExceptionObject.GetType().FullName, exArgs.ExitApplication, exArgs.IsTerminating, ge.Format());
+					else
+						Log.ErrorFormat("GLib unhandled exception, args.ExceptionObject=null:\n\tExitApplication={1}, IsTerminating={2}\n{3}",
+							exArgs.ExitApplication, exArgs.IsTerminating, ge.Format());
+				};
+				
 				Log.Debug("win = new MainWindow()");
 				MainWindow win = new MainWindow();
 				
@@ -61,13 +77,9 @@ namespace Artefacts.TestClient
 				Log.Debug("win.Show()");
 				win.Show();
 				
-				Thread clientThread = null;
 				win.DeleteEvent += (o, a2) => {
 					if (clientThread != null && clientThread.IsAlive)
 						clientThread.Abort();
-
-//					Artefacts.FileSystem.File.CRCAbortThread(true);
-//					ClientWriter.WriteLine("Artefacts.FileSystem.File CRC Thread cancelled!");
 					
 					MainClass.Quit();
 					Thread.Sleep(111);
@@ -79,38 +91,37 @@ namespace Artefacts.TestClient
 //				new Thread(() => {
 					using (ArtefactsHost Host = new ArtefactsHost(serviceBaseUrl, HostWriter))
 					{
-//						win.DeleteEvent += (o, a1) => { Host.Release(); };
-
-//						Thread.Sleep(1111);
-	//					Host.Start(serviceBaseUrl);
-					win.OnBtnStartClicked += (object sender, EventArgs e) => 
-					{
-								clientThread = new Thread(() => {
-									try
+	//						win.DeleteEvent += (o, a1) => { Host.Release(); };
+	
+	//						Thread.Sleep(1111);
+		//					Host.Start(serviceBaseUrl);
+						win.OnBtnStartClicked += (object sender, EventArgs e) => 
+						{
+							clientThread = new Thread(() => {
+								try
+								{
+									using (ArtefactsTestClient Client = new ArtefactsTestClient(serviceBaseUrl, ClientWriter, win))
 									{
-										using (ArtefactsTestClient Client = new ArtefactsTestClient(serviceBaseUrl, ClientWriter, win))
-										{
-											Client.Run();
-										}
+										Client.Run();
 									}
-									catch (Exception ex)
-									{
-										Log.Error(ex);
-										ClientWriter.WriteLine(ex);
-									}
-									finally
-									{
-										clientThread = null;	
-									}
-								});
-								clientThread.Start();
-					};
-//					Thread.Sleep(888);
-					Log.Debug("Application.Run()");
- 					Application.Run();
-				}
+								}
+								catch (Exception ex)
+								{
+									Log.Error(ex);
+									ClientWriter.WriteLine(ex);
+								}
+								finally
+								{
+									clientThread = null;	
+								}
+							});
+							clientThread.Start();
+						};
+	//					Thread.Sleep(888);
+						Log.Debug("Application.Run()");
+	 					Application.Run();
+					}
 				//}).Start();
-				
 			}
 			catch (Exception ex)
 			{

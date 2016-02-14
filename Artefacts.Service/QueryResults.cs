@@ -13,42 +13,67 @@ namespace Artefacts.Service
 	[DataContract]
 	public class QueryResults : ICollection<Artefact>
 	{
+		#region Properties
+		/// <summary>Gets or sets the artefacts</summary>
 		[DataMember(Order=2)]
-		public List<Artefact> /*Artefact[]*/ Artefacts {
-			get;
-			set;
-		}
+		public List<Artefact> Artefacts { get; set; }
 		
+		/// <summary>Gets the count</summary>
+		/// <remarks>ICollection implementation</remarks>
 		[DataMember(Order=1)]
-		public int /* long */ ScalarResult { get; set; }
-//		[DataMember(Order = 2)]
-//		public ResponseStatus ResponseStatus { get; set; }
+		public int Count { get { return Artefacts == null ? 0 : Artefacts.Count; } } 
 		
-		public QueryResults()
-		{
-			//Artefacts = new Artefact[0];
-			Artefacts = new List<Artefact>();
-		}
+		/// <summary>Gets or sets the server count</summary>
+		[DataMember(Order=3)]
+		public int ServerCount { get; set; }
 		
+		/// <summary>Gets a value indicating whether this instance is read only</summary>
+		/// <remarks>ICollection implementation</remarks>
+		public bool IsReadOnly { get { return false; } }
+		#endregion
+		
+		#region Construction
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Artefacts.Service.QueryResults"/> class.
+		/// </summary>
+//		public QueryResults()
+//		{
+//			Artefacts = new List<Artefact>();
+//			Count = Artefacts.Count;
+//		}
+		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Artefacts.Service.QueryResults"/> class.
+		/// </summary>
+		/// <param name="artefacts">Artefacts.</param>
 		public QueryResults(IEnumerable<Artefact> artefacts)
 		{
-			//Artefacts = new List<Artefact>(artefacts).ToArray();
 			Artefacts = new List<Artefact>(artefacts);
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Artefacts.Service.QueryResults"/> class.
+		/// </summary>
+		/// <param name="count">Count.</param>
+		public QueryResults(int count)
+		{
+			ServerCount = count;
+			Artefacts = new List<Artefact>();
+		}
+		#endregion
+		
+		/// <summary>
+		/// Get this instance.
+		/// </summary>
+		/// <typeparam name="T">The 1st type parameter.</typeparam>
 		public IEnumerable<T> Get<T>() where T : new()
 		{
 			return Artefacts.Select(artefact => artefact.As<T>());
 		}
 
 		#region ICollection implementation
-
 		public void Add(Artefact item)
 		{
-//			Artefact[] artefacts = Artefacts;
-//			Artefacts = new Artefact[artefacts.Length + 1];
-//			artefacts.CopyTo(Artefacts, 0);
-//			Artefacts[Artefacts.Length - 1] = item;
 			Artefacts.Add(item);
 		}
 
@@ -71,19 +96,6 @@ namespace Artefacts.Service
 		{
 			return Artefacts.Remove(item);
 		}
-
-		public int Count {
-			get {
-				return Artefacts.Count();
-			}
-		}
-
-		public bool IsReadOnly {
-			get {
-				return false;
-			}
-		}
-
 		#endregion
 
 		#region IEnumerable implementation
@@ -100,8 +112,9 @@ namespace Artefacts.Service
 		
 		public override string ToString()
 		{
-			return string.Format("[QueryResults: Artefacts.Count={0}]",	//, Artefacts={1}]",	//, ResponseStatus={2}]",
+			return string.Format("[QueryResults: Artefacts.Count={0}, Count={1}, ServerCount={2}]",	//, Artefacts={1}]",	//, ResponseStatus={2}]",
 				Artefacts == null ? "[null]" : Artefacts.Count().ToString(),
+				Count, ServerCount,
 				Artefacts == null ? "[null]" : Artefacts.ToString());
 			//ResponseStatus == null ? "[null]" : ResponseStatus.ToString());
 		}

@@ -40,6 +40,8 @@ namespace Artefacts
 	public class Artefact : DynamicObject, IReturn, IBsonDocumentSerializer
 	{
 		#region Static members
+		public static readonly Type _TArtefact = typeof(Artefact);
+		
 		public static readonly ILogFactory LogFactory;
 		public static readonly ILog Log;
 		public static TextWriter LogWriter { get; private set; }
@@ -116,8 +118,9 @@ namespace Artefacts
 		/// </summary>
 		static Artefact()
 		{
+//			_TArtefact = typeof(Artefact);
 			LogFactory = new ConsoleLogFactory();
-			Log = Artefact.LogFactory.GetLogger(typeof(Artefact));
+			Log = Artefact.LogFactory.GetLogger(_TArtefact);
 		}
 		
 		/// <summary>
@@ -125,7 +128,6 @@ namespace Artefacts
 		/// </summary>
 		public static void ConfigureServiceStack()
 		{
-			
 			MongoDB.Bson.IO.JsonWriterSettings _jsonSettings =
 				new MongoDB.Bson.IO.JsonWriterSettings()
 			{
@@ -199,6 +201,7 @@ namespace Artefacts
 		/// </summary>
 		/// <returns><c>true</c>, if member filter was _defaulted, <c>false</c> otherwise.</returns>
 		/// <param name="member">Member.</param>
+		/// 
 		public static bool DefaultMemberFilter(MemberInfo member)
 		{
 			return
@@ -439,6 +442,8 @@ namespace Artefacts
 		/// <param name="type">Type.</param>
 		public object As(Type type)
 		{
+			if (type == _TArtefact)
+				return this;
 			object instance = Artefact.Cache.GetInstance(this, type);
 			MemberInfo[] typeMembers = GetDataMembers(type).ToArray();
 			IEnumerable<KeyValuePair<string, object>> combinedData = Data;

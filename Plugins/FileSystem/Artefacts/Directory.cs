@@ -80,6 +80,13 @@ namespace Artefacts.FileSystem
 		{
 			return System.IO.Directory.Exists(Path);
 		}
+
+		public override string ToString()
+		{
+			return string.Format(
+				"[Directory: Attributes={0} CreationTime={1} LastAccessTime={2} LastWriteTime={3} Path={4}]",
+				Attributes, CreationTime, LastAccessTime, LastWriteTime, Path);
+		}
 		#endregion
 		#endregion
 	}

@@ -99,6 +99,8 @@
     <Compile Include="IArtefactCollection.cs" />
     <Compile Include="ArtefactQueryable.cs" />
     <Compile Include="ArtefactQueryTranslator.cs" />
+    <Compile Include="CountResults.cs" />
+    <Compile Include="CountRequest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

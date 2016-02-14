@@ -87,8 +87,8 @@ namespace Artefacts.Service
 					bool testSuccess = false;
 					try
 					{
-						Log.InfoFormat("\n--------Test: {0}-------- {1}", testName, T1);
-						_writer.WriteLine("\n--------Test: {0}-------- {1}", testName, T1);
+						Log.InfoFormat("\n--------Start: {0}-------- {1}", testName, T1);
+						_writer.WriteLine("\n--------Start: {0}-------- {1}", testName, T1);
 						OnStartedTest(mi, CurrentTestStartTime);
 						mi.Invoke(this, new object[] { });
 						testSuccess = true;

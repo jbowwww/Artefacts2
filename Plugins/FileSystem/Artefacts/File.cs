@@ -377,8 +377,8 @@ namespace Artefacts.FileSystem
 		public override string ToString()
 		{
 			return string.Format(
-				"[File: Path={6}, Size={0}, CRC={1}, HasCRC={2}, Name={3}, NameWithoutExtension={4}, Extension={5}]",
-				Size, CRC, HasCRC, Name, NameWithoutExtension, Extension, Path);
+				"[File: Attributes={0} CreationTime={1} LastAccessTime={2} LastWriteTime={3} Size={4} CRC={5} HasCRC={6} Extension={7} Path={8}]",
+				Attributes, CreationTime, LastAccessTime, LastWriteTime, Size, CRC, HasCRC, Extension, Path);
 		}
 		#endregion
 	}

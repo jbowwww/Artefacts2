@@ -31,39 +31,91 @@ namespace Artefacts.TestClient
 	[TestFixture]
 	public class ArtefactsTestClient : TestClientBase
 	{
+//		public class TestClientSettings {
+//			private ArtefactsTestClient _testClient;
+//			
+//			public TimeSpan? Timeout {
+//				get { return _testClient._client.Timeout; }
+//				set { _testClient._client.Timeout = value; }
+//			}
+//
+//			public Action<HttpWebRequest> RequestFilter {
+//				get { return _testClient._client.RequestFilter; }
+//				set { _testClient._client.RequestFilter = value; }
+//			}
+//
+//			public Action<HttpWebResponse> ResponseFilter {
+//				get { return _testClient._client.ResponseFilter; }
+//				set { _testClient._client.ResponseFilter = value; }
+//			}
+//
+//			internal TestClientSettings() {}
+//			
+//			public TestClientSettings(ArtefactsTestClient testClient)
+//			{
+//				if (testClient == null)
+//					throw new ArgumentNullException("testClient");
+//				_testClient = testClient;
+//			}
+//			
+//			internal void SetTestClient(ArtefactsTestClient testClient)
+//			{
+//				_testClient = testClient;
+//			}
+//		}
+//	
+//		public static readonly TestClientSettings DefaultSettings = new TestClientSettings() {
+//			Timeout = TimeSpan.FromSeconds(15),
+//			RequestFilter = null,
+//			ResponseFilter = null
+//		};
+
+		internal void OptionalRequestFilter(HttpWebRequest request)
+		{
+			_bufferWriter.WriteLine(string.Format("Client.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}",
+				request.Method, request.ContentType, request.ContentLength, request.UserAgent, request.MediaType,
+				request.RequestUri, request.ProtocolVersion, request.Expect, request.Accept));
+		}
+		
+		internal void OptionalResponseFilter(HttpWebResponse response)
+		{
+			_bufferWriter.WriteLine(
+				string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}",
+					response.StatusCode, response.StatusDescription, response.CharacterSet,
+					response.ContentEncoding, response.ContentType, response.ContentLength));
+		}
+		
 		#region Private fields
 		private TextBufferWriter _bufferWriter;
 		private string _serviceBaseUrl;
-		private IServiceClient _client;
+//		private IServiceClient _client;
+		private ServiceClientBase _client;
 //		private ArtefactsClient _artefactsClient;
 		private dynamic _artefact;
 		private MainWindow _win;
-		private string _winBaseTitle;
+//		private string _winBaseTitle;
 		#endregion
+		
+//		public readonly TestClientSettings Settings = DefaultSettings;
 		
 		public ConcurrentQueue<FileSystemEntry> DelQueue = new ConcurrentQueue<FileSystemEntry>();
 		public ConcurrentQueue<FileSystemEntry> PostQueue = new ConcurrentQueue<FileSystemEntry>();
 		public ConcurrentQueue<Directory> DirectoryQueue = new ConcurrentQueue<Directory>();
-
+		
+		ArtefactCollection<Directory> dirCollection;
+		ArtefactCollection<File> fileCollection;
+		
 		//[TestFixtureSetUp]
 		public ArtefactsTestClient(string serviceBaseUrl, TextBufferWriter bufferWriter, MainWindow win) : base(bufferWriter)
 		{
 			_bufferWriter = bufferWriter;
 			_serviceBaseUrl = serviceBaseUrl;
 			_win = win;
-			_winBaseTitle = _win.Title;
+//			_winBaseTitle = _win.Title;
 			
 			_bufferWriter.WriteLine(string.Format("Creating client to access {0} ... ", _serviceBaseUrl));
 			_client = new JsonServiceClient(_serviceBaseUrl) {
-				//				RequestFilter = (HttpWebRequest request) => bufferWriter.WriteLine(
-				//					string.Format("Client.{0} HTTP {6} {5} {2} bytes {1} Expect {7} Accept {8}",
-				//				              request.Method, request.ContentType,  request.ContentLength,
-				//				              request.UserAgent, request.MediaType, request.RequestUri,
-				//				              request.ProtocolVersion, request.Expect, request.Accept)),
-				//				ResponseFilter = (HttpWebResponse response) => bufferWriter.WriteLine(
-				//					string.Format(" --> {0} {1}: {2} {3} {5} bytes {4}",
-				//				              response.StatusCode, response.StatusDescription, response.CharacterSet,
-				//				              response.ContentEncoding, response.ContentType, response.ContentLength))
+				Timeout = TimeSpan.FromSeconds(15)
 			};
 
 			Artefact.ConfigureServiceStack();
@@ -83,7 +135,10 @@ namespace Artefacts.TestClient
 				testBool = false
 			});
 			bufferWriter.WriteLine("\tJSON: " + _artefact.ToString());//k.StringExtensions.ToJson(_artefact));
-			bufferWriter.WriteLine();
+			
+			dirCollection = new ArtefactCollection<Directory>(_client) { Log = Log };
+			fileCollection = new ArtefactCollection<File>(_client) { Log = Log };	//, "Artefacts_FileSystem_File");
+
 		}
 		
 		public override void Dispose()
@@ -94,6 +149,7 @@ namespace Artefacts.TestClient
 		public override bool OnStartingTests()
 		{
 			_win.EnableStatusGetters = true;
+			_win.EnableStartButton = false;
 			return base.OnStartingTests();
 		}
 		
@@ -509,15 +565,29 @@ namespace Artefacts.TestClient
 			int totalUsedGroups = dupeGroups.Count(pair => pair.Value.Count > 1);
 			_bufferWriter.WriteLine("Total " + File.FormatSize(totalSize) + " in " + totalUsedGroups + "/" + dupeGroups.Count + " groups");
 		}
-		
-//		[Test]
+
+		/// <summary>
+		/// Gets the dupes files collection.
+		/// </summary>
+		/// <remarks>TODO: Get queries like below working - that reference the same collection, possibly other collections etc...</remarks>
+		[Test]
+		public void GetDupesDirectoriesCollection()
+		{
+//			dirCollection.Log = Log;
+			DateTime lastWriteTime = DateTime.Now - TimeSpan.FromDays(365);
+			IQueryable<Directory> q = dirCollection.Where(d => d.LastWriteTime > lastWriteTime);
+			_bufferWriter.WriteLine("Collection has {0} directories\nFound {1} directories with LastWriteTime > {2}",
+			                        dirCollection.Count(), q.Count(), lastWriteTime);
+//			_bufferWriter.WriteLine("\nq:");
+//			foreach (Directory d in q)
+//				_bufferWriter.WriteLine(d);
+		}
+
+		[Test]
 		public void GetFilesCollection()
 		{
-			ArtefactCollection<File> collection = new ArtefactCollection<File>(_client, "Artefacts_FileSystem_File");
-			IQueryable<File> q = collection.Where(f => f.Extension.ToLower() == ".txt");
-			foreach (File f in q)
-				_bufferWriter.WriteLine(f);
-			_bufferWriter.WriteLine("Count: " + q.Count());
+			IQueryable<File> q = fileCollection.Where(f => f.Extension.ToLower() == ".txt");
+			_bufferWriter.WriteLine("Found {0} files with extension \".txt\"", q.Count());
 		}
 		
 		/// <summary>
@@ -527,22 +597,23 @@ namespace Artefacts.TestClient
 		[Test]
 		public void GetDupesFilesCollection()
 		{
-			ArtefactCollection<File> collection = new ArtefactCollection<File>(_client, "Artefacts_FileSystem_File");
-			IQueryable<File> q = collection.Where(f => f.Size > 1 * 1024 * 1024 * 1024);// && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
-			IQueryable<File> q2 = collection.Where(f => /* (!f.HasCRC  !f.CRC.HasValue || */ f.CRC == null || f.CRC/*.Value*/ == 0);// ==  0));
+			IQueryable<File> q = fileCollection.Where(f => f.Size > 1 * 1024 * 1024 * 1024);// && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+			IQueryable<File> q2 = fileCollection.Where(f => /* (!f.HasCRC  !f.CRC.HasValue || */ f.CRC != null);// || f.CRC/*.Value*/ == 0);// ==  0));
 				// ^^ TODO: Can't get the nullable field thing to work and all my mongo DB has CRC: null on lots of files
+//			IQueryable<File> q3 = fileCollection.Where(f => f.Size > ((long)(16*1024*1024)) && fileCollection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+			_bufferWriter.WriteLine("Collection \"{0}\": {1} files", fileCollection.Expression, fileCollection.Count());
+			_bufferWriter.WriteLine("Queryable \"{0}\": {1} files with Size > 1GB", q.Expression, q.Count());
 			foreach (File f in q)
 				_bufferWriter.WriteLine(f);
-			_bufferWriter.WriteLine("Collection has {0} files\nFound {1} files with Size > 16MB\nFound {2} files with null CRC\n",
-			                       0,// collection.Count(),
-			                        q.Count(),
-			                        q2.Count());
-			IQueryable<File> q3 = collection.Where(f => f.Size > ((long)(16*1024*1024)) && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
-			foreach (File f in q3)
+			_bufferWriter.WriteLine("Queryable \"{0}\": {1} files with non-null CRC", q2.Expression, q2.Count());
+			foreach (File f in q2)
 				_bufferWriter.WriteLine(f);
-			_bufferWriter.WriteLine("Count: " + q3.Count());
+//			_bufferWriter.WriteLine("Queryable \"{0}\": {1} files with null CRC", q3.Expression, q3.Count());
+//			foreach (File f in q3)
+//				_bufferWriter.WriteLine(f);
 		}
 		
+
 		#region Helper functions
 		/// <summary>
 		/// 

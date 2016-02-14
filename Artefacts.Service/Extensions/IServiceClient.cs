@@ -9,7 +9,7 @@ namespace Artefacts.Service.Extensions
 		public static Artefact GetOrCreate<T>(this IServiceClient client, Expression<Func<T, bool>> predicate, Func<T> create)
 		{
 			Artefact artefact;
-			QueryResults results = client.Get<QueryResults>(QueryRequest.Make<T>(predicate));
+			QueryResults results = client.Get<QueryResults>(QueryRequest.Make<T>(typeof(T).FullName, predicate));
 			if (results.Count > 0)
 				artefact = results.Artefacts[0];
 			else

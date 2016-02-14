@@ -37,6 +37,10 @@ public partial class MainWindow: Gtk.Window
 		remove { btnStartMain.Clicked -= value; }
 	}
 	
+	public bool EnableStartButton {
+		get { return btnStartMain.Sensitive; }
+		set { btnStartMain.Sensitive = value; }
+	}
 	public string DefaultTrashFolder {
 		get { return btnTrashDefaultChooser.Filename; }
 	}
@@ -96,6 +100,7 @@ public partial class MainWindow: Gtk.Window
 
 	public override void Dispose()
 	{
+		EnableStatusGetters = false;
 		base.Dispose();
 	}
 	#endregion
@@ -104,11 +109,8 @@ public partial class MainWindow: Gtk.Window
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
 	{
 		if (System.IO.Directory.Exists(btnTrashDefaultChooser.Filename))
-		{
 			ConfigurationManager.AppSettings["defaultTrashPath"] = btnTrashDefaultChooser.Filename;
-			
-		}
-		_autoScrollTimer.Dispose();
+		EnableStatusGetters = false;	// destroys _autoScrollTimer
 	}
 	
 	protected void OnConfigureEvent(object sender, ConfigureEventArgs a)
@@ -142,8 +144,8 @@ public partial class MainWindow: Gtk.Window
 			MethodInfo currentTest = GetCurrentTest == null ? null : GetCurrentTest.Invoke();
 			txtTestName.Text = currentTest == null ? "No test running" :
 				"Current Test: " + currentTest.DeclaringType.FullName + "." + currentTest.Name;
-			txtTestTime.Text = GetCurrentTestTime == null ? "" :
-				(DateTime.Now - GetCurrentTestTime.Invoke()).ToString();
+			if (currentTest != null)
+				txtTestTime.Text = GetCurrentTestTime == null ? "" : (DateTime.Now - GetCurrentTestTime.Invoke()).ToString();
 		});
 		if (_autoScrollHost && _autoScrollHostUpdated)
 		{
