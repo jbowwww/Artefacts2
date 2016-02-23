@@ -101,6 +101,7 @@
     <Compile Include="ArtefactQueryTranslator.cs" />
     <Compile Include="CountResults.cs" />
     <Compile Include="CountRequest.cs" />
+    <Compile Include="ClientQueryExecutorVisitor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

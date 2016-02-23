@@ -23,7 +23,18 @@ namespace Artefacts.Service
 	public class ArtefactCollection<T> : ArtefactQueryable<T>, IArtefactCollection, IDisposable
 	{
 		#region Static members
-		public static ExpressionVisitor Visitor = new ClientQueryVisitor<T>();
+		public static ExpressionVisitor Visitor = new ClientQueryExecutorVisitor<T>();
+		
+		public class QueryableRegistry : Dictionary<Expression, IQueryable>
+		{
+			public IQueryable Get(Expression expression)
+			{
+				if (!base.ContainsKey(expression))
+					base.Add(expression, new ArtefactQueryable<T>(this, expression));
+				return base[expression];
+			}
+		}
+		public static readonly QueryableRegistry Queries = new Dictionary<Expression, IQueryable>();
 		#endregion
 		
 		#region Private fields
@@ -51,7 +62,7 @@ namespace Artefacts.Service
 			Client = client;
 			Name = name;
 			Collection = this;
-			Expression = expression ?? Expression.Parameter(typeof(ArtefactCollection<T>), Name);
+			Expression = expression ?? Expression.Parameter(typeof(ArtefactCollection<T>), Name);		//Expression.Constant(this);
 		}
 		
 		public void Dispose()
@@ -65,19 +76,23 @@ namespace Artefacts.Service
 		#region IQueryProvider implementation
 		public IQueryable CreateQuery(Expression expression)
 		{
-			return new ArtefactQueryable<T>(this, expression);
+			Log.DebugFormat("CreateQuery: {0}", ExpressionPrettyPrinter.PrettyPrint(expression));
+			expression = Visitor.Visit(expression);
+			Log.InfoFormat("CreateQuery: {0}", ExpressionPrettyPrinter.PrettyPrint(expression));
+			return Queries.Get(expression); //new ArtefactQueryable<T>(this, expression);
 		}
 		
 		public IQueryable<TElement> CreateQuery<TElement>(Expression expression)
 		{
 			IArtefactCollection collection = ArtefactCollection.CollectionsByType[typeof(TElement)];
-			return new ArtefactQueryable<TElement>(collection, expression);
+			Log.DebugFormat("CreateQuery: <{0}>: {1}", collection.Name, ExpressionPrettyPrinter.PrettyPrint(expression));
+			return collection.CreateQuery(expression);
 		}
 		
 		public object Execute(Expression expression)
 		{
 			QueryRequest request = QueryRequest.Make<T>(Name, expression);
-			Log.Info(string.Format("ArtefactCollection.Execute(\"{0}\"): Client.Get({1})",
+			Log.Info(string.Format("Execute(\"{0}\"): Client.Get({1})",
 				expression != null ? expression.ToString() : "", request));
 			return Client.Get<QueryResults>(request);
 		}
@@ -101,7 +116,7 @@ namespace Artefacts.Service
 		{
 			Type resultType = typeof(TResult);
 			
-			expression = Visitor.Visit(expression);
+			//expression = Visitor.Visit(expression);
 			
 			MethodCallExpression mce = expression as MethodCallExpression;
 			if (mce != null)
@@ -121,20 +136,26 @@ namespace Artefacts.Service
 						//QueryResults qr = (QueryResults)Execute(mce);//.Arguments[0]);
 						
 						if (mce.Method.Name == "Count" && mce.Arguments.Count == 1)
-							//return (TResult)(object)qr.ServerCount;
-							return (TResult)(object)Client.Get<CountResults>(CountRequest.Make<T>(Name, mce)).Count;
+						{
+							CountRequest request = CountRequest.Make<T>(Name, mce);
+							Log.InfoFormat("ArtefactCollection<{0}>.Execute(\"{1}\").Count", typeof(TResult).FullName, expression);
+							return (TResult)(object)Client.Get<CountResults>(request).Count;
+						}
+							
 						
 						throw new InvalidOperationException(string.Format("Unknown scalar LINQ method \"{0} {1}.{2}\"",
 							mce.Method.ReturnType.FullName, mce.Method.DeclaringType.FullName, mce.Method.Name));
 //						return (TResult)mce.Method.Invoke(null, new [] { qr });
 					}
 				}
+				Log.InfoFormat("ArtefactCollection<{0}>.Execute(\"{1}\")", typeof(TResult).FullName, expression);
 				return (TResult)Execute(mce);
 			}
 			
 			if (resultType != QueryResultType)
 				throw new ArgumentOutOfRangeException("TResult", resultType, "TResult type \"" + resultType.FullName + "\" for expression \"" + expression + "\" should have been \"" + QueryResultType.FullName + "\"");
 			
+			Log.InfoFormat("ArtefactCollection<{0}>.Execute(\"{1}\")", typeof(TResult).FullName, expression);
 			return (TResult)Execute(expression);
 		}
 		#endregion

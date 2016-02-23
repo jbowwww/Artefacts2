@@ -19,7 +19,6 @@ namespace Artefacts.Service
 		#endregion
 		
 		private StringBuilder _serializedData = new StringBuilder(32);
-		public readonly ClientQueryVisitor<T> Visitor = new ClientQueryVisitor<T>();
 		
 		public string SerializedData {
 			get { return _serializedData.ToString(); }
@@ -27,29 +26,32 @@ namespace Artefacts.Service
 
 		public string LastOperation { get; protected set; }
 		
-		protected Expression StripQuotes(UnaryExpression e)
-		{
-			while (e != null && e.NodeType == ExpressionType.Quote)
-				return Visitor.Visit(e.Operand);
-			return e;
-		}
-
-		public Expression Visit(Expression expression)
-		{
-			Expression visitedExpression = Visitor.Visit(expression);
-			return visitedExpression;
-		}
+		public Expression Expression { get; protected set; }
+		
+//		protected Expression StripQuotes(UnaryExpression e)
+//		{
+//			while (e != null && e.NodeType == ExpressionType.Quote)
+//				return Visitor.Visit(e.Operand);
+//			return e;
+//		}
+//
+//		public Expression Visit(Expression expression)
+//		{
+//			Expression visitedExpression = Visitor.Visit(expression);
+//			return visitedExpression;
+//		}
 		
 		public IMongoQuery Translate(Expression e)
 		{
-			Expression ve = Visit(e);
-//			if (typeof(ArtefactQueryable<T>).IsAssignableFrom(ve.Type))
+//			Expression Expression
+			Expression = e; //Visit(e);
+//			if (typeof(ArtefactQueryable<T>).IsAssignableFrom(Expression.Type))
 //			{
-				if (ve.NodeType == ExpressionType.Constant)
+			if (Expression.NodeType == ExpressionType.Constant)
 				{
 					return Query.Null;
 				}
-				ParameterExpression pe = ve as ParameterExpression;
+			ParameterExpression pe = Expression as ParameterExpression;
 				if (pe != null)
 				{
 				LastOperation = "Where";
@@ -58,26 +60,26 @@ namespace Artefacts.Service
 				}
 //			}
 			
-//			if (ve.NodeType == ExpressionType.Quote)
-//				return Translate(StripQuotes(ve));
-			else if (ve.NodeType == ExpressionType.UnaryPlus)
-				return TranslateUnary((UnaryExpression)ve);
-			else if (ve.NodeType == ExpressionType.Convert)
-				return TranslateConvert((UnaryExpression)ve);
-			BinaryExpression be = ve as BinaryExpression;
+//			if (Expression.NodeType == ExpressionType.Quote)
+//				return Translate(StripQuotes(Expression));
+			else if (Expression.NodeType == ExpressionType.UnaryPlus)
+				return TranslateUnary((UnaryExpression)Expression);
+			else if (Expression.NodeType == ExpressionType.Convert)
+				return TranslateConvert((UnaryExpression)Expression);
+			BinaryExpression be = Expression as BinaryExpression;
 			if (be != null)
-				return TranslateBinary((BinaryExpression)ve);
+				return TranslateBinary((BinaryExpression)Expression);
 			
 			
-			MemberExpression me = ve as MemberExpression;
+			MemberExpression me = Expression as MemberExpression;
 			if (me != null)
 				return TranslateMember(me);
 			
-			if (ve.NodeType == ExpressionType.Call)
-				return TranslateMethodCall((MethodCallExpression)ve);
-			else if (ve.NodeType == ExpressionType.Lambda)
-				return TranslateLambda((LambdaExpression)ve);
-			throw new ArgumentOutOfRangeException("visitedExpression", ve, "Expression of type \"" + ve.NodeType + "\" not supported");
+			if (Expression.NodeType == ExpressionType.Call)
+				return TranslateMethodCall((MethodCallExpression)Expression);
+			else if (Expression.NodeType == ExpressionType.Lambda)
+				return TranslateLambda((LambdaExpression)Expression);
+			throw new ArgumentOutOfRangeException("visitedExpression", Expression, "Expression of type \"" + Expression.NodeType + "\" not supported");
 		}
 		
 		protected IMongoQuery TranslateConvert(UnaryExpression ue)
@@ -161,14 +163,14 @@ namespace Artefacts.Service
 								if (i > 1)
 									_serializedData.Append(", ");
 								Translate(mce.Arguments[i]);
-//								Expression ve = Visit(StripQuotes(mce.Arguments[i]));
-//								qp = Query<T>.Where((Expression<Func<T, bool>>)ve);		//Translate();
+//								Expression Expression = Visit(StripQuotes(mce.Arguments[i]));
+//								qp = Query<T>.Where((Expression<Func<T, bool>>)Expression);		//Translate();
 //								qp = Query.And(qp);
 							}
 							_serializedData.Append(')');							
 							IMongoQuery q2 = Query.Null;
 							if (mce.Method.Name == "Where")
-								q2 = Query<T>.Where((Expression<Func<T, bool>>)StripQuotes((UnaryExpression)mce.Arguments[1]));
+								q2 = Query<T>.Where((Expression<Func<T, bool>>)/*StripQuotes*/(((UnaryExpression)mce.Arguments[1]).Operand)).Inject();
 							if (q == null)
 								return q2;
 							else if (q2 != null)

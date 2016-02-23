@@ -14,7 +14,7 @@ namespace Artefacts.Service
 	//	}
 	//
 	//	public class ClientQueryVisitor<TArtefact> : ExpressionVisitor where TArtefact : Artefact
-	public class ClientQueryVisitor<T> : ExpressionVisitor
+	public class ClientQueryExecutorVisitor<T> : ExpressionVisitor
 	{
 		static readonly Type _enumerableStaticType = typeof(System.Linq.Enumerable);
 		static readonly Type _queryableStaticType = typeof(System.Linq.Queryable);
@@ -29,32 +29,63 @@ namespace Artefacts.Service
 			BindingFlags.Public | BindingFlags.NonPublic;
 		private bool _innerQuery = false;
 		private ArtefactQueryable<T> _innerQueryable;
+//		private IQueryProvider _provider;
+
+		public readonly  Stack<MethodCallExpression> LinqStack = new Stack<MethodCallExpression>();
+		public readonly Stack<Expression> Stack = new Stack<Expression>();
+		public Expression ParentExpression { get { return Stack.Count == 0 ? null : Stack.Peek(); } }
+		
 		public int InnerQueriesExecuted {
 			get;
 			protected set;
 		}
-
 		
+		
+//		public ClientQueryExecutorVisitor(IQueryProvider provider)
+//		{
+//			_provider = provider;
+//		}
+		
+		public override Expression Visit(Expression exp)
+		{
+			Expression visitedExpression;
+			Stack.Push(exp);
+			visitedExpression = base.Visit(exp);
+			Stack.Pop();
+			return visitedExpression;
+		}
+
 		protected override Expression VisitConstant(ConstantExpression c)
 		{
 			if (typeof(ArtefactQueryable<T>).IsAssignableFrom(c.Type) && CurrentDepth > 1)
 			{
-				_innerQuery = true;
+ 				_innerQuery = true;
 				_innerQueryable = (ArtefactQueryable<T>)c.Value;
 				return c;
 			}
 			return base.VisitConstant(c);
 		}
 
+		protected override Expression VisitParameter(ParameterExpression p)
+		{
+			if (typeof(ArtefactQueryable<T>).IsAssignableFrom(p.Type) && CurrentDepth > 1)
+			{
+//				_innerQuery = true;
+//				_innerQueryable = (ArtefactQueryable<T>)p.Value;
+				return p;
+			}
+			return base.VisitParameter(p);
+		}
+		
 		protected override Expression VisitBinary(BinaryExpression b)
 		{
 			return Expression.MakeBinary(b.NodeType, Visit(b.Left), Visit(b.Right));
 		}
 
-//		protected override Expression VisitUnary(UnaryExpression u)
-//		{
-//			return Expression.MakeUnary(u.NodeType, Visit(u.Operand), u.Type, u.Method);
-//		}
+		protected override Expression VisitUnary(UnaryExpression u)
+		{
+			return Expression.MakeUnary(u.NodeType, Visit(u.Operand), u.Type, u.Method);
+		}
 		//		protected override Expression VisitParameter(ParameterExpression p)
 		//		{
 		//			if (p.Name == "collection" &&
@@ -155,47 +186,51 @@ namespace Artefacts.Service
 					                                            mArguments.Cast<ConstantExpression>().Select<ConstantExpression, object>((ce) => ce.Value).ToArray()));
 		
 				// LINQ queries are always extension methods so are in fact static
-				if (mObject == null && mArguments.Count() > 0 && _enumerableType.IsAssignableFrom(mArguments.ElementAt(0).Type))
+				if (mObject == null && mArguments.Count() > 0 && _enumerableType.IsAssignableFrom(mArguments.ElementAt(0).Type)
+				 && (m.Method.DeclaringType == _enumerableStaticType || m.Method.DeclaringType == _queryableStaticType))
 				{
-					// Replace the predicate version of count() with a Where(predicate).Count
-					if (m.Method.DeclaringType == _enumerableStaticType || m.Method.DeclaringType == _queryableStaticType)
+//					LinqStack.Push(
+					// Replace the predicate version of count() with a Where(predicate).Count{
+					if (mArguments.Count() == 2)
 					{
-						if (mArguments.Count() == 2)
+						if (m.Method.Name == "Count")
 						{
-							if (m.Method.Name == "Count")
-							{
-								Expression innerWhere = Expression.Call(
-									m.Method.DeclaringType, "Where",
-									new Type[] { _elementType },
-								/*Visit*/(mArguments.ElementAt(0)),
-								/*Visit*/(mArguments.ElementAt(1)));
-								Expression outerCount = Expression.Call(
+							Expression innerWhere = Expression.Call(
+								m.Method.DeclaringType, "Where",
+								new Type[] { _elementType },
+								Visit(mArguments.ElementAt(0)),
+								Visit(mArguments.ElementAt(1)));
+							Expression outerCount = Expression.Call(
 //									m.Method.DeclaringType,
-									_enumerableStaticType, "Count",
-									new Type[] { _elementType },
-								Expression.Convert(innerWhere, _enumerableType));
-								return /*Visit*/(outerCount);
-							}
-							else if (m.Method.Name == "Where")
-							{
-								Expression where = Expression.Call(
-									m.Method.DeclaringType, "Where",
-									new Type[] { _elementType },
-									/*Visit*/(mArguments.ElementAt(0)),
-									/*Visit*/(mArguments.ElementAt(1)));
-								return where;
-							}
+								_enumerableStaticType, "Count",
+								new Type[] { _elementType },
+							Expression.Convert(innerWhere, _enumerableType));
+							return Visit(outerCount);
 						}
-						else if (mArguments.Count() == 1)
+						else if (m.Method.Name == "Where")
 						{
-							if (m.Method.Name == "Count")
-							{
-								return Expression.Call(
-									m.Method.DeclaringType, "Count",
-									new Type[] { _elementType },
-									/*Visit*/(mArguments.ElementAt(0))
-								);
-							}
+							Expression where = Expression.Call(
+								m.Method.DeclaringType, "Where",
+								new Type[] { _elementType },
+								Visit(mArguments.ElementAt(0)),
+								Visit(mArguments.ElementAt(1)));
+							return where;
+						}
+					}
+					else if (mArguments.Count() == 1)
+					{
+						if (m.Method.Name == "Count")
+						{
+							Expression newCall = Expression.Call(
+								m.Method.DeclaringType, "Count",
+								new Type[] { _elementType },
+								Visit(mArguments.ElementAt(0))
+							);
+							if 	( (	ParentExpression != null && Stack.Count > 1 )
+							&&	(	ParentExpression.NodeType != ExpressionType.Call
+							||		m.Method.DeclaringType != _enumerableStaticType	))
+								return Expression.Constant(_innerQueryable.Provider.Execute(newCall));
+							return newCall;
 						}
 					}
 					throw new NotSupportedException(string.Format("Unsupported method \"", m.Method.DeclaringType.FullName, ".", m.Method.Name, "\""));
@@ -223,10 +258,10 @@ namespace Artefacts.Service
 //		protected override ReadOnlyCollection<Expression> VisitExpressionList(ReadOnlyCollection<Expression> original)
 //		{
 //			return new ReadOnlyCollection<Expression>(original.Select(e => e.Type == _elementType ? _artefactType : e.Type).ToList());
-////		}
-//		protected override Expression VisitLambda(LambdaExpression lambda)
-//		{
-//			return Expression.Lambda(Visit(lambda.Body), VisitExpressionList(lambda.Parameters));
 //		}
+		protected override Expression VisitLambda(LambdaExpression lambda)
+		{
+			return Expression.Lambda(Visit(lambda.Body), VisitExpressionList(lambda.Parameters));
+		}
 	}
 }

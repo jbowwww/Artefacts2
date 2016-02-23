@@ -12,18 +12,24 @@ namespace Artefacts.Service
 {
 	public class ArtefactQueryable<T> : IQueryable<T>, IQueryable, ICollection<T>
 	{
+		#region Static fields
+		public static readonly Type EnumerableStaticType = typeof(System.Linq.Enumerable);
+		public static readonly Type QueryableStaticType = typeof(System.Linq.Queryable);
+		public static readonly Type QueryResultType = typeof(QueryResults);
+		
+		
+		#endregion
+		
 		#region Private fields
 //		private Expression _expression;
 		private QueryResults _results;
+//		private CountResults _countResults;
 		#endregion
 		
 		#region Constants
 		public readonly Type ElementType = typeof(T);
 		public readonly Type EnumerableType = typeof(IEnumerable<T>);
 		public readonly Type QueryableType = typeof(IQueryable<T>);
-		public readonly Type EnumerableStaticType = typeof(System.Linq.Enumerable);
-		public readonly Type QueryableStaticType = typeof(System.Linq.Queryable);
-		public readonly Type QueryResultType = typeof(QueryResults);
 		#endregion
 		
 		#region Properties and fields
@@ -41,7 +47,7 @@ namespace Artefacts.Service
 		}
 
 		public int Count {
-			get { return Results.ServerCount; }
+			get { return this.Count(); }// _countResults ?? (_countResults = Provider.Execute<int>(Expression)); } // Results.Count; }
 		}
 
 		public bool IsReadOnly {
@@ -102,10 +108,10 @@ namespace Artefacts.Service
 	
 	public static class ArtefactQueryableExtensions
 	{
-		public static int Count<T>(this ArtefactQueryable<T> artefactQueryable)
-		{
-			return artefactQueryable.Results.Count;
-		}
+//		public static int Count<T>(this ArtefactQueryable<T> artefactQueryable)
+//		{
+//			return artefactQueryable.Results.Count;
+//		}
 	}
 }
 

@@ -15,17 +15,17 @@ namespace Artefacts.Service
 	{
 		#region Properties
 		/// <summary>Gets or sets the artefacts</summary>
-		[DataMember(Order=2)]
+		[DataMember]
 		public List<Artefact> Artefacts { get; set; }
 		
 		/// <summary>Gets the count</summary>
 		/// <remarks>ICollection implementation</remarks>
-		[DataMember(Order=1)]
+//		[DataMember(Order=1)]
 		public int Count { get { return Artefacts == null ? 0 : Artefacts.Count; } } 
 		
 		/// <summary>Gets or sets the server count</summary>
-		[DataMember(Order=3)]
-		public int ServerCount { get; set; }
+//		[DataMember(Order=3)]
+//		public int ServerCount { get; set; }
 		
 		/// <summary>Gets a value indicating whether this instance is read only</summary>
 		/// <remarks>ICollection implementation</remarks>
@@ -36,11 +36,19 @@ namespace Artefacts.Service
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Service.QueryResults"/> class.
 		/// </summary>
-//		public QueryResults()
-//		{
-//			Artefacts = new List<Artefact>();
-//			Count = Artefacts.Count;
-//		}
+		public QueryResults()
+		{
+			Artefacts = new List<Artefact>();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Artefacts.Service.QueryResults"/> class.
+		/// </summary>
+		/// <param name="count">Count.</param>
+		public QueryResults(int count)
+		{
+			Artefacts = new List<Artefact>(count);
+		}
 		
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Artefacts.Service.QueryResults"/> class.
@@ -49,16 +57,6 @@ namespace Artefacts.Service
 		public QueryResults(IEnumerable<Artefact> artefacts)
 		{
 			Artefacts = new List<Artefact>(artefacts);
-		}
-		
-		/// <summary>
-		/// Initializes a new instance of the <see cref="Artefacts.Service.QueryResults"/> class.
-		/// </summary>
-		/// <param name="count">Count.</param>
-		public QueryResults(int count)
-		{
-			ServerCount = count;
-			Artefacts = new List<Artefact>();
 		}
 		#endregion
 		
@@ -112,9 +110,8 @@ namespace Artefacts.Service
 		
 		public override string ToString()
 		{
-			return string.Format("[QueryResults: Artefacts.Count={0}, Count={1}, ServerCount={2}]",	//, Artefacts={1}]",	//, ResponseStatus={2}]",
+			return string.Format("[QueryResults: Artefacts.Count={0} Count={1}]",
 				Artefacts == null ? "[null]" : Artefacts.Count().ToString(),
-				Count, ServerCount,
 				Artefacts == null ? "[null]" : Artefacts.ToString());
 			//ResponseStatus == null ? "[null]" : ResponseStatus.ToString());
 		}

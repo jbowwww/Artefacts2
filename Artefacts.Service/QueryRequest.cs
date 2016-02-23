@@ -51,9 +51,11 @@ namespace Artefacts.Service
 		{
 			if (collectionName.IsNullOrSpace())
 				throw new ArgumentOutOfRangeException("collectionName", collectionName, "collectionName is NULL or whitespace");
+			ClientQueryVisitor<T> Visitor = new ClientQueryVisitor<T>();
 			ArtefactQueryTranslator<T> translator = new ArtefactQueryTranslator<T>();
-			IMongoQuery query = translator.Translate(expression);
-			return new QueryRequest(collectionName, query, translator.LastOperation);
+			Expression visited = Visitor.Visit(expression);
+			IMongoQuery query = translator.Translate(visited);
+			return new QueryRequest(collectionName, query, translator.LastOperation) { Expression = visited };
 		}
 		#endregion
 		
@@ -86,6 +88,9 @@ namespace Artefacts.Service
 		}
 		private QueryDocument _query;
 
+		[IgnoreDataMember]
+		public Expression Expression { get; set; }
+		
 		[DataMember(Order = 2)]
 		public string Operation { get; set; }
 		
@@ -101,8 +106,8 @@ namespace Artefacts.Service
 				throw new ArgumentOutOfRangeException("collectionName", collectionName, "collectionName is NULL or whitespace");
 //			if (query == null)
 //				throw new ArgumentNullException("query");
-			if (operation.IsNullOrSpace())
-				throw new ArgumentOutOfRangeException("operation", operation, "operation is NULL or whitespace");
+//			if (operation.IsNullOrSpace())
+//				throw new ArgumentOutOfRangeException("operation", operation, "operation is NULL or whitespace");
 			CollectionName = Artefact.MakeSafeCollectionName(collectionName);
 			Query = new QueryDocument(query.ToBsonDocument());
 			Operation = operation;

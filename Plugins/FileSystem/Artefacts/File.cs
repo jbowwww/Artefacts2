@@ -236,16 +236,28 @@ namespace Artefacts.FileSystem
 		public void DoCRC(bool force = false, bool wait = false, Action<File> continueWith = null)
 		{
 			EventWaitHandle waitCRC = new EventWaitHandle(false, EventResetMode.ManualReset);
+			waitCRC.Reset();
 			if (force || (!HasCRC && !IsCRCQueued))
 			{
-				_crc = new FileCRC(
-					FileInfo ?? (FileInfo = new FileInfo(Path)),
-					new FileCRC.Region[] { new FileCRC.Region(0, FileInfo.Length - 1) },
-					() => waitCRC.Set());
-				if (wait && IsCRCQueued)
-					waitCRC.WaitOne();
-				if (continueWith != null)
-					continueWith(this);
+				try {
+					_crc = new FileCRC(
+						FileInfo ?? (FileInfo = new FileInfo(Path)),
+						new FileCRC.Region[] { new FileCRC.Region(0, FileInfo.Length - 1) },
+						() => waitCRC.Set());
+					if (wait && IsCRCQueued)
+						waitCRC.WaitOne();
+					if (continueWith != null)
+						continueWith(this);
+				}
+				catch (Exception ex) {
+					Log.Error("Error waiting for FileCRC for \"" + Path + "\"", ex);
+					throw ex;
+				}
+				finally {
+					Log.Debug("waitCRC: " + waitCRC);
+//					waitCRC.Set();	// Shouldn't need because FileCRC class uses a finally{} clause to ensure the continueWith Action is always called
+				}
+
 			}
 		}
 

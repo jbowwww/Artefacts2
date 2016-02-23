@@ -19,6 +19,7 @@ using MongoDB.Bson;
 using System.Dynamic.Utils;
 using MongoDB.Bson.Serialization;
 using System.Reflection;
+using MongoDB.Driver.Builders;
 
 namespace Artefacts.TestClient
 {
@@ -136,8 +137,8 @@ namespace Artefacts.TestClient
 			});
 			bufferWriter.WriteLine("\tJSON: " + _artefact.ToString());//k.StringExtensions.ToJson(_artefact));
 			
-			dirCollection = new ArtefactCollection<Directory>(_client) { Log = Log };
-			fileCollection = new ArtefactCollection<File>(_client) { Log = Log };	//, "Artefacts_FileSystem_File");
+			dirCollection = new ArtefactCollection<Directory>(_client) { Log = _bufferWriter.GetLog("<"+typeof(Directory).FullName+">") };
+			fileCollection = new ArtefactCollection<File>(_client) { Log = _bufferWriter.GetLog("<"+typeof(File).FullName+">") };	//, "Artefacts_FileSystem_File");
 
 		}
 		
@@ -417,7 +418,7 @@ namespace Artefacts.TestClient
 			QueryRequest request =
 				QueryRequest.Make<File>(f => 
 					//f.Path.StartsWith("/mnt/Trapdoor/media/mp3/") &&
-					(f.Size  > (16 * 1024 * 1024)));
+					(f.Size  > (64 * 1024 * 1024)));
 			QueryResults results = _client.Get<QueryResults>(request);
 			_bufferWriter.WriteLine(string.Format("{0} file results >= 16MB ", results.Count));
 			long i = 0;
@@ -444,15 +445,14 @@ namespace Artefacts.TestClient
 					{
 						if (sizeGroups.ContainsKey(file.Size))
 							continue;
-						results2 = (QueryResults)_client.Get<object>(QueryRequest.Make<File>(f => f.Size == file.Size));
-//						results2 = new List<File>(
-//							results.Artefacts
-//								.Select(a => a.As<File>())
-//								.Where(f => f.Size == file.Size && System.IO.File.Exists(f.Path)));
-						files = results2.Artefacts.Select(a => a.As<File>());
-						sizeGroups.Add(file.Size, files);
+						sizeGroups.Add(file.Size, null);
 					}
-					
+					results2 = _client.Get<QueryResults>(
+						QueryRequest.Make<File>(
+							f => f.Size == file.Size && System.IO.File.Exists(f.Path))
+						);
+					files = results2.Get<File>();
+						
 					if (!MainClass.HasQuit() && results2.Count > 1)
 					{
 						_bufferWriter.WriteLine(
@@ -500,7 +500,6 @@ namespace Artefacts.TestClient
 							});
 							groupSize += file2.Size;
 						}
-						
 						totalSize += groupSize;
 					}
 				}
@@ -573,11 +572,28 @@ namespace Artefacts.TestClient
 		[Test]
 		public void GetDupesDirectoriesCollection()
 		{
-//			dirCollection.Log = Log;
-			DateTime lastWriteTime = DateTime.Now - TimeSpan.FromDays(365);
+			//			dirCollection.Log = Log;
+			DateTime lastWriteTime = DateTime.Now - TimeSpan.FromDays(35);
 			IQueryable<Directory> q = dirCollection.Where(d => d.LastWriteTime > lastWriteTime);
 			_bufferWriter.WriteLine("Collection has {0} directories\nFound {1} directories with LastWriteTime > {2}",
 			                        dirCollection.Count(), q.Count(), lastWriteTime);
+			//			_bufferWriter.WriteLine("\nq:");
+			//			foreach (Directory d in q)
+			//				_bufferWriter.WriteLine(d);
+		}
+		
+		/// <summary>
+		/// Gets the dupes files collection.
+		/// </summary>
+		/// <remarks>TODO: Get queries like below working - that reference the same collection, possibly other collections etc...</remarks>
+		[Test]
+		public void GetDupesDirectoriesCollectionMyCount()
+		{
+//			dirCollection.Log = Log;
+			DateTime lastWriteTime = DateTime.Now - TimeSpan.FromDays(35);
+			ArtefactQueryable<Directory> q = (ArtefactQueryable<Directory>) dirCollection.Where(d => d.LastWriteTime > lastWriteTime);
+			_bufferWriter.WriteLine("Collection has {0} directories\nFound {1} directories with LastWriteTime > {2}",
+			                        dirCollection.Count, q.Count, lastWriteTime);
 //			_bufferWriter.WriteLine("\nq:");
 //			foreach (Directory d in q)
 //				_bufferWriter.WriteLine(d);
@@ -586,7 +602,7 @@ namespace Artefacts.TestClient
 		[Test]
 		public void GetFilesCollection()
 		{
-			IQueryable<File> q = fileCollection.Where(f => f.Extension.ToLower() == ".txt");
+			IQueryable<File> q = fileCollection.Where(f => f.Path.StartsWithIgnoreCase("/mnt/Trapdoor/media/") && f.Extension.ToLower() == ".txt");
 			_bufferWriter.WriteLine("Found {0} files with extension \".txt\"", q.Count());
 		}
 		
@@ -600,7 +616,7 @@ namespace Artefacts.TestClient
 			IQueryable<File> q = fileCollection.Where(f => f.Size > 1 * 1024 * 1024 * 1024);// && collection.Count(f2 => f2.Size == f.Size) > (Int64)1);
 			IQueryable<File> q2 = fileCollection.Where(f => /* (!f.HasCRC  !f.CRC.HasValue || */ f.CRC != null);// || f.CRC/*.Value*/ == 0);// ==  0));
 				// ^^ TODO: Can't get the nullable field thing to work and all my mongo DB has CRC: null on lots of files
-//			IQueryable<File> q3 = fileCollection.Where(f => f.Size > ((long)(16*1024*1024)) && fileCollection.Count(f2 => f2.Size == f.Size) > (Int64)1);
+			IQueryable<File> q3 = fileCollection.Where(f => f.Size > ((long)(16*1024*1024)) && fileCollection.Count(f2 => f2.Size == f.Size) > (Int64)1);
 			_bufferWriter.WriteLine("Collection \"{0}\": {1} files", fileCollection.Expression, fileCollection.Count());
 			_bufferWriter.WriteLine("Queryable \"{0}\": {1} files with Size > 1GB", q.Expression, q.Count());
 			foreach (File f in q)
@@ -608,9 +624,9 @@ namespace Artefacts.TestClient
 			_bufferWriter.WriteLine("Queryable \"{0}\": {1} files with non-null CRC", q2.Expression, q2.Count());
 			foreach (File f in q2)
 				_bufferWriter.WriteLine(f);
-//			_bufferWriter.WriteLine("Queryable \"{0}\": {1} files with null CRC", q3.Expression, q3.Count());
-//			foreach (File f in q3)
-//				_bufferWriter.WriteLine(f);
+			_bufferWriter.WriteLine("Queryable \"{0}\": {1} DUPED files over 16MB ", q3.Expression, q3.Count());
+			foreach (File f in q3)
+				_bufferWriter.WriteLine(f);
 		}
 		
 

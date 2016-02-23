@@ -56,7 +56,7 @@ namespace Artefacts
 				switch (exp.NodeType)
 				{
 				case ExpressionType.Quote:
-					return this.Visit(StripQuotes(exp));	// return this.Visit(StripQuotes(exp));
+					return /*this.Visit*/(StripQuotes(exp));
 				case ExpressionType.Negate:
 				case ExpressionType.NegateChecked:
 				case ExpressionType.Not:

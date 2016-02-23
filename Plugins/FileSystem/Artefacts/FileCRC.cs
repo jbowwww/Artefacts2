@@ -25,6 +25,9 @@ namespace Artefacts.FileSystem
 
 		public class Region
 		{
+			/// <summary>Gets or sets the _file CR</summary>
+			public FileCRC FileCRC { get; set; }
+
 			/// <summary>Gets the size of the component</summary>
 			public const int ComponentSize = sizeof(Int64);
 
@@ -49,7 +52,8 @@ namespace Artefacts.FileSystem
 				{
 					if (!HasValue)
 					{
-						_crcReady.WaitOne();
+						if (!_crcReady.WaitOne(TimeSpan.FromMinutes(1)))
+							throw new InvalidOperationException("Error waiting on file CRC for \"" + FileCRC.FileInfo.FullName + "\"");
 						if (!HasValue)
 							throw new InvalidOperationException("_crc.HasValue = false, after waiting for _crcReady");
 					}
@@ -97,7 +101,8 @@ namespace Artefacts.FileSystem
 //					_crcTask.Wait();
 //					if (!HasCRC)
 //						throw new InvalidOperationException("After waiting for CRC task, _crc.HasValue stil = false");
-					_crcReady.WaitOne();
+					if (!_crcReady.WaitOne(TimeSpan.FromMinutes(1)))
+						throw new InvalidOperationException("Error waiting for FileCRC._crcReady, timedout");
 					if (!HasCRC)
 						throw new InvalidOperationException("_crc.HasValue = false, after waiting for _crcReady");
 				}
@@ -119,13 +124,15 @@ namespace Artefacts.FileSystem
 
 		public FileCRC()
 		{
+			_crcReady.Reset();
 			FileInfo = null;
 			Regions = new Region[0];
 		}
 
 		public FileCRC(Int64 crc)
 		{
-			FileInfo = null;
+			_crcReady.Reset();
+FileInfo = null;
 			Regions = new Region[0];
 			CRC = crc;
 		}
@@ -143,44 +150,59 @@ namespace Artefacts.FileSystem
 			TaskCreationOptions taskOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness;
 			_crcTask = new Task(() =>
 			{
-				byte[] data;
-				using (FileStream fs = FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+				try
 				{
-					data = new byte[fs.Length];
-					int offset = 0;
-					while (fs.Position < fs.Length)
+					byte[] data;
+					using (FileStream fs = FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
 					{
-						int readTryCount = fs.Length >= int.MaxValue ? int.MaxValue : (int)fs.Length;
-						int readActualCount = fs.Read(data, offset, readTryCount);
-						if (readActualCount < readTryCount)
-							throw new IOException(
-								"File read \"" + FileInfo.Name + "\" offset " + offset +
-								", count " + readTryCount + " only read " + readActualCount + " bytes");
-						offset += readActualCount;
+						data = new byte[fs.Length];
+						int offset = 0;
+						while (fs.Position < fs.Length)
+						{
+							int readTryCount = fs.Length >= int.MaxValue ? int.MaxValue : (int)fs.Length;
+							int readActualCount = fs.Read(data, offset, readTryCount);
+							if (readActualCount < readTryCount)
+								throw new IOException(
+									"File read \"" + FileInfo.Name + "\" offset " + offset +
+									", count " + readTryCount + " only read " + readActualCount + " bytes");
+							offset += readActualCount;
+						}
+					}
+
+	//				ParallelOptions parallelOptions = new ParallelOptions() {
+	//					MaxDegreeOfParallelism = 8
+	//				};
+	//				Parallel.ForEach(Regions, parallelOptions, (region) =>
+
+					foreach (Region region in Regions)
+					{
+						region._crcReady.Reset();
+						TaskCreationOptions subTaskOptions = TaskCreationOptions.AttachedToParent;
+						// TODO: Extract crc calc'ion from byte[] buffer into a Region member method(s) e.g. GetRegionData / CalculateCRC()
+						Task calcCrcTask = new Task(() => {
+							Int64 crc = 0;
+							byte[] regionData =
+								new ArraySegment<byte>(data, (int)region.Start, (int)region.Size).Array
+									.Concat(new byte[region.PaddedSize - region.Size]).ToArray();
+							for (long i = 0; i < region.ComponentCount; i++)
+								crc += BitConverter.ToInt64(regionData, (int)i);
+							region.CRC = Int64.MaxValue - crc;
+							region._crcReady.Set();
+						}, subTaskOptions);
+						calcCrcTask.Start();
 					}
 				}
-
-//				ParallelOptions parallelOptions = new ParallelOptions() {
-//					MaxDegreeOfParallelism = 8
-//				};
-//				Parallel.ForEach(Regions, parallelOptions, (region) =>
-
-				foreach (Region region in Regions)
+				catch (Exception ex)
 				{
-					region._crcReady.Reset();
-					TaskCreationOptions subTaskOptions = TaskCreationOptions.AttachedToParent;
-					// TODO: Extract crc calc'ion from byte[] buffer into a Region member method(s) e.g. GetRegionData / CalculateCRC()
-					Task calcCrcTask = new Task(() => {
-						Int64 crc = 0;
-						byte[] regionData =
-							new ArraySegment<byte>(data, (int)region.Start, (int)region.Size).Array
-								.Concat(new byte[region.PaddedSize - region.Size]).ToArray();
-						for (long i = 0; i < region.ComponentCount; i++)
-							crc += BitConverter.ToInt64(regionData, (int)i);
-						region.CRC = Int64.MaxValue - crc;
-						region._crcReady.Set();
-					}, subTaskOptions);
-					calcCrcTask.Start();
+					throw new InvalidOperationException("Error while calculating CRC for \"" + FileInfo.FullName + "\"", ex);
+				}
+				finally
+				{
+					Interlocked.Decrement(ref FileCRC.QueueCount);
+					if (onComplete != null)
+						onComplete();
+					_isQueued = false;
+					_crcReady.Set();
 				}
 			}, taskOptions);
 			_crcTask.ContinueWith((task) => {
@@ -196,9 +218,12 @@ namespace Artefacts.FileSystem
 
 		private void Init(FileInfo fileInfo, IEnumerable<Region> regions)
 		{
+			_crcReady.Reset();
 			FileInfo = fileInfo;
 			Regions = (regions != null && regions.Count() > 0) ? regions.ToArray()
 				: new FileCRC.Region[] { new FileCRC.Region(0, FileInfo.Length - 1) };
+			foreach (Region region in Regions)
+				region.FileCRC = this;
 		}
 
 		public static implicit operator Int64(FileCRC crc)
