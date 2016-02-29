@@ -101,7 +101,7 @@ namespace Artefacts
 		
 		public Log GetLog(string sourceName)
 		{
-			return new Log(sourceName);
+			return new Log(this, sourceName);
 		}
 
 		public class Log : ILog
@@ -125,7 +125,7 @@ namespace Artefacts
 				_prefixWarn = string.Concat("WARN: ", sourceName, ": ");
 			}
 			
-			private string WriteFormatted(string prefix, string message)
+			private void WriteFormatted(string prefix, string message)
 			{
 				Writer.WriteLine(string.Concat(prefix, message.Replace("\n", string.Concat("\n", prefix))));
 			}
@@ -210,8 +210,7 @@ namespace Artefacts
 					return true;
 				}
 			}
-
-		#endregion
+		}
 	}
 }
 

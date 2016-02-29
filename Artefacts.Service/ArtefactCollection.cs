@@ -34,7 +34,7 @@ namespace Artefacts.Service
 				return base[expression];
 			}
 		}
-		public static readonly QueryableRegistry Queries = new Dictionary<Expression, IQueryable>();
+		public readonly QueryableRegistry Queries = new QueryableRegistry();
 		#endregion
 		
 		#region Private fields
