@@ -12,6 +12,15 @@ namespace Artefacts.Service
 {
 	public class ArtefactQueryable<T> : IQueryable<T>, IQueryable, ICollection<T>
 	{
+		public ServiceStack.Logging.ILog _log = null;
+		public ServiceStack.Logging.ILog Log {
+			get
+			{
+				return _log ??
+					(_log = Artefact.LogFactory.GetLogger(this.GetType()));
+			}
+		}
+
 		#region Private fields
 //		private Expression _expression;
 		private QueryResults _results;
@@ -50,11 +59,12 @@ namespace Artefacts.Service
 		#endregion
 		
 		#region Construction
-		public ArtefactQueryable() { }
+		protected ArtefactQueryable() { }
 		public ArtefactQueryable(IArtefactCollection collection, Expression expression)
 		{
 			Expression = expression;
 			Collection = collection;
+			Log.Info(this);
 		}
 		#endregion
 		
@@ -90,6 +100,7 @@ namespace Artefacts.Service
 		{
 //			if (ElementType == typeof(Artefact))	//artefactType)
 //				return /*(IEnumerator<T>)*/Results.Artefacts.GetEnumerator();
+			Log.DebugFormat("ArtefactQueryable<{0}>.GetEnumerator()", typeof(T).FullName);
 			return Results.Artefacts.Select(a => a.As<T>()).GetEnumerator();
 		}
 
@@ -98,6 +109,12 @@ namespace Artefacts.Service
 			return (IEnumerator)GetEnumerator();
 		}
 		#endregion
+		
+		public override string ToString()
+		{
+			return string.Format("[ArtefactQueryable<{0}>: {1}]", typeof(T).FullName, Expression);
+				//string.Format("[ArtefactQueryable: Log={0}, Expression={1}, Provider={2}, Collection={3}, MongoQuery={4}, Results={5}, Count={6}, IsReadOnly={7}]", Log, Expression, Provider, Collection, MongoQuery, Results, Count, IsReadOnly);
+		}
 	}
 	
 	public static class ArtefactQueryableExtensions

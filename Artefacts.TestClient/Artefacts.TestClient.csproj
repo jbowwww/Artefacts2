@@ -25,12 +25,12 @@
     <Externalconsole>true</Externalconsole>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Externalconsole>true</Externalconsole>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -84,13 +84,10 @@
     <Reference Include="ServiceStack.Logging.NLog">
       <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Logging.NLog.dll</HintPath>
     </Reference>
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Text.dll</HintPath>
-    </Reference>
-    <Reference Include="ServiceStack">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.dll</HintPath>
-    </Reference>
     <Reference Include="System.Configuration" />
+    <Reference Include="ServiceStack">
+      <HintPath>bin\Debug\ServiceStack.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gtk-gui\gui.stetic">
@@ -124,5 +121,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="ArtefactTestClient_old.cs" />
   </ItemGroup>
 </Project>

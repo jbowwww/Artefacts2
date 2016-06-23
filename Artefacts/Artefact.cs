@@ -34,6 +34,9 @@ namespace Artefacts
 	/// 		  used (JSON, JSV, ProtoBuf, ...)
 	/// 		- Seems like double handling of the fields
 	/// Try all of the above, compare code readability / format suitability/readability / performance
+	/// 8/4/16
+	/// 	 TODO: Investigate serialization efficiency/size etc using wireshark.
+	/// 			Might want to add possibility of binary (how does that work with REST though?)
 	/// </remarks>
 	[Route("/Artefacts/{Collection}/{Id}/", "POST,PUT")]
 //	[DataContract]
@@ -42,9 +45,9 @@ namespace Artefacts
 		#region Static members
 		public static readonly Type _TArtefact = typeof(Artefact);
 		
-		public static readonly ILogFactory LogFactory;
-		public static readonly ILog Log;
-		public static TextWriter LogWriter { get; private set; }
+		public static readonly ILogFactory LogFactory = new ConsoleLogFactory();
+		public static readonly ILog Log = Artefact.LogFactory.GetLogger(_TArtefact);
+		//public static TextWriter LogWriter { get; private set; }
 		
 		public class ArtefactTypedInstanceCache : ConcurrentDictionary<Type, object>
 		{
@@ -116,12 +119,12 @@ namespace Artefacts
 		/// <summary>
 		/// Initializes the <see cref="Artefacts.Artefact"/> class.
 		/// </summary>
-		static Artefact()
-		{
+//		static Artefact()
+//		{
 //			_TArtefact = typeof(Artefact);
-			LogFactory = new ConsoleLogFactory();
-			Log = Artefact.LogFactory.GetLogger(_TArtefact);
-		}
+//			LogFactory;
+//			Log;
+//		}
 		
 		/// <summary>
 		/// Configures service stack - serialisers etc
@@ -156,8 +159,8 @@ namespace Artefacts
 			JsConfig<Artefact>.SerializeFn = a => a.Data.ToJson<DataDictionary>(_serializationOptions, _jsonSettings);
 			JsConfig<Artefact>.DeSerializeFn = a => new Artefact(BsonSerializer.Deserialize<DataDictionary>(a));
 			
-//			JsConfig<DataDictionary>.SerializeFn = a => a.ToJson<DataDictionary>(_serializationOptions, _jsonSettings);
-//			JsConfig<DataDictionary>.DeSerializeFn = a => BsonSerializer.Deserialize<DataDictionary>(a);
+			JsConfig<DataDictionary>.SerializeFn = a => a.ToJson<DataDictionary>(_serializationOptions, _jsonSettings);
+			JsConfig<DataDictionary>.DeSerializeFn = a => BsonSerializer.Deserialize<DataDictionary>(a);
 			//			
 //						JsConfig<DataDictionary>.SerializeFn = a => StringExtensions.ToJson(a).EncodeJson();
 //						JsConfig<DataDictionary>.DeSerializeFn = a => a.UrlDecode().FromJson<DataDictionary>();
@@ -202,29 +205,25 @@ namespace Artefacts
 		/// <returns><c>true</c>, if member filter was _defaulted, <c>false</c> otherwise.</returns>
 		/// <param name="member">Member.</param>
 		/// 
-		public static bool DefaultMemberFilter(MemberInfo member)
-		{
-			return
-				(member.MemberType == MemberTypes.Field ||
-				 member.MemberType == MemberTypes.Property)
-			 &&  member.IsPublic()
-			 && (member.GetCustomAttribute<IgnoreDataMemberAttribute>() == null);
-		}
-		
 		public delegate bool IncludeMemberDelegate(MemberInfo member);
+//		public static bool DefaultMemberFilter(MemberInfo member)
+		public static readonly IncludeMemberDelegate DefaultMemberFilter = (MemberInfo member) =>
+			(member.MemberType == MemberTypes.Field || member.MemberType == MemberTypes.Property) &&
+			 member.IsPublic() && (member.GetCustomAttribute<IgnoreDataMemberAttribute>() == null);
 		public static IncludeMemberDelegate MemberFilter = DefaultMemberFilter;
 		
-		public static BindingFlags DefaultBindingFlags =
+		public const BindingFlags DefaultBindingFlags =
 			BindingFlags.Instance |
 			BindingFlags.Public | BindingFlags.NonPublic | 
 			BindingFlags.GetField | BindingFlags.GetProperty;
 		
-		public static IEnumerable<MemberInfo> GetDataMembers(Type instanceType, BindingFlags bindingFlags = 0, IncludeMemberDelegate memberFilter = null)
+		public static IEnumerable<MemberInfo> GetDataMembers(Type instanceType, BindingFlags bindingFlags = DefaultBindingFlags, IncludeMemberDelegate memberFilter = null)
 		{
 			if (instanceType == null)
 				throw new ArgumentNullException("instanceType");
-			if (bindingFlags == 0)
-				bindingFlags = DefaultBindingFlags;
+			// needed this when DefaultBindingFlags wasn't constant. Unfortunatelyu doesn't work for DefaultMemberFilter
+//			if (bindingFlags == 0)
+//				bindingFlags = DefaultBindingFlags;
 			if (memberFilter == null)
 				memberFilter = MemberFilter;
 			return instanceType.GetMembers(bindingFlags).Where(mi => memberFilter(mi));
@@ -499,8 +498,12 @@ namespace Artefacts
 			return sb.Append("]").ToString();
 		}
 
-		#region IBsonDocumentSerializer implementation
-
+		/// <summary>
+		/// Gets the serialization info for a member.
+		/// </summary>
+		/// <param name="memberName">The member name.</param>
+		/// <returns>The serialization info for the member.</returns>
+		/// <remarks>IBsonDocumentSerializer implementation</remarks>
 		public BsonSerializationInfo GetMemberSerializationInfo(string memberName)
 		{
 			if (Data.ContainsKey(memberName))
@@ -515,31 +518,55 @@ namespace Artefacts
 			throw new MissingMemberException("Artefact", memberName);
 		}
 
-		#endregion
-
-		#region IBsonSerializer implementation
-
+		/// <summary>
+		/// Deserializes an object from a BsonReader.
+		/// </summary>
+		/// <param name="bsonReader">The BsonReader.</param>
+		/// <param name="nominalType">The nominal type of the object.</param>
+		/// <param name="options">The serialization options.</param>
+		/// <returns>An object.</returns>
+		/// <remarks>IBsonSerializer implementation</remarks>
 		public object Deserialize(MongoDB.Bson.IO.BsonReader bsonReader, Type nominalType, IBsonSerializationOptions options)
 		{
 			return BsonDocumentSerializer.Instance.Deserialize(bsonReader, nominalType, options);
 		}
 
+		/// <summary>
+		/// Deserializes an object from a BsonReader.
+		/// </summary>
+		/// <param name="bsonReader">The BsonReader.</param>
+		/// <param name="nominalType">The nominal type of the object.</param>
+		/// <param name="actualType">The actual type of the object.</param>
+		/// <param name="options">The serialization options.</param>
+		/// <returns>An object.</returns>
+		/// <remarks>IBsonSerializer implementation</remarks>
 		public object Deserialize(MongoDB.Bson.IO.BsonReader bsonReader, Type nominalType, Type actualType, IBsonSerializationOptions options)
 		{
 			return BsonDocumentSerializer.Instance.Deserialize(bsonReader, nominalType, actualType, options);
 		}
 
+		/// <summary>
+		/// Gets the default serialization options for this serializer.
+		/// </summary>
+		/// <returns>The default serialization options for this serializer.</returns>
+		/// <remarks>IBsonSerializer implementation</remarks>
 		public IBsonSerializationOptions GetDefaultSerializationOptions()
 		{
 			return DocumentSerializationOptions.SerializeIdFirstInstance;
 		}
 
+		/// <summary>
+		/// Serializes an object to a BsonWriter.
+		/// </summary>
+		/// <param name="bsonWriter">The BsonWriter.</param>
+		/// <param name="nominalType">The nominal type.</param>
+		/// <param name="value">The object.</param>
+		/// <param name="options">The serialization options.</param>
+		/// <remarks>IBsonSerializer implementation</remarks>
 		public void Serialize(MongoDB.Bson.IO.BsonWriter bsonWriter, Type nominalType, object value, IBsonSerializationOptions options)
 		{
 			BsonDocumentSerializer.Instance.Serialize(bsonWriter, nominalType, value, options);
 		}
-
-		#endregion
 
 		/// <summary>
 		/// Converts this object to a BsonDocument.
@@ -576,8 +603,7 @@ namespace Artefacts
 		/// <returns>The dynamic member names.</returns>
 		public override IEnumerable<string> GetDynamicMemberNames()
 		{
-			List<string> names = new List<string>(Data.Keys);
-//			names.AddRange(PersistedData.Keys);
+			List<string> names = new List<string>(Data.Keys);		//			names.AddRange(PersistedData.Keys);
 			return names;
 		}
 

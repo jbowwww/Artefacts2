@@ -81,6 +81,47 @@ namespace Artefacts.FileSystem
 			return System.IO.Directory.Exists(Path);
 		}
 
+		public void Recurse(Func<Directory, bool> directoryCallback, Action<Directory> directoryComplete, Func<File, bool> fileCallback,
+			out long dirCount, out long dirTestedCount, out long  fileCount, out long fileTestedCount, int depth = -1)
+		{
+			dirCount = 0;
+			dirTestedCount = 0;
+			fileCount = 0;
+			fileTestedCount = 0;
+			if (fileCallback != null)
+			{
+				foreach (File file in Files)
+				{
+					fileCount++;
+					if (fileCallback(file))
+						fileTestedCount++;
+				}
+			}
+			if (directoryCallback != null)
+			{
+				List<Directory> subDirs = new List<Directory>();
+				foreach (Directory dir in Directories)
+				{
+					dirCount++;
+					if (directoryCallback(dir))
+					{
+						dirTestedCount++;
+						subDirs.Add(dir);
+					}
+				}
+				if (depth != 0)
+				{
+					foreach (Directory dir in subDirs)
+					{
+						dir.Recurse(directoryCallback, directoryComplete, fileCallback,
+							out dirCount, out dirTestedCount, out fileCount, out fileTestedCount, depth - 1);
+						if (directoryComplete != null)
+							directoryComplete(dir);
+					}
+				}
+			}
+		}
+
 		public override string ToString()
 		{
 			return string.Format(

@@ -124,8 +124,8 @@ namespace Artefacts.Service
 				_output.WriteLine("HTTP POST: " + artefact);
 				ArtefactCache[artefact.Id] = artefact;
 				WriteConcernResult result = Save(artefact);
-				Log.Debug("Save(artefact,SaveType.InsertOrUpdate): " + result);
-				_output.WriteLine("Save(artefact,SaveType.InsertOrUpdate): " + result);
+				Log.Debug("Save(artefact,SaveType.InsertOrUpdate): " + result.Response.ToString());
+				_output.WriteLine("Save(artefact,SaveType.InsertOrUpdate): " + result.Response.ToString());
 				object r = default(HttpWebResponse);// artefact;
 //				return r;
 				return r;
@@ -151,9 +151,9 @@ namespace Artefacts.Service
 				Log.DebugFormat("HTTP PUT: ", artefact);
 				_output.WriteLine("HTTP PUT: " + artefact);
 				ArtefactCache[artefact.Id] = artefact;
-				WriteConcernResult result = Save(artefact, SaveType.Update);	//InsertOrUpdate(artefact);
-				Log.Debug("Save(artefact,SaveType.Update): " + result);
-				_output.WriteLine("Save(artefact,SaveType.Update): " + result);
+				WriteConcernResult result = Save(artefact, SaveType.InsertOrUpdate);	//.Update);	//InsertOrUpdate(artefact);
+				Log.Debug("Save(artefact,SaveType.InsertOrUpdate): " + result.Response.ToString());
+				_output.WriteLine("Save(artefact,SaveType.InsertOrUpdate): " + result.Response.ToString());
 				object r = default(HttpWebResponse);// artefact;
 				return r;
 				//return null;
@@ -166,6 +166,39 @@ namespace Artefacts.Service
 			}
 //			
 //			}
+		}
+		
+		public object Post(SaveRequest save)
+		{
+			MongoCollection<Artefact> _mcArtefacts = _mDb.GetCollection<Artefact>(save.CollectionName);
+			BsonDocument artefactData = BsonDocument.Create(save.Data);
+			object result =
+				save.Type == SaveRequestType.Insert ? _mcArtefacts.Insert<BsonDocument>(artefactData)
+			:	save.Type == SaveRequestType.Update ? _mcArtefacts.Update(Query.EQ("_id", BsonString.Create(save.Data["_id"])), Update<BsonDocument>.Replace(artefactData))
+			:	save.Type == SaveRequestType.Upsert ? _mcArtefacts.Save(artefactData)
+			:	default(WriteConcernResult);
+//			if (result.Ok)
+//				artefact.State = ArtefactState.Current;
+			return default(HttpWebResponse);
+		}
+		
+		public object Post(SaveBatchRequest saveBatch)
+		{
+			List<object> results = new List<object>();
+			foreach (SaveRequest save in saveBatch.Items)
+			{
+				MongoCollection<Artefact> _mcArtefacts = _mDb.GetCollection<Artefact>(save.CollectionName);
+				BsonDocument artefactData = BsonDocument.Create(save.Data);
+				object result =
+					save.Type == SaveRequestType.Insert ? _mcArtefacts.Insert<BsonDocument>(artefactData)
+				:	save.Type == SaveRequestType.Update ? _mcArtefacts.Update(Query.EQ("_id", BsonString.Create(save.Data["_id"])), Update<BsonDocument>.Replace(artefactData))
+				:	save.Type == SaveRequestType.Upsert ? _mcArtefacts.Save(artefactData)
+				:	default(WriteConcernResult);
+				//			if (result.Ok)
+				//				artefact.State = ArtefactState.Current;
+				results.Add(result);
+			}
+			return default(HttpWebResponse);	//results.ToArray();
 		}
 		
 		/// <summary>
@@ -260,7 +293,8 @@ namespace Artefacts.Service
 				WriteConcernResult result =
 					saveType == SaveType.Insert ? _mcArtefacts.Insert<BsonDocument>(artefactData)
 				:	saveType == SaveType.Update ? _mcArtefacts.Update(
-						Query<BsonDocument>.EQ<string>(a => (string)a["_id"], artefact.Id),
+						Query.EQ("_id", BsonString.Create(artefact.Id)),
+//						Query<BsonDocument>.EQ<string>(a => (string)a["_id"], artefact.Id),
 						Update<BsonDocument>.Replace(artefactData))
 				:	saveType == SaveType.InsertOrUpdate ? _mcArtefacts.Save(artefactData)// _mcArtefacts.Save<BsonDocument>(artefactData)
 				: default(WriteConcernResult);

@@ -42,6 +42,14 @@ namespace Artefacts.FileSystem
 				orderby d.Label.Length descending		//					.OrderByDescending((d) => d.Label.Length)
 				select d).FirstOrDefault();
 		}
+
+
+		public static string FormatSize(this File file)
+		{
+			if (file == null)
+				throw new ArgumentNullException("file");
+			return Size.Format(file.Size);
+		}
 	}
 }
 

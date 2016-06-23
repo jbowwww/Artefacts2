@@ -4,23 +4,61 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Threading;
+using System.Collections.Concurrent;
+using Mono.Math;
 
 namespace Artefacts.FileSystem
 {
 	public class FileCRC
 	{
-		public static int QueueCount = 0;
-		public static object QueueMonitorLock = new object();
+		public static ServiceStack.Logging.ILog Log = Artefact.LogFactory.GetLogger(typeof(FileCRC));
 
-		public static void WaitForEmptyQueue()
+
+		private static Semaphore _crcSemaphore;
+
+		private static BigInteger _mallocTotal = new BigInteger(0);
+
+		private const int _readBufferSize = 8 * 1024 * 1024;
+
+		public static int QueueCount {
+			get { return Volatile.Read(ref _queueCount); }
+			set { Volatile.Write(ref _queueCount, value); }
+		}
+		private static int _queueCount = 0;
+		private static readonly object QueueMonitorLock = new object();
+
+		
+		public static bool WaitForEmptyQueue()
 		{
-			Monitor.Enter(QueueMonitorLock);
-			while (QueueCount > 0)
+			return WaitForEmptyQueue(Timeout.Infinite);
+		}
+		public static bool WaitForEmptyQueue(int timeout)
+		{
+//			Monitor.Enter(QueueMonitorLock);
+//			while (QueueCount > 0)
+//			{
+//				Monitor.Exit(QueueMonitorLock);
+//				Monitor.Enter(QueueMonitorLock);
+//			}
+//			Monitor.Exit(QueueMonitorLock);
+		return WaitForQueueCount(0, timeout);
+		}
+
+		public static bool WaitForQueueCount(int count)
+		{
+		return WaitForQueueCount(count, Timeout.Infinite);
+		}
+		public static bool WaitForQueueCount(int count, int timeout)
+		{
+//			while (true)
+			while (QueueCount > count)
 			{
-				Monitor.Exit(QueueMonitorLock);
-				Monitor.Enter(QueueMonitorLock);
+				Log.DebugFormat("FileCRC.WaitForQueueCount({0}, {1}): FileCRC.QueueCount={2}>{3}, waiting...\n", count, timeout, QueueCount, count);
+				Thread.Sleep(3333);
+//					Monitor.Enter(QueueMonitorLock);
+//			Monitor.Exit(QueueMonitorLock);
 			}
-			Monitor.Exit(QueueMonitorLock);
+			return true;
 		}
 
 		public class Region
@@ -47,12 +85,12 @@ namespace Artefacts.FileSystem
 			public Int64 CRC {
 				get
 				{
-					if (!HasValue)
-					{
-						_crcReady.WaitOne();
+//					if (!HasValue)
+//					{
+//						_crcReady.WaitOne();
 						if (!HasValue)
 							throw new InvalidOperationException("_crc.HasValue = false, after waiting for _crcReady");
-					}
+//					}
 					return _crc.Value;
 				}
 
@@ -64,14 +102,16 @@ namespace Artefacts.FileSystem
 			public bool HasValue { get { return _crc.HasValue; } }
 			private Int64? _crc;
 
-			internal EventWaitHandle _crcReady = new EventWaitHandle(false, EventResetMode.ManualReset);
+//			internal EventWaitHandle _crcReady = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+			internal Task _crcTask;
 
 			/// <summary>Initializes a new instance of the <see cref="Artefacts.FileSystem.FileCRC+Region"/> class</summary>
 			/// <param name="start">Start.</param>
 			/// <param name="finish">Finish.</param>
 			public Region(long start, long finish)
 			{
-				if ((finish - start + 1) > int.MaxValue)
+				if ((finish - start + 1) > long.MaxValue)
 					throw new ArgumentOutOfRangeException("finish", finish, "start = " + start + ", so finish must be <= " + (start + int.MaxValue));
 				Start = start;
 				Finish = finish;
@@ -81,6 +121,7 @@ namespace Artefacts.FileSystem
 			}
 		}
 
+		public File File { get; internal set; }
 		public FileInfo FileInfo { get; internal set; }
 
 		public Region[] Regions { get; internal set; }
@@ -117,6 +158,11 @@ namespace Artefacts.FileSystem
 
 		public bool IsCRCQueued { get { return _isQueued; } }
 
+		static FileCRC()
+		{
+			_crcSemaphore = new Semaphore(4, 4);
+		}
+
 		public FileCRC()
 		{
 			FileInfo = null;
@@ -135,67 +181,98 @@ namespace Artefacts.FileSystem
 			Init(fileInfo, regions);
 		}
 
-		public FileCRC(FileInfo fileInfo, IEnumerable<Region> regions, Action onComplete = null)
+		public FileCRC(File file, FileInfo fileInfo, IEnumerable<Region> regions, Action<File> onComplete = null)
 		{
-			Interlocked.Increment(ref FileCRC.QueueCount);
-			_isQueued = true;
 			Init(fileInfo, regions);
-			TaskCreationOptions taskOptions = TaskCreationOptions.LongRunning | TaskCreationOptions.PreferFairness;
-			_crcTask = new Task(() =>
-			{
-				byte[] data;
-				using (FileStream fs = FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
-				{
-					data = new byte[fs.Length];
-					int offset = 0;
-					while (fs.Position < fs.Length)
-					{
-						int readTryCount = fs.Length >= int.MaxValue ? int.MaxValue : (int)fs.Length;
-						int readActualCount = fs.Read(data, offset, readTryCount);
-						if (readActualCount < readTryCount)
-							throw new IOException(
-								"File read \"" + FileInfo.Name + "\" offset " + offset +
-								", count " + readTryCount + " only read " + readActualCount + " bytes");
-						offset += readActualCount;
+			Monitor.Enter(QueueMonitorLock);
+			try
+			{	
+				QueueCount++;
+				_isQueued = true;
+				TaskCreationOptions taskOptions = TaskCreationOptions.PreferFairness | TaskCreationOptions.LongRunning;
+				_crcSemaphore.WaitOne();
+				_crcTask = new Task(() => {
+					byte[] data;
+					try {
+						data = new byte[_readBufferSize];
+
+						// TODO: If this works reliably, maybe try async reading for speed boost (would read data in background while calc'ing CRC on loaded data? would need 2x buffers)
+						using (FileStream fs = FileInfo.Open(FileMode.Open, FileAccess.Read, FileShare.Read))
+						{
+							long length = fs.Length;
+							long position = fs.Position;
+							int regionIndex = 0;
+							Region region = Regions[regionIndex];			// OK to assume array length is >= 1?
+							Int64 crc = Int64.MaxValue;
+							while (position < length)
+							{
+								long remainingBytes = length - position;
+								int readTryCount = remainingBytes < (long)_readBufferSize ? (int)remainingBytes : _readBufferSize;
+								int readActualCount = fs.Read(data, 0, readTryCount);
+								if (readActualCount < 0)
+									throw new IOException(string.Format(
+										"Error reading \"{0}\", attempted {1} bytes from position {2}",
+										FileInfo.Name, readTryCount, position));
+								Array.Clear(data, readActualCount, _readBufferSize - readActualCount);
+								for (int i = 0; i < _readBufferSize; i += Region.ComponentSize)
+								{
+									if (position + i + Region.ComponentSize >= region.Finish)
+									{
+										region.CRC = crc;
+										if (++regionIndex >= Regions.Length)
+											break;
+										region = Regions[regionIndex];
+										crc = Int64.MaxValue;
+									}
+									crc -= BitConverter.ToInt64(data, i);
+								}
+								position += readActualCount;
+							}
+						}
+						CRC = Int64.MaxValue - Regions.Sum(r => r.CRC);
 					}
-				}
-
-//				ParallelOptions parallelOptions = new ParallelOptions() {
-//					MaxDegreeOfParallelism = 8
-//				};
-//				Parallel.ForEach(Regions, parallelOptions, (region) =>
-
-				foreach (Region region in Regions)
-				{
-					region._crcReady.Reset();
-					TaskCreationOptions subTaskOptions = TaskCreationOptions.AttachedToParent;
-					// TODO: Extract crc calc'ion from byte[] buffer into a Region member method(s) e.g. GetRegionData / CalculateCRC()
-					Task calcCrcTask = new Task(() => {
-						Int64 crc = 0;
-						byte[] regionData =
-							new ArraySegment<byte>(data, (int)region.Start, (int)region.Size).Array
-								.Concat(new byte[region.PaddedSize - region.Size]).ToArray();
-						for (long i = 0; i < region.ComponentCount; i++)
-							crc += BitConverter.ToInt64(regionData, (int)i);
-						region.CRC = Int64.MaxValue - crc;
-						region._crcReady.Set();
-					}, subTaskOptions);
-					calcCrcTask.Start();
-				}
-			}, taskOptions);
-			_crcTask.ContinueWith((task) => {
-				CRC = Int64.MaxValue - Regions.Sum(r => r.CRC);
-				Interlocked.Decrement(ref FileCRC.QueueCount);
-				if (onComplete != null)
-					onComplete();
-				_crcReady.Set();
+					catch (Exception ex)
+					{
+						Log.Error(ex);
+					}
+					finally
+					{
+						data = null;
+//						_mallocTotal -= new BigInteger((ulong)dataSize);
+						QueueCount--;
+						_isQueued = false;
+						_crcReady.Set();
+						_crcTask = null;
+						if (onComplete != null)
+							onComplete(file);
+						Monitor.Exit(QueueMonitorLock);
+						GC.Collect();
+						_crcSemaphore.Release();
+					}
+				}, taskOptions);
+				_crcTask.Start();
+			}
+			catch (Exception ex)
+			{
+				Log.Error(ex);
+				QueueCount--;
 				_isQueued = false;
-			});
-			_crcTask.Start();
+				_crcReady.Set();
+				if (_crcTask != null)
+					_crcTask = null;
+				if (onComplete != null)
+					onComplete(file);
+				Monitor.Exit(QueueMonitorLock);
+			}
+			finally
+			{
+				GC.Collect();
+			}
 		}
 
-		private void Init(FileInfo fileInfo, IEnumerable<Region> regions)
+		private void Init(FileInfo fileInfo, IEnumerable<Region> regions, File file = null)
 		{
+			File = file;
 			FileInfo = fileInfo;
 			Regions = (regions != null && regions.Count() > 0) ? regions.ToArray()
 				: new FileCRC.Region[] { new FileCRC.Region(0, FileInfo.Length - 1) };

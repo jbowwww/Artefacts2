@@ -89,7 +89,7 @@
               </packing>
             </child>
             <child>
-              <widget class="Gtk.FileChooserButton" id="btnTrashDefaultChooser">
+              <widget class="Gtk.FileChooserButton" id="btnFileChooser">
                 <property name="MemberName" />
                 <property name="WidthRequest">340</property>
                 <property name="Title" translatable="yes">Select Trash Folder</property>
@@ -128,12 +128,24 @@
               </packing>
             </child>
             <child>
+              <widget class="Gtk.Label" id="txtTotalSize">
+                <property name="MemberName" />
+                <property name="LabelProp" translatable="yes">Total Size:</property>
+              </widget>
+              <packing>
+                <property name="Position">5</property>
+                <property name="AutoSize">True</property>
+                <property name="Expand">False</property>
+                <property name="Fill">False</property>
+              </packing>
+            </child>
+            <child>
               <widget class="Gtk.Label" id="txtPostQueue">
                 <property name="MemberName" />
                 <property name="LabelProp" translatable="yes">Post Queue: 0</property>
               </widget>
               <packing>
-                <property name="Position">5</property>
+                <property name="Position">6</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -146,7 +158,7 @@
                 <property name="LabelProp" translatable="yes">Directory Queue: 0</property>
               </widget>
               <packing>
-                <property name="Position">6</property>
+                <property name="Position">7</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>
@@ -160,7 +172,7 @@
               </widget>
               <packing>
                 <property name="PackType">End</property>
-                <property name="Position">7</property>
+                <property name="Position">8</property>
                 <property name="AutoSize">True</property>
                 <property name="Expand">False</property>
                 <property name="Fill">False</property>

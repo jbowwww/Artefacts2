@@ -22,6 +22,7 @@
     <ConsolePause>false</ConsolePause>
     <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
     <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -31,6 +32,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <PlatformTarget>x64</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -42,6 +44,7 @@
     <Reference Include="ServiceStack.Interfaces">
       <HintPath>..\..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Interfaces.dll</HintPath>
     </Reference>
+    <Reference Include="Mono.Security" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -52,6 +55,7 @@
     <Compile Include="Artefacts\FileSystemEntry.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Artefacts\FileCRC.cs" />
+    <Compile Include="Size.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

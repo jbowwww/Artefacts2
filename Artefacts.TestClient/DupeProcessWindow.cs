@@ -207,7 +207,7 @@ namespace Artefacts.TestClient
 							long size = file.Size;//(long)_model.GetValue(iter, (int)Column.Size);
 							totalSize += size;
 							//string cmd = "mv \"" + filePath + "\" \"" + trashPath + "\"\n";
-							_debug.Write("Moving \"" + filePath + "\" (" + File.FormatSize(size) + ") to trash folder \"" + trashPath + "\": ");
+							_debug.Write("Moving \"" + filePath + "\" (" + size.FormatSize() + ") to trash folder \"" + trashPath + "\": ");
 							using (Process mvProc = Process.Start("mv", "\"" + filePath + "\" \"" + trashPath + "\""))
 							{
 								mvProc.OutputDataReceived +=
@@ -237,7 +237,7 @@ namespace Artefacts.TestClient
 //							outFile.Write(buf, 0, buf.Length);
 						}
 					}
-					_debug.WriteLine("Total " + File.FormatSize(totalSize) + " moved\n");
+				_debug.WriteLine("Total " + totalSize.FormatSize() + " moved\n");
 				}
 //				}
 //			}

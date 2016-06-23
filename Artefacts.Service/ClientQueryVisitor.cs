@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.ObjectModel;
 using MongoDB.Bson;
+using Artefacts.Service.Extensions;
 
 namespace Artefacts.Service
 {
@@ -141,64 +142,41 @@ namespace Artefacts.Service
 		{
 			Expression mObject = Visit(m.Object);
 			IEnumerable<Expression> mArguments = VisitExpressionList(m.Arguments);			
-			MethodInfo mi = m.Method;
-			ParameterInfo[] pi = mi.GetParameters();
-				
+			MethodInfo method = m.Method;
+			ParameterInfo[] pi = method.GetParameters();
 			if (mArguments != m.Arguments || mObject != m.Object)
 			{
-	
 				// If method call is on a constant instance and all arguments are constants too,
 				// invoke method and replace with constant expression of method's return value
 				if (mObject != null && mObject.NodeType == ExpressionType.Constant
-					&& mArguments.All<Expression>((arg) => arg.NodeType == ExpressionType.Constant))
+				&&	mArguments.All<Expression>((arg) => arg.NodeType == ExpressionType.Constant))
 					return Expression.Constant(m.Method.Invoke((mObject as ConstantExpression).Value,
-					                                            mArguments.Cast<ConstantExpression>().Select<ConstantExpression, object>((ce) => ce.Value).ToArray()));
+						mArguments.Cast<ConstantExpression>().Select<ConstantExpression, object>((ce) => ce.Value).ToArray()));
 		
 				// LINQ queries are always extension methods so are in fact static
-				if (mObject == null && mArguments.Count() > 0 && _enumerableType.IsAssignableFrom(mArguments.ElementAt(0).Type))
+				if (mObject == null && method.IsLinqMethod())
 				{
-					// Replace the predicate version of count() with a Where(predicate).Count
-					if (m.Method.DeclaringType == _enumerableStaticType || m.Method.DeclaringType == _queryableStaticType)
+					if (mArguments.Count() == 2)
 					{
-						if (mArguments.Count() == 2)
-						{
-							if (m.Method.Name == "Count")
-							{
-								Expression innerWhere = Expression.Call(
-									m.Method.DeclaringType, "Where",
-									new Type[] { _elementType },
-									Visit(mArguments.ElementAt(0)),
-									Visit(mArguments.ElementAt(1)));
-								Expression outerCount = Expression.Call(
-//									m.Method.DeclaringType,
-									_enumerableStaticType, "Count",
-									new Type[] { _elementType },
-								Expression.Convert(innerWhere, _enumerableType));
-								return outerCount;
-							}
-							else if (m.Method.Name == "Where")
-							{
-								Expression where = Expression.Call(
-									m.Method.DeclaringType, "Where",
-									new Type[] { _elementType },
-									Visit(mArguments.ElementAt(0)),
-									Visit(mArguments.ElementAt(1)));
-								return where;
-							}
-						}
-						else if (mArguments.Count() == 1)
-						{
-							if (m.Method.Name == "Count")
-							{
-								return Expression.Call(
-									m.Method.DeclaringType, "Count",
-									new Type[] { _elementType },
-									Visit(mArguments.ElementAt(0))
-								);
-							}
-						}
+						// replace predicate version of count with .Where(predicate).Count()
+						if (m.Method.Name == "Count")
+							return Expression.Call(_enumerableStaticType, "Count", new[] { _elementType },		//Expression.Convert(innerWhere, _enumerableType);s
+								Expression.Call(m.Method.DeclaringType, "Where", new[] { _elementType },
+									mArguments.ElementAt(0), mArguments.ElementAt(1)));
+						else if (m.Method.Name == "Where")
+							return m.CombineConsecutiveWhereClauses();
 					}
-					throw new NotSupportedException(string.Format("Unsupported method \"", m.Method.DeclaringType.FullName, ".", m.Method.Name, "\""));
+					else if (mArguments.Count() == 1)
+					{
+//							if (m.Method.Name == "Count") {
+//								return Expression.Call(
+//									m.Method.DeclaringType, "Count",
+//									new Type[] { _elementType },
+//									Visit(mArguments.ElementAt(0))
+//								);
+//							}
+					}
+					return Expression.Call(mObject, m.Method, mArguments);
 				}
 			}
 			return base.VisitMethodCall(m);

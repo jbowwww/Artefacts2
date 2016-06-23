@@ -60,10 +60,11 @@ namespace Artefacts.Service
 			
 //			if (ve.NodeType == ExpressionType.Quote)
 //				return Translate(StripQuotes(ve));
-			else if (ve.NodeType == ExpressionType.UnaryPlus)
-				return TranslateUnary((UnaryExpression)ve);
-			else if (ve.NodeType == ExpressionType.Convert)
-				return TranslateConvert((UnaryExpression)ve);
+			UnaryExpression unary = ve as UnaryExpression;
+			if (unary != null)	//ve.NodeType == ExpressionType.UnaryPlus)
+				return TranslateUnary(unary);//(UnaryExpression)ve);
+//			else if (ve.NodeType == ExpressionType.Convert)
+//				return TranslateConvert((UnaryExpression)ve);
 			BinaryExpression be = ve as BinaryExpression;
 			if (be != null)
 				return TranslateBinary((BinaryExpression)ve);
@@ -82,7 +83,6 @@ namespace Artefacts.Service
 		
 		protected IMongoQuery TranslateConvert(UnaryExpression ue)
 		{
-			_serializedData.AppendFormat("({0})(", ue.Type.FullName);
 			Translate(ue.Operand);
 			_serializedData.Append(")");
 			return null;
@@ -92,9 +92,15 @@ namespace Artefacts.Service
 		{
 			if (ue.Method != null)
 				_serializedData.Append(ue.Method.Name + "(");
+			else if (ue.NodeType == ExpressionType.Convert)
+				_serializedData.AppendFormat("({0})(", ue.Type.FullName);
+			else if (ue.NodeType == ExpressionType.Not)
+				_serializedData.Append("!(");
+			else
+				throw new ArgumentOutOfRangeException("ue", ue, "Not supported");
 			Translate(ue.Operand);
-			if (ue.Method != null)
-				_serializedData.Append(")");
+			//if (ue.Method != null)
+			_serializedData.Append(")");
 			return null;
 		}
 		

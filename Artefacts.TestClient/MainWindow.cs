@@ -41,8 +41,13 @@ public partial class MainWindow: Gtk.Window
 		get { return btnStartMain.Sensitive; }
 		set { btnStartMain.Sensitive = value; }
 	}
-	public string DefaultTrashFolder {
-		get { return btnTrashDefaultChooser.Filename; }
+	public string RootFolder {
+		get { return btnFileChooser.Filename; }
+	}
+	
+	public string ToolbarTotalSize {
+		get { return txtTotalSize.Text; }
+		set { txtTotalSize.Text = value; }
 	}
 	
 	public delegate int GetIntDelegate();
@@ -91,7 +96,7 @@ public partial class MainWindow: Gtk.Window
 	public MainWindow() : base (Gtk.WindowType.Toplevel)
 	{
 		Build();
-		btnTrashDefaultChooser.SetFilename(ConfigurationManager.AppSettings["defaultTrashPath"]);
+		btnFileChooser.SetFilename(ConfigurationManager.AppSettings["defaultTrashPath"]);
 		tvHost.Buffer.InsertText += (object o, InsertTextArgs args) => _autoScrollHostUpdated = true;
 		tvClient.Buffer.InsertText += (object o, InsertTextArgs args) => _autoScrollClientUpdated = true;
 		EnableStatusGetters = true;
@@ -108,8 +113,8 @@ public partial class MainWindow: Gtk.Window
 	#region Event Handlers
 	protected void OnDeleteEvent(object sender, DeleteEventArgs a)
 	{
-		if (System.IO.Directory.Exists(btnTrashDefaultChooser.Filename))
-			ConfigurationManager.AppSettings["defaultTrashPath"] = btnTrashDefaultChooser.Filename;
+		if (System.IO.Directory.Exists(btnFileChooser.Filename))
+			ConfigurationManager.AppSettings["defaultTrashPath"] = btnFileChooser.Filename;
 		EnableStatusGetters = false;	// destroys _autoScrollTimer
 	}
 	
@@ -147,26 +152,28 @@ public partial class MainWindow: Gtk.Window
 			if (currentTest != null)
 				txtTestTime.Text = GetCurrentTestTime == null ? "" : (DateTime.Now - GetCurrentTestTime.Invoke()).ToString();
 		});
-		if (_autoScrollHost && _autoScrollHostUpdated)
-		{
-			TextIter pos = tvHost.Buffer.EndIter;
-			if (posHost.Equal(default(TextIter)) || !pos.Equal(posHost))	//.Offset != posHost.Offset)
+		Application.Invoke((sender, e) => {
+			if (_autoScrollHost && _autoScrollHostUpdated)
 			{
-				posHost = pos;
-				pos.LineOffset = 0;
-				Application.Invoke((sender, e) => tvHost.ScrollToIter(pos, 0, false, 0, 0));
+				TextIter pos = tvHost.Buffer.EndIter;
+				if (posHost.Equal(default(TextIter)) || !pos.Equal(posHost))	//.Offset != posHost.Offset)
+				{
+					posHost = pos;
+					pos.LineOffset = 0;
+					tvHost.ScrollToIter(pos, 0, false, 0, 0);
+				}
 			}
-		}
-		if (_autoScrollClient && _autoScrollClientUpdated)
-		{
-			TextIter pos = tvClient.Buffer.EndIter;
-			if (posClient.Equal(default(TextIter)) || !pos.Equal(posClient))
+			if (_autoScrollClient && _autoScrollClientUpdated)
 			{
-				posClient = pos;
-				pos.LineOffset = 0;
-				Application.Invoke((sender, e) => tvClient.ScrollToIter(pos, 0, false, 0, 0));
+				TextIter pos = tvClient.Buffer.EndIter;
+				if (posClient.Equal(default(TextIter)) || !pos.Equal(posClient))
+				{
+					posClient = pos;
+					pos.LineOffset = 0;
+					tvClient.ScrollToIter(pos, 0, false, 0, 0);
+				}
 			}
-		}
+		});
 	}
 	#endregion
 

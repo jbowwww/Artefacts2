@@ -101,6 +101,8 @@
     <Compile Include="ArtefactQueryTranslator.cs" />
     <Compile Include="CountResults.cs" />
     <Compile Include="CountRequest.cs" />
+    <Compile Include="Extensions\Expressions.cs" />
+    <Compile Include="SaveArtefactRequest.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -108,7 +110,6 @@
     <Folder Include="Extensions\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="SaveArtefactRequest.cs" />
     <None Include="QueryFactory.cs" />
     <None Include="DTO\Artefact.cs" />
     <None Include="ArtefactsClient.cs" />

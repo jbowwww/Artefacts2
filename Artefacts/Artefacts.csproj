@@ -62,17 +62,12 @@
       <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Client.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ServiceStack.Text">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Text.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="ServiceStack">
-      <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="ServiceStack.Common">
       <HintPath>..\..\..\..\Resources\CS\ServiceStack\lib\ServiceStack.Common.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="ServiceStack.Text">
+      <HintPath>bin\Debug\ServiceStack.Text.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>
